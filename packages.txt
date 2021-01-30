@@ -1,0 +1,5 @@
+emacs
+alacritty
+i3status-rs
+qutebrowser
+sway
