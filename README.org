@@ -1,0 +1,19 @@
+#+title: Dotfiles
+#+author: Tommaso Rossi
+
+Configuration files for common programs, with special emphasis on GNU Emacs.
+
+** Manage symlinks with GNU Stow
+
+Using GNU Stow, you can easily create symlinks to get started right away without having to manually creating them or to copy files to configuration folders.
+
+Stow a package (create symlinks for configuration files of one program):
+#+begin_src bash
+stow <package>
+#+end_src
+
+Get started right away stowing every package:
+#+begin_src bash
+./initialize.sh
+#+end_src
+When launching this script, you can control which package will be stowed by editing the =packages.txt= file.
