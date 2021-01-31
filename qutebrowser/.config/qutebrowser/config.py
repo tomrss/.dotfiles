@@ -143,4 +143,6 @@ c.statusbar.show = 'always'
 #   - switching: Show the tab bar when switching tabs.
 c.tabs.show = 'always'
 
+config.bind('M', 'hint links spawn mpv {hint-url}')
+
 config.load_autoconfig()
