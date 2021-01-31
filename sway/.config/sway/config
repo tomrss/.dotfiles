@@ -41,7 +41,7 @@ font pango: JetBrainsMono Medium 13
 default_border pixel 1
 
 ### Startup
-exec swaymsg "workspace 1; exec emacs;"
+# exec swaymsg "workspace 1; exec emacs;"
 # for_window [app_id="Alacritty"] fullscreen enable
 
 ### Idle configuration
@@ -141,8 +141,8 @@ input type:touchpad tap enabled
 
     # Good ol' Alt-Tab within workspace
     # bindsym Alt+Tab focus back_and_forth
-    bindsym Alt+Tab exec swaymsg [con_id=$(swaymsg -t get_tree | ~/.config/sway/alttab t)] focus
-    bindsym Alt+Shift+Tab exec swaymsg [con_id=$(swaymsg -t get_tree | ~/.config/sway/alttab f)] focus
+    bindsym Alt+Tab exec swaymsg [con_id=$(swaymsg -t get_tree | ~/.config/sway/alttab.py t)] focus
+    bindsym Alt+Shift+Tab exec swaymsg [con_id=$(swaymsg -t get_tree | ~/.config/sway/alttab.py f)] focus
 
     # Move the focused window with the same, but add Shift
     bindsym $mod+Shift+$left move left
