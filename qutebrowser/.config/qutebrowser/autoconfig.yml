@@ -13,9 +13,17 @@ settings:
       w: session-save
       wq: quit --save
       wqa: quit --save
+  content.blocking.method:
+    global: both
+  content.cookies.accept:
+    global: no-3rdparty
+  content.cookies.store:
+    global: true
   content.notifications:
     https://www.reddit.com: false
   statusbar.show:
     global: always
   tabs.show:
     global: always
+  url.start_pages:
+    global: https://start.duckduckgo.com
