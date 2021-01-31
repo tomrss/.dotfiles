@@ -142,3 +142,5 @@ c.statusbar.show = 'always'
 #   - multiple: Hide the tab bar if only one tab is open.
 #   - switching: Show the tab bar when switching tabs.
 c.tabs.show = 'always'
+
+config.load_autoconfig()
