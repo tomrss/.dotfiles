@@ -134,6 +134,15 @@ config.set('content.javascript.enabled', True, 'qute://*/*')
 #   - in-mode: Show the statusbar when in modes other than normal mode.
 c.statusbar.show = 'always'
 
+c.url.searchengines = {
+    'DEFAULT': 'https://duckduckgo.com/?q={}',
+    'ddg': 'https://duckduckgo.com/?q={}',
+    'aw': 'https://wiki.archlinux.org/?search={}',
+    'goog': 'https://www.google.com/search?q={}',
+    'wiki': 'https://en.wikipedia.org/wiki/{}',
+    'syt': 'https://www.youtube.com/results?search_query={}'
+}
+
 # When to show the tab bar.
 # Type: String
 # Valid values:
