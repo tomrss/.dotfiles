@@ -40,12 +40,12 @@
 ;;; Code:
 (require 'ansi-color)
 
-;; set default face
-(set-face-attribute 'default nil :font "JetBrainsMono" :height 110)
-;; set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "JetBrainsMono" :height 110)
-;; set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height 150 :weight 'regular)
+;; set default font, fixed and variable pitch fonts
+(when (x-list-fonts "JetBrainsMono")
+  (set-face-attribute 'default nil :font "JetBrainsMono" :height 110)
+  (set-face-attribute 'fixed-pitch nil :font "JetBrainsMono" :height 110))
+(when (x-list-fonts "Cantarell")
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 150 :weight 'regular))
 
 ;; Other interesting fonts:
 ;; - DejaVu Sans Mono 13
