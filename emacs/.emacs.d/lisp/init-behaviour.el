@@ -178,14 +178,16 @@
   ("C-c C-d" . helpful-at-point))
 
 ;; code snippets
-(use-package yasnippet
-  :config (yas-global-mode))
+;; (use-package yasnippet
+;;   :hook prog-mode)
 
-(use-package yasnippet-snippets)
+;; (use-package yasnippet-snippets
+;;   :after yasnippet)
 
-(use-package ivy-yasnippet
-  :bind
-  ("C-<tab>" . ivy-yasnippet))
+;; (use-package ivy-yasnippet
+;;   :after (:all ivy yasnippet)
+;;   :bind
+;;   ("C-<tab>" . ivy-yasnippet))
 
 ;; allow actions for minibuffer items
 ;;(use-package embark
