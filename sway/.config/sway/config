@@ -271,7 +271,7 @@ bindsym $mod+r mode "resize"
 # }
 
 bar {
-    font pango:JetBrainsMono Medium, FontAwesome 15
+    font pango:JetBrainsMono, FontAwesome 12
     position top
     status_command /usr/bin/i3status-rs ~/.config/i3status-rs/config.toml
     colors {
