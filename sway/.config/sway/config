@@ -37,9 +37,6 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # Font configuration
 font pango: JetBrainsMono Medium 13
 
-# gaps between windows
-exec swaymsg "gaps inner all set 3;"
-
 # Hide window title bar
 default_border pixel 1
 
