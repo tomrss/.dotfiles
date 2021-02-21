@@ -174,7 +174,7 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key)
-  ("C-h s" . helpful-symbol)
+  ("C-h o" . helpful-symbol)
   ("C-c C-d" . helpful-at-point))
 
 ;; code snippets
