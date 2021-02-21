@@ -93,17 +93,17 @@
 
 ;; git
 (use-package magit
-  :defer t)
+  :commands magit-status)
 
 ;; project management
 (use-package projectile
+  :commands (projectile-switch-project
+	     projectile-ripgrep
+	     projectile-find-file)
   :diminish projectile-mode
-  :config (projectile-mode)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/sources")
-    (setq projectile-project-search-path '("~/sources")))
   (setq projectile-switch-project-action #'projectile-dired))
 
 ;; enhance projectile with counsel (apparently selectrum does not have
