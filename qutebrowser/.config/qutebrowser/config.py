@@ -140,7 +140,9 @@ c.url.searchengines = {
     'aw': 'https://wiki.archlinux.org/?search={}',
     'goog': 'https://www.google.com/search?q={}',
     'wiki': 'https://en.wikipedia.org/wiki/{}',
-    'syt': 'https://www.youtube.com/results?search_query={}'
+    'syt': 'https://www.youtube.com/results?search_query={}',
+    'enit': 'https://www.wordreference.com/enit/{}',
+    'iten': 'https://www.wordreference.com/iten/{}'
 }
 
 # When to show the tab bar.
