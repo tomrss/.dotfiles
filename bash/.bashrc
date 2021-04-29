@@ -143,11 +143,10 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# CUSTOM
 alias l="ls -lh"
 alias ll="ls -lah"
 alias xclip="xclip -selection c"
 
-export PATH=$PATH:/home/user/scripts
+export PATH=$PATH:$HOME/scripts:$HOME.dotnet/tools:$HOME.cargo/bin:$HOME.local/bin
 
-export PATH="$PATH:/home/user/.dotnet/tools"
+export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/library"
