@@ -147,6 +147,6 @@ alias l="ls -lh"
 alias ll="ls -lah"
 alias xclip="xclip -selection c"
 
-export PATH=$PATH:$HOME/scripts:$HOME.dotnet/tools:$HOME.cargo/bin:$HOME.local/bin
+export PATH=$PATH:$HOME/scripts:$HOME/.dotnet/tools:$HOME/.cargo/bin:$HOME/.local/bin
 
 export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/library"
