@@ -37,7 +37,7 @@ block = "sound"
 [[block]]
 block = "battery"
 driver = "upower"
-format = "{percentage}% {time}"
+format = "{percentage} {time}"
 
 [[block]]
 block = "time"
