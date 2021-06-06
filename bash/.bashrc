@@ -146,6 +146,7 @@ export NVM_DIR="$HOME/.nvm"
 alias l="ls -lh"
 alias ll="ls -lah"
 alias xclip="xclip -selection c"
+alias pvpn="protonvpn"
 
 export PATH=$PATH:$HOME/scripts:$HOME/.dotnet/tools:$HOME/.cargo/bin:$HOME/.local/bin
 
