@@ -31,6 +31,10 @@ interval = 1
 format = "{utilization} {frequency}"
 
 [[block]]
+block = "custom"
+command = ''' sensors | grep "Package id 0" | awk -F "  " '{ print $2 }' '''
+interval = 5
+
 [[block]]
 block = "sound"
 
