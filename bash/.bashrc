@@ -139,15 +139,27 @@ ex ()
 }
 
 # NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if command -v nvm &> /dev/null; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi
 
+# path configuration
+the_path=$PATH:$HOME/.local/bin:$HOME/scripts
+
+if command -v rustc &> /dev/null; then
+    export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/library"
+    the_path=$the_path:$HOME/.cargo/bin
+fi
+if command -v dotnet &> /dev/null; then
+    the_path=$the_path:$HOME/.dotnet/tools
+fi
+
+export PATH=$the_path
+
+# custom aliases
 alias l="ls -lh"
 alias ll="ls -lah"
 alias xclip="xclip -selection c"
 alias pvpn="protonvpn"
-
-export PATH=$PATH:$HOME/scripts:$HOME/.dotnet/tools:$HOME/.cargo/bin:$HOME/.local/bin
-
-export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/library"

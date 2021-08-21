@@ -126,13 +126,8 @@ config.set('content.javascript.enabled', True, 'chrome://*/*')
 # Type: Bool
 config.set('content.javascript.enabled', True, 'qute://*/*')
 
-# When to show the statusbar.
-# Type: String
-# Valid values:
-#   - always: Always show the statusbar.
-#   - never: Always hide the statusbar.
-#   - in-mode: Show the statusbar when in modes other than normal mode.
-c.statusbar.show = 'always'
+c.url.default_page = 'about:blank'
+c.url.start_pages = ['about:blank']  # doesn't work
 
 c.url.searchengines = {
     'DEFAULT': 'https://duckduckgo.com/?q={}',
@@ -145,6 +140,14 @@ c.url.searchengines = {
     'iten': 'https://www.wordreference.com/iten/{}'
 }
 
+# When to show the statusbar.
+# Type: String
+# Valid values:
+#   - always: Always show the statusbar.
+#   - never: Always hide the statusbar.
+#   - in-mode: Show the statusbar when in modes other than normal mode.
+c.statusbar.show = 'always'
+
 # When to show the tab bar.
 # Type: String
 # Valid values:
@@ -154,6 +157,33 @@ c.url.searchengines = {
 #   - switching: Show the tab bar when switching tabs.
 c.tabs.show = 'always'
 
+# Default font families to use. Whenever "default_family" is used in a
+# font setting, it's replaced with the fonts listed here. If set to an
+# empty value, a system-specific monospace default is used.
+# Type: List of Font, or Font
+c.fonts.default_family = '"JetBrains Mono"'
+# Default font size to use. Whenever "default_size" is used in a font
+# setting, it's replaced with the size listed here. Valid values are
+# either a float value with a "pt" suffix, or an integer value with a
+# "px" suffix.
+# Type: String
+c.fonts.default_size = '11pt'
+# Font used in the completion widget.
+# Type: Font
+c.fonts.completion.entry = '11pt "JetBrains Mono"'
+# Font used for the debugging console.
+# Type: Font
+c.fonts.debug_console = '11pt "JetBrains Mono"'
+# Font used for prompts.
+# Type: Font
+c.fonts.prompts = 'default_size sans-serif'
+# Font used in the statusbar.
+# Type: Font
+c.fonts.statusbar = '11pt "JetBrains Mono"'
+
+config.bind('xb', 'config-cycle statusbar.show always never')
+config.bind('xt', 'config-cycle tabs.show always never')
+config.bind('xx', 'config-cycle statusbar.show always never;; config-cycle tabs.show always never')
 config.bind('M', 'hint links spawn mpv {hint-url}')
 
 config.load_autoconfig()

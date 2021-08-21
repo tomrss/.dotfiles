@@ -19,11 +19,12 @@ settings:
     global: no-3rdparty
   content.cookies.store:
     global: true
-  content.notifications:
+  content.notifications.enabled:
+    https://www.chess.com: true
     https://www.reddit.com: false
   statusbar.show:
     global: always
   tabs.show:
     global: always
   url.start_pages:
-    global: https://start.duckduckgo.com
+    global: about:blank
