@@ -22,6 +22,8 @@ settings:
   content.notifications.enabled:
     https://www.chess.com: true
     https://www.reddit.com: false
+  content.register_protocol_handler:
+    https://mail.protonmail.com?to=%25s: true
   statusbar.show:
     global: always
   tabs.show:
