@@ -22,9 +22,97 @@ Note: sometimes I found clearer to read directly the tangled source instead of t
 That's why comments are tangled in source too.
 
 * Table of contents
-:properties:
-:toc: :include all :ignore this
-:end:
+:PROPERTIES:
+:TOC:      :include all :force (nothing) :ignore (this) :local (nothing)
+:END:
+:CONTENTS:
+- [[#early-init][Early init]]
+  - [[#header][Header]]
+  - [[#garbage-collections][Garbage collections]]
+  - [[#file-name-handlers-at-startup][File name handlers at startup]]
+  - [[#disable-packageel][Disable package.el]]
+  - [[#early-ui-cleanups][Early UI cleanups]]
+  - [[#change-config-directories][Change config directories]]
+  - [[#footer][Footer]]
+- [[#initial-config][Initial config]]
+  - [[#header][Header]]
+  - [[#some-early-configuration][Some early configuration]]
+- [[#packaging][Packaging]]
+  - [[#bootstrap-the-package-manager][Bootstrap the package manager]]
+  - [[#manage-lockfile-and-profiles][Manage lockfile and profiles]]
+  - [[#initialize-use-package][Initialize use-package]]
+- [[#keep-folders-clean][Keep folders clean]]
+- [[#completion-framework][Completion framework]]
+  - [[#getting-help-and-docs][Getting help and docs]]
+    - [[#improve-self-documentation][Improve self-documentation]]
+    - [[#hint-keybindings][Hint keybindings]]
+  - [[#minibuffer-completions][Minibuffer completions]]
+    - [[#completion-ui][Completion UI]]
+    - [[#completion-styles][Completion styles]]
+    - [[#contextual-info-in-minibuffer][Contextual info in minibuffer]]
+    - [[#completing-read-functions][Completing read functions]]
+    - [[#minibuffer-actions][Minibuffer actions]]
+  - [[#autocomplete-in-buffer][Autocomplete in-buffer]]
+    - [[#completions-at-point][Completions at point]]
+    - [[#snippets][Snippets]]
+- [[#user-interface][User interface]]
+  - [[#fonts-and-icons][Fonts and icons]]
+  - [[#theme][Theme]]
+  - [[#modeline][Modeline]]
+  - [[#line-and-column-numbers][Line and column numbers]]
+  - [[#compilation-buffer][Compilation buffer]]
+  - [[#buffer-helpers][Buffer helpers]]
+  - [[#smooth-scrolling][Smooth scrolling]]
+  - [[#highlight-edits][Highlight edits]]
+  - [[#file-manager][File manager]]
+  - [[#process-management][Process management]]
+  - [[#projects][Projects]]
+- [[#editing-features][Editing features]]
+  - [[#navigable-undo-tree][Navigable undo tree]]
+  - [[#vim-emulation][Vim emulation]]
+  - [[#highlight-current-line][Highlight current line]]
+  - [[#parentheses][Parentheses]]
+  - [[#text-selection-and-navigation][Text selection and navigation]]
+- [[#org-mode][Org mode]]
+  - [[#org-and-org-babel][Org and Org Babel]]
+  - [[#org-roam][Org Roam]]
+  - [[#auto-tangle][Auto tangle]]
+- [[#windows-and-buffers-management][Windows and buffers management]]
+  - [[#optimize-window-placement][Optimize window placement]]
+    - [[#window-placement-rules][Window placement rules]]
+    - [[#popup-buffers][Popup buffers]]
+    - [[#window-navigation][Window navigation]]
+- [[#better-defaults][Better defaults]]
+- [[#terminals][Terminals]]
+  - [[#term][Term]]
+  - [[#vterm][Vterm]]
+  - [[#eshell][Eshell]]
+    - [[#prompt][Prompt]]
+    - [[#banner][Banner]]
+    - [[#keys-and-aliases][Keys and aliases]]
+    - [[#colors][Colors]]
+    - [[#history][History]]
+    - [[#visual-commands][Visual commands]]
+    - [[#generic-configuration-and-eshell-defaults][Generic configuration and eshell defaults]]
+    - [[#navigation][Navigation]]
+    - [[#help-highlighting-and-completions][Help, highlighting and completions]]
+    - [[#eshell-popup][Eshell popup]]
+- [[#development][Development]]
+  - [[#version-control][Version control]]
+  - [[#syntax-checking][Syntax checking]]
+  - [[#indentation][Indentation]]
+  - [[#lsp-mode][LSP mode]]
+  - [[#languages][Languages]]
+    - [[#java][Java]]
+    - [[#groovy][Groovy]]
+    - [[#nodejs][Node.js]]
+    - [[#python][Python]]
+    - [[#rust][Rust]]
+    - [[#c][C#]]
+    - [[#latex][LaTeX]]
+    - [[#configuration-and-markup][Configuration and markup]]
+- [[#footer][Footer]]
+:END:
 
 * Early init
 
@@ -1213,6 +1301,15 @@ text with margins for increased readability.
   (use-package visual-fill-column
     :after org
     :hook (org-mode . tr/org-mode-visual-fill))
+  
+#+end_src
+
+Make table of contents:
+
+#+begin_src emacs-lisp
+  ;; table of contents
+  (use-package org-make-toc
+    :hook (org-mode . org-make-toc-mode))
   
 #+end_src
 
