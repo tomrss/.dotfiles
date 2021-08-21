@@ -3,17 +3,73 @@
 
 Configuration files for common programs, with special emphasis on GNU Emacs.
 
-** Manage symlinks with GNU Stow
+* Manage symlinks with GNU Stow
 
 Using GNU Stow, you can easily create symlinks to get started right away without having to manually creating them or to copy files to configuration folders.
 
 Stow a package (create symlinks for configuration files of one program):
 #+begin_src bash
-stow <package>
+  stow <package>
 #+end_src
 
 Get started right away stowing every package:
 #+begin_src bash
-./initialize.sh
+  ./initialize.sh
 #+end_src
 When launching this script, you can control which package will be stowed by editing the =packages.txt= file.
+
+* Bootstrap system on GNU Guix
+
+** Keyboard
+Italian keys:
+
+#+begin_src shell
+  loadkeys it
+#+end_src
+
+** Networking
+Bring up network interface:
+
+#+begin_src shell
+  ip link set <interface> up
+#+end_src
+
+Connect to wifi with =wpa_supplicant=:
+#+begin_src text
+network={
+  ssid="my-ssid"
+  key_mgmt=WPA-PSK
+  psk="the network's secret passphrase"
+}
+#+end_src
+
+#+begin_src shell
+  wpa_supplicant -c wpa_supplicant.conf -i <interface> -B
+#+end_src
+
+DHCP client:
+#+begin_src shell
+  dhclient -v <interface>
+#+end_src
+
+** Partitioning
+
+Create/alter partition table with =fdisk=, =cfdisk= or =parted=.
+Remember the ESP flag for EFI system partition (example on =/dev/sda1=):
+#+begin_src shell
+  parted /dev/sda set 1 esp on
+#+end_src
+
+Format ESP:
+#+begin_src shell
+  mkfs.fat -F32 /dev/sda1
+#+end_src
+
+Setup LUKS encryption on root partition (example on =/dev/sda2=):
+#+begin_src shell
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 cryptroot
+mkfs.ext4 -L my-root /dev/mapper/cryptroot
+#+end_src
+
+Then mount it:

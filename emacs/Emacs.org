@@ -21,6 +21,11 @@ Main features:
 Note: sometimes I found clearer to read directly the tangled source instead of the Org file.
 That's why comments are tangled in source too.
 
+* Table of contents
+:properties:
+:toc: :include all :ignore this
+:end:
+
 * Early init
 
 The early init file is loaded before the =init.el= file.  Is loaded even before the GUI is
