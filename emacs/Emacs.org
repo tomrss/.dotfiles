@@ -7,7 +7,7 @@ Literate configuration for GNU Emacs.
 Main features:
 - Optimization of startup times with careful lazy loading.
 - Reproducible builds with =straight.el=.
-- Completion framework including completions at point (=company=) and minibuffer completions
+- Completion framework including completions at point and minibuffer completions
   with incremental narrowing, fuzzy matching of results and frequency-recency based ordering
   of completion candidates.
 - Enhancements of Emacs terminals, with special attention to =eshell=.
@@ -605,14 +605,15 @@ https://github.com/minad/vertico
     :straight nil
     :init
     (savehist-mode +1))
-
+  
   (use-package orderless
     :init
     (setq orderless-matching-styles '(orderless-literal
 				      orderless-initialism
 				      orderless-regexp))
+    (setq orderless-component-separator "[ +]+") 
     (setq completion-styles '(orderless)))
-
+  
 #+end_src
 
 *** Contextual info in minibuffer
@@ -732,9 +733,7 @@ Configure completions at point and snippets.
 
 *** Completions at point
 
-TODO: try out =corfu= (minad guaranteed!)
-
-For completions at point, =company= is the classic.  =company-quickhelp= can display useful docs.
+Legacy completions with the classic =company=:
 
 #+begin_src emacs-lisp
   ;; completions at point
@@ -765,7 +764,9 @@ For completions at point, =company= is the classic.  =company-quickhelp= can dis
 
 #+end_src
 
-Try =corfu=:
+Completions in region with =corfu=.
+TODO: This part needs more attention, especially regarding key bindings
+
 #+begin_src emacs-lisp
   (use-package corfu
     :init
@@ -774,20 +775,23 @@ Try =corfu=:
     (setq corfu-auto t)
     (setq corfu-auto-delay 0.1)
     (setq corfu-cycle t)
+    ;; quit corfu popup on space, for using orderless fuzzy match use the "+":
+    (setq corfu-quit-at-boundary t)
     (setq corfu-echo-documentation 0))
 
   (use-package dabbrev
+    ;; TODO this bindings have no sense in italian keyboard
     ;; Swap M-/ and C-M-/
     :bind (("M-/" . dabbrev-completion)
 	   ("C-M-/" . dabbrev-expand)))
-
+  
   (setq tab-always-indent 'complete)
-
+  
 #+end_src
 
 *** Snippets
 
-TODO: it seems that yasnippet and company keep conflicting
+TODO: find a way to integrate with corfu
 TODO: find out an acceptable workflow for yasnippet.  can't use it right now
 
 =yasnippet= is used for getting code (and other) snippets as you write.
@@ -810,7 +814,6 @@ TODO: find out an acceptable workflow for yasnippet.  can't use it right now
   ;; (use-package yasnippet-snippets
   ;;   :after yasnippet)
 
-  ;; (setq tab-always-indent 'complete)
 #+end_src
 
 * User interface
@@ -867,14 +870,15 @@ Theme configuration.  =doom-themes= are really curated and well done.
 
 #+begin_src emacs-lisp
   ;;;;; Theme
-
+  
   (use-package doom-themes
     :if window-system
     :init
+    (setq doom-nord-brighter-modeline t)
     (load-theme 'doom-nord t)
     (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
-    (set-face-attribute 'shadow nil :foreground "#EBCB8B")) ; TODO maybe marginalia-documentation is enough
-
+    (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
+  
 #+end_src
 
 ** Modeline
@@ -892,9 +896,9 @@ TODO put here modes with hidden modeline?
   (use-package minions
     :init (minions-mode +1))
   
-  (use-package doom-modeline
-    :if window-system
-    :init (doom-modeline-mode +1))
+  ;; (use-package doom-modeline
+  ;;   :if window-system
+  ;;   :init (doom-modeline-mode +1))
   
   ;; some modes do not need modeline
   (use-package hide-mode-line
@@ -1020,10 +1024,11 @@ Base configuration:
 
 #+begin_src emacs-lisp
   ;;;;; File managing with `dired'
-
+  
   ;; base `dired' tweaks
   (use-package dired
     :straight nil				; is builtin
+    :defer t
     :commands (dired dired-jump)
     :bind (("C-x j" . dired-jump)
 	   :map dired-mode-map ("q" . tr/kill-dired-buffers)) ; TODO: why did I do this?  It seems crazy: dangerous and misleading
@@ -1037,10 +1042,10 @@ Base configuration:
     ;; manage the --dired option of ls
     (when IS-MAC
       (setq dired-use-ls-dired (not IS-MAC)))
-
+  
     ;; TODO this is really annoying when doing rm from eshell
     (setq delete-by-moving-to-trash t))
-
+  
 #+end_src
 
 =dired= enhancements packages:
@@ -1074,13 +1079,14 @@ TODO: whish there was some tweak package for proced.  Something to make it more 
 
 #+begin_src emacs-lisp
   ;;;;; Process management
-
+  
   (use-package proced
     :straight nil				; is builtin
+    :defer t
     :config
     (setq proced-auto-update-interval 5)
     (proced-toggle-auto-update +1))
-
+  
 #+end_src
 
 ** Projects
