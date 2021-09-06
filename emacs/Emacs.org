@@ -874,7 +874,6 @@ Theme configuration.  =doom-themes= are really curated and well done.
   (use-package doom-themes
     :if window-system
     :init
-    (setq doom-nord-brighter-modeline t)
     (load-theme 'doom-nord t)
     (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
     (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
@@ -1041,7 +1040,7 @@ Base configuration:
     (setq dired-listing-switches "-agho --group-directories-first")
     ;; manage the --dired option of ls
     (when IS-MAC
-      (setq dired-use-ls-dired (not IS-MAC)))
+      (setq dired-use-ls-dired nil))
   
     ;; TODO this is really annoying when doing rm from eshell
     (setq delete-by-moving-to-trash t))
