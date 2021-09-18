@@ -60,6 +60,7 @@ That's why comments are tangled in source too.
   - [[#modeline][Modeline]]
   - [[#line-and-column-numbers][Line and column numbers]]
   - [[#smooth-scrolling][Smooth scrolling]]
+  - [[#highlight-current-line][Highlight current line]]
   - [[#highlight-edits][Highlight edits]]
 - [[#projects-and-file-management][Projects and file management]]
   - [[#file-manager][File manager]]
@@ -73,7 +74,6 @@ That's why comments are tangled in source too.
   - [[#save-point][Save point]]
   - [[#auto-update-buffers][Auto update buffers]]
   - [[#share-clipboard][Share clipboard]]
-  - [[#highlight-current-line][Highlight current line]]
   - [[#text-selection-and-navigation][Text selection and navigation]]
 - [[#org-mode][Org mode]]
   - [[#org-and-org-babel][Org and Org Babel]]
@@ -910,6 +910,22 @@ Smooth scroll line by line.
 
 #+end_src
 
+** Highlight current line
+
+Highlight current line.
+
+#+begin_src emacs-lisp
+  ;; highlight current line
+  (use-package hl-line
+    :hook
+    (dired-mode . hl-line-mode)
+    (prog-mode . hl-line-mode)
+    (special-mode . hl-line-mode)
+    :custom
+    (hl-line-sticky-flag nil))
+
+#+end_src
+
 ** Highlight edits
 
 Highlight edits as you type.
@@ -1140,22 +1156,6 @@ Better integration with system clipboard.
   
 #+end_src
 
-** Highlight current line
-
-Highlight current line.
-
-#+begin_src emacs-lisp
-  ;; highlight current line
-  (use-package hl-line
-    :hook
-    (dired-mode . hl-line-mode)
-    (prog-mode . hl-line-mode)
-    (special-mode . hl-line-mode)
-    :custom
-    (hl-line-sticky-flag nil))
-
-#+end_src
-
 ** Text selection and navigation
 
 Add useful text selection and navigation commands.
@@ -1308,7 +1308,10 @@ TODO: more shackle rules are needed
 	    (helpful-mode :popup t :select t :align bottom :size 0.33)
 	    ("\\*Warnings\\*" :regexp t :noselect t))
 	  shackle-default-rule '(:noselect t)))
-
+  
+  ;; split by default vertically
+  (setq split-height-threshold nil)
+  
 #+end_src
 
 ** Popup buffers
