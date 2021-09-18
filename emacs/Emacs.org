@@ -455,7 +455,7 @@ For starters, disable lockfiles.
 Then, put every backup file in the same folder using the =no-littering= package.
 This package does more than that: it cleans the config folder by putting (almost) everything in
 =etc/= and =var/= subfolders of the emacs config folder (which we set in =~/.cache/emacs= in early
-ninit).
+init).
 
 #+begin_src emacs-lisp
   ;; clean emacs folder with `no-littering'
