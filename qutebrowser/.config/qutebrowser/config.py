@@ -127,7 +127,7 @@ config.set('content.javascript.enabled', True, 'chrome://*/*')
 config.set('content.javascript.enabled', True, 'qute://*/*')
 
 c.url.default_page = 'about:blank'
-c.url.start_pages = ['about:blank']  # doesn't work
+# c.url.start_pages = ['about:blank']  # doesn't work
 
 c.url.searchengines = {
     'DEFAULT': 'https://duckduckgo.com/?q={}',
@@ -136,6 +136,7 @@ c.url.searchengines = {
     'goog': 'https://www.google.com/search?q={}',
     'wiki': 'https://en.wikipedia.org/wiki/{}',
     'syt': 'https://www.youtube.com/results?search_query={}',
+    'cyt': 'https://www.youtube.com/c/{}/videos',
     'enit': 'https://www.wordreference.com/enit/{}',
     'iten': 'https://www.wordreference.com/iten/{}'
 }
