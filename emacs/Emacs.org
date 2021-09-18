@@ -1309,9 +1309,6 @@ TODO: more shackle rules are needed
 	    ("\\*Warnings\\*" :regexp t :noselect t))
 	  shackle-default-rule '(:noselect t)))
   
-  ;; split by default vertically
-  (setq split-height-threshold nil)
-  
 #+end_src
 
 ** Popup buffers
