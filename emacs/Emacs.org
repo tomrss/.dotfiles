@@ -53,36 +53,38 @@ That's why comments are tangled in source too.
     - [[#completing-read-functions][Completing read functions]]
     - [[#minibuffer-actions][Minibuffer actions]]
   - [[#autocomplete-in-buffer][Autocomplete in-buffer]]
-    - [[#completions-at-point][Completions at point]]
+    - [[#completions-in-region][Completions in region]]
     - [[#snippets][Snippets]]
 - [[#user-interface][User interface]]
   - [[#fonts-and-icons][Fonts and icons]]
   - [[#theme][Theme]]
   - [[#modeline][Modeline]]
   - [[#line-and-column-numbers][Line and column numbers]]
-  - [[#compilation-buffer][Compilation buffer]]
-  - [[#buffer-helpers][Buffer helpers]]
   - [[#smooth-scrolling][Smooth scrolling]]
   - [[#highlight-edits][Highlight edits]]
+- [[#projects-and-file-management][Projects and file management]]
   - [[#file-manager][File manager]]
-  - [[#process-management][Process management]]
   - [[#projects][Projects]]
-- [[#editing-features][Editing features]]
+  - [[#project-tree-layout][Project tree layout]]
+  - [[#process-management][Process management]]
+- [[#editing-and-behaviour][Editing and behaviour]]
   - [[#navigable-undo-tree][Navigable undo tree]]
   - [[#vim-emulation][Vim emulation]]
+  - [[#short-command-confirmation][Short command confirmation]]
+  - [[#save-point][Save point]]
+  - [[#auto-update-buffers][Auto update buffers]]
+  - [[#share-clipboard][Share clipboard]]
   - [[#highlight-current-line][Highlight current line]]
-  - [[#parentheses][Parentheses]]
   - [[#text-selection-and-navigation][Text selection and navigation]]
 - [[#org-mode][Org mode]]
   - [[#org-and-org-babel][Org and Org Babel]]
-  - [[#org-roam][Org Roam]]
   - [[#auto-tangle][Auto tangle]]
+  - [[#org-roam][Org Roam]]
 - [[#windows-and-buffers-management][Windows and buffers management]]
   - [[#optimize-window-placement][Optimize window placement]]
-    - [[#window-placement-rules][Window placement rules]]
-    - [[#popup-buffers][Popup buffers]]
-    - [[#window-navigation][Window navigation]]
-- [[#better-defaults][Better defaults]]
+  - [[#popup-buffers][Popup buffers]]
+  - [[#window-navigation][Window navigation]]
+  - [[#buffer-helpers][Buffer helpers]]
 - [[#terminals][Terminals]]
   - [[#term][Term]]
   - [[#vterm][Vterm]]
@@ -99,12 +101,15 @@ That's why comments are tangled in source too.
     - [[#eshell-popup][Eshell popup]]
 - [[#development][Development]]
   - [[#version-control][Version control]]
+  - [[#parentheses][Parentheses]]
   - [[#syntax-checking][Syntax checking]]
+  - [[#compilation-buffer][Compilation buffer]]
   - [[#indentation][Indentation]]
   - [[#lsp-mode][LSP mode]]
   - [[#languages][Languages]]
     - [[#java][Java]]
     - [[#groovy][Groovy]]
+    - [[#clojure][Clojure]]
     - [[#nodejs][Node.js]]
     - [[#python][Python]]
     - [[#rust][Rust]]
@@ -179,7 +184,7 @@ Another useful trick is to garbage collect when idle (from https://emacs.stackex
 Temporarily disabling file name handlers at startup can speedup startup too.  Source: ambrevar dotfiles https://github.com/Ambrevar/dotfiles/blob/master/.emacs.d/init.el
 
 #+begin_src emacs-lisp :tangle .emacs.d/early-init.el :mkdirp yes
-  ;;;; Temporary disable file handler at startup (thanks to ambrevar)
+  ;;;; Temporary disable file handler at startup
 
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (setq file-name-handler-alist nil)
@@ -197,7 +202,7 @@ Temporarily disabling file name handlers at startup can speedup startup too.  So
 Disable =package.el= at startup as =straight.el= package manager will be used.
 
 #+begin_src emacs-lisp :tangle .emacs.d/early-init.el :mkdirp yes
-  ;;;; Disable package.el at startup as straight.el package manager will be used
+  ;;;; Disable package.el at startup
 
   (setq package-enable-at-startup nil)
 
@@ -205,10 +210,10 @@ Disable =package.el= at startup as =straight.el= package manager will be used.
 
 ** Early UI cleanups
 
-TODO: as stated in the docs, this part should probably not be in early-init, because the UI is not already initialized.
+Remove useless stuff from UI and other optimizations
 
 #+begin_src emacs-lisp :tangle .emacs.d/early-init.el :mkdirp yes
-  ;;;; Remove useless stuff from UI and other optimizations
+  ;;;; Early UI cleanups
 
   ;; frame resize seems to be very expensive, disable it
   (setq frame-inhibit-implied-resize t)
@@ -217,12 +222,6 @@ TODO: as stated in the docs, this part should probably not be in early-init, bec
   (setq inhibit-startup-screen t)
   (setq initial-scratch-message nil)
   (setq initial-major-mode 'fundamental-mode)
-
-  ;; disable really ugly stuff
-  (menu-bar-mode -1)
-  (toggle-scroll-bar -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1)
 
 #+end_src
 
@@ -312,6 +311,17 @@ Display startup time in seconds to better monitoring.
 		       (time-subtract (current-time) emacs-start-time))))
 		 (message "Initialized in %.2fs with %d garbage collections" elapsed gcs-done))) t)
   
+#+end_src
+
+Disable menus and some mouse-based interface.
+
+#+begin_src emacs-lisp
+  ;; disable really ugly stuff
+  (menu-bar-mode -1)
+  (toggle-scroll-bar -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+
 #+end_src
 
 The following is a dirty trick to avoid the annoying startup message:
@@ -571,11 +581,11 @@ The packages are:
 
   #+end_src
 
-TODO: vertico and orderless are sure very nice, but i really miss prescient.el, that is awesome
-
 *** Completion UI
 
 Configure a vertical based minibuffer completion UI with the =vertico= package.
+
+TODO: find a way to select first candidate with TAB
 
 https://github.com/minad/vertico
 
@@ -731,41 +741,9 @@ Configure completions at point and snippets.
 
 #+end_src
 
-*** Completions at point
-
-Legacy completions with the classic =company=:
-
-#+begin_src emacs-lisp
-  ;; completions at point
-  ;; (use-package company
-  ;;   :init
-  ;;   (add-hook 'after-init-hook 'global-company-mode)
-  ;;   :config
-  ;;   (setq company-idle-delay 0)
-  ;;   (setq company-minimum-prefix-length 2)
-  ;;   (setq completion-styles '(partial-completion substring emacs27))
-  ;;   (setq company-backends
-  ;; 	'((company-files          ; files & directory
-  ;; 	   company-keywords       ; keywords
-  ;; 	   company-capf)
-  ;; 	  (company-abbrev
-  ;; 	   company-dabbrev
-  ;; 	   company-dabbrev-code)))
-  ;;   :bind
-  ;;   (:map company-active-map
-  ;; 	("<tab>" . company-complete-selection)
-  ;; 	("TAB" . company-complete-selection)))
-
-  ;; ;; display docs when completing
-  ;; (use-package company-quickhelp
-  ;;   :after company
-  ;;   :hook
-  ;;   (company-mode . company-quickhelp-mode))
-
-#+end_src
+*** Completions in region
 
 Completions in region with =corfu=.
-TODO: This part needs more attention, especially regarding key bindings
 
 #+begin_src emacs-lisp
   (use-package corfu
@@ -826,12 +804,12 @@ So it's very likely that it does not work!
 #+begin_src emacs-lisp
   ;;;; User interface
 
-  ;; try to do some OS specific config but it's tested only on GNU/Linux
+  ;; recognize system
   (defconst IS-GNU     (eq system-type 'gnu/linux))
   (defconst IS-MAC     (eq system-type 'darwin))
   (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
 
-  ;; disable what is maybe the most annoying thing ever invented (not only in Emacs)
+  ;; disable the really annoying bell
   (setq ring-bell-function 'ignore)
 
 #+end_src
@@ -886,8 +864,6 @@ Customize modeline.  Just use =doom-modeline= which is great and works perfectly
 The only downside is some performance overhead at startup.
 Hide modeline will be used later for some modes.
 
-TODO put here modes with hidden modeline?
-
 #+begin_src emacs-lisp
   ;;;;; Modeline
   
@@ -902,7 +878,7 @@ TODO put here modes with hidden modeline?
   ;; some modes do not need modeline
   (use-package hide-mode-line
     :defer t
-    :hook ((help-mode helpful-mode vterm-mode) . hide-mode-line-mode))
+    :hook ((help-mode helpful-mode vterm-mode treemacs-mode) . hide-mode-line-mode))
   
 #+end_src
 
@@ -922,74 +898,9 @@ Configure line and column numbers for relevant modes.
 
 #+end_src
 
-** Compilation buffer
-
-Enhance compilation buffer.
-TODO this is not user interface.  Put elsewhere, like development.
-
-#+begin_src emacs-lisp
-  ;;;;; Enhance compilation buffer
-
-  (with-eval-after-load 'compilation-mode (require 'ansi-color))
-
-  ;; colorize compilation buffer
-  (defun tr/colorize-compilation-buffer ()
-    "Support ANSI colors in compilation buffer."
-    (when (eq major-mode 'compilation-mode)
-      (ansi-color-apply-on-region compilation-filter-start (point-max))))
-
-  (add-hook 'compilation-filter-hook #'tr/colorize-compilation-buffer)
-
-  ;; follow output with scroll in compilation buffer
-  (setq compilation-scroll-output t)
-
-#+end_src
-
-** Buffer helpers
-
-#+begin_src emacs-lisp
-  ;;;;; buffer helpers
-
-  ;; use `ibuffer' instead of buffer list
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-
-  (defun tr/kill-other-buffers ()
-    "Kill all other buffers."
-    (interactive)
-    (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
-
-  (defun tr/kill-mode-buffers (mode)
-    "Kill all buffers with major mode MODE."
-    (interactive
-     (list
-      (intern
-       (completing-read
-	"Mode: "
-	(delete-dups
-	 (mapcar
-	  (lambda (buffer)
-	    (buffer-local-value 'major-mode buffer))
-	  (buffer-list)))))))
-    (mapc (lambda (buffer)
-	    (when (eq mode (buffer-local-value 'major-mode buffer))
-	      (kill-buffer buffer)))
-	  (buffer-list))
-    (message "Killed buffers with major mode %s" mode))
-
-  (defun tr/kill-dired-buffers ()
-    "Kill all dired buffers."
-    (interactive)
-    (tr/kill-mode-buffers 'dired-mode))
-
-  (defun tr/kill-help-buffers ()
-    "Kill all help buffers."
-    (interactive)
-    (tr/kill-mode-buffers 'help-mode)
-    (tr/kill-mode-buffers 'helpful-mode))
-
-#+end_src
-
 ** Smooth scrolling
+
+Smooth scroll line by line.
 
 #+begin_src emacs-lisp
   ;;;;; Smooth scrolling
@@ -1004,7 +915,7 @@ TODO this is not user interface.  Put elsewhere, like development.
 
 ** Highlight edits
 
-TODO write
+Highlight edits as you type.
 
 #+begin_src emacs-lisp
   ;;;;; Highlight edits
@@ -1016,9 +927,19 @@ TODO write
 
 #+end_src
 
+* Projects and file management
+
+This section is dedicated to manage projects, intended as a collection of closely related files checked into source control, and file management and explorer.
+
+#+begin_src emacs-lisp
+  ;;;; Projects and file management
+
+#+end_src
+
 ** File manager
 
-=dired= is the best file manager.  Here follow some enhancements.
+=dired= is a great file manager.  Here follow some enhancements.
+
 Base configuration:
 
 #+begin_src emacs-lisp
@@ -1069,12 +990,47 @@ Base configuration:
 
 #+end_src
 
+** Projects
+
+Manage projects with =projectile=.
+
+#+begin_src emacs-lisp
+  (use-package projectile
+    :commands (projectile-switch-project
+	       projectile-ripgrep
+	       projectile-find-file)
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :config
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  #+end_src
+
+** Project tree layout
+
+=treemacs= is a tree layout file explorer for projects.
+
+  #+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t
+    :config
+    (treemacs-resize-icons 16)
+    (add-hook 'treemacs-mode-hook #'hide-mode-line-mode))
+  
+  (use-package treemacs-projectile
+    :after treemacs projectile)
+  
+  (use-package treemacs-magit
+    :after treemacs magit)
+ 
+  (use-package treemacs-evil
+    :after treemacs evil)
+  
+#+end_src
+
 ** Process management
 
-=proced= is an excellent interface for process management, that easily outclass =ps=, =top= and =htop=.
-
-TODO: how is this user interface???
-TODO: whish there was some tweak package for proced.  Something to make it more clear like diredfl would be great.  I shall find it since I don't want to write it myself (diredfl source is pretty scary and feels boring to implement).  Really hard to find someone that cutomized proced, even purcell didn't do it.
+=proced= is an excellent interface for process management.
 
 #+begin_src emacs-lisp
   ;;;;; Process management
@@ -1088,40 +1044,7 @@ TODO: whish there was some tweak package for proced.  Something to make it more 
   
 #+end_src
 
-** Projects
-
-Manage projects with =projectile=.
-
-TODO why is this in user-interface????
-TODO why, WHY, WHY IS EVERYTHING IN USER INTERFACE. REFACTOR ALL!!!! For fuck's sake
-
-#+begin_src emacs-lisp
-  ;; TODO why is this in user-interface?
-  (use-package projectile
-    :commands (projectile-switch-project
-	       projectile-ripgrep
-	       projectile-find-file)
-    :bind-keymap
-    ("C-c p" . projectile-command-map)
-    :config
-    (setq projectile-switch-project-action #'projectile-dired))
-
-  ;; TODO this can be in fact UI... fuck...
-  (use-package treemacs
-    :defer t
-    :config
-    (treemacs-resize-icons 16))
-  ;; (add-hook 'treemacs-mode-hook 'variable-pitch-mode))
-
-  (use-package treemacs-projectile
-    :after treemacs projectile)
-
-  (use-package treemacs-magit
-    :after treemacs magit)
-
-#+end_src
-
-* Editing features
+* Editing and behaviour
 
 This section is dedicated to customization and enhancements of editing features, like vim-like
 (=evil=) keybindings, text selection utilities, motion commands, parentheses and more.
@@ -1172,22 +1095,52 @@ section is rather slim.
     :after evil
     :init
     (setq evil-collection-company-use-tng nil) ; TODO i read somewhere that in most cases this is needed for a bug in evil-collection, but don't remember
-    :custom
-    (evil-collection-outline-bind-tab-p nil) ; TODO what is this? why i put it here??
     :config
-    (setq evil-collection-mode-list
-	  (remove 'lispy evil-collection-mode-list)) ; TODO if i will ever use lispy...
     (evil-collection-init))
 
   (add-hook 'with-editor-mode-hook 'evil-insert-state)
 
 #+end_src
 
-TODO this is indisputable but why is this here?
+** Short command confirmation
+
+Typing "yes" or "no" in confirmations is too slow, replace it with "y" or "n".
+
 #+begin_src emacs-lisp
   ;; TODO this is indisputable but why is this here?
   (fset 'yes-or-no-p 'y-or-n-p)
 
+#+end_src
+
+** Save point
+
+Reopen files at the same point.
+
+#+begin_src emacs-lisp
+  (save-place-mode +1)
+
+#+end_src
+
+** Auto update buffers
+
+Automatically revert (update) buffers.
+
+#+begin_src emacs-lisp
+  ;; auto revert non file buffers
+  (setq global-auto-revert-non-file-buffers t)
+
+  ;; auto revert file buffers (when file changes)
+  (global-auto-revert-mode 1)
+
+#+end_src
+
+** Share clipboard
+
+Better integration with system clipboard.
+
+#+begin_src emacs-lisp
+  (setq save-interprogram-paste-before-kill t)
+  
 #+end_src
 
 ** Highlight current line
@@ -1206,55 +1159,33 @@ Highlight current line.
 
 #+end_src
 
-** Parentheses
-
-Configure parentheses and delimiters.
-
-TODO move section in prog
-
-#+begin_src emacs-lisp
-  ;;;;; Configure parentheses
-
-  ;; highlight mathing parentesis
-  (show-paren-mode 1)
-
-  ;; auto close parentheses in prog mode
-  (use-package smartparens
-    :hook
-    (prog-mode . smartparens-mode)
-    (inferior-emacs-lisp-mode . smartparens-mode)
-    :config
-    (require 'smartparens-config))
-
-  ;; highlight matching delimiters with rainbow colors
-  (use-package rainbow-delimiters
-    :hook
-    (prog-mode . rainbow-delimiters-mode)
-    (inferior-emacs-lisp-mode . rainbow-delimiters-mode))
-#+end_src
-
 ** Text selection and navigation
 
 Add useful text selection and navigation commands.
 
 #+begin_src emacs-lisp
   ;;;;; Text selection and navigation commands
-
+  
   ;; increases the selected region by semantic units
   (use-package expand-region
     ;; this binding makes sense only in italian keyboard
     :bind ("C-ò" . er/expand-region))
-
+  
   ;; navigate text with char-based hints
   (use-package avy
-    :bind ("C-," . avy-goto-char))
-  ;; :map org-mode-map ("C-," . avy-goto-char))) ; this replaces org-cycle-agenda-files
-
+    :bind (("C-," . avy-goto-char)
+	   :map org-mode-map ("C-," . avy-goto-char))) 
+  
 #+end_src
 
 * Org mode
 
 Lightweight and simple configuration for =org-mode= and =org-roam=.
+
+#+begin_src emacs-lisp
+  ;;;; Configure Org mode
+
+#+end_src
 
 ** Org and Org Babel
 
@@ -1262,8 +1193,6 @@ Adjust some defaults, setup =org-babel= languages and setup visual fill column f
 text with margins for increased readability.
 
 #+begin_src emacs-lisp
-  ;;;; Configure Org mode
-  
   (use-package org
     :straight nil				; use builtin instead of pulling another
     :defer t
@@ -1294,15 +1223,18 @@ text with margins for increased readability.
     (setq org-return-follows-link t)	; TODO some problems with evil
     (setq org-startup-truncated nil)
     (setq org-startup-with-inline-images t))
+
+  #+end_src
   
-  
+Visual fill column: center text with margins, improving readability and look.
+
+  #+begin_src emacs-lisp
   (defun tr/org-mode-visual-fill ()
     "Visual fill configuration for org mode."
     (setq visual-fill-column-width 100
 	  visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
   
-  ;; center text with margins: improve readability and look
   (use-package visual-fill-column
     :after org
     :hook (org-mode . tr/org-mode-visual-fill))
@@ -1312,9 +1244,24 @@ text with margins for increased readability.
 Make table of contents:
 
 #+begin_src emacs-lisp
-  ;; table of contents
   (use-package org-make-toc
     :hook (org-mode . org-make-toc-mode))
+  
+#+end_src
+
+** Auto tangle
+
+Auto tangle on save.
+
+#+begin_src emacs-lisp
+  ;;;;; Auto tangle on save
+  
+  (defun tr/org-auto-tangle ()
+    "Set hook for auto tangling org files on save."
+      (let ((org-confirm-babel-evaluate nil))
+	(org-babel-tangle)))
+  
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'tr/org-auto-tangle 0 t)))
   
 #+end_src
 
@@ -1333,23 +1280,6 @@ Make table of contents:
 
 #+end_src
 
-** Auto tangle
-
-Auto tangle on save.
-TODO is this really useful?
-TODO disabled because this is very wrong, add-hook supports a local parameter
-
-#+begin_src emacs-lisp
-  ;;;;; Auto tangle on save
-
-  ;; (defun tr/org-auto-tangle ()
-  ;;   (when (eq major-mode 'org-mode)
-  ;;     (org-babel-tangle)))
-  ;; (add-hook 'after-save-hook 'tr/org-auto-tangle)
-  ;; (add-hook 'org-mode-hook '(lambda () (add-hook 'after-save-hook #'org-babel-tangle)))
-
-#+end_src
-
 * Windows and buffers management
 
 Window management can be kind of weird in Emacs.  It's not rare that windows are created when we
@@ -1364,16 +1294,7 @@ This section is dedicated to (try) to fix some of these issues.
 
 ** Optimize window placement
 
-Or at least try to.
-
-#+begin_src emacs-lisp
-  ;;;;; Optimize window placement
-
-#+end_src
-
-*** Window placement rules
-
-=shackle= is a good starting point: it allows defining rules for how windows are displayed.
+Or at least try to.  =shackle= is a good starting point: it allows defining rules for how windows are displayed.
 
 TODO: more shackle rules are needed
 
@@ -1393,7 +1314,7 @@ TODO: more shackle rules are needed
 
 #+end_src
 
-*** Popup buffers
+** Popup buffers
 
 Some buffers have an ephemeral nature and are not needed on screen all the time.
 The =popper= package helps in treating them like "popups".
@@ -1419,7 +1340,7 @@ The =popper= package helps in treating them like "popups".
 
 #+end_src
 
-*** Window navigation
+** Window navigation
 
 =ace-window= is like =avy= but for windows and can avoid window ciclying with =C-x o=.
 
@@ -1430,12 +1351,49 @@ The =popper= package helps in treating them like "popups".
 
 #+end_src
 
-* Better defaults
-TODO move elsewhere
+** Buffer helpers
+
+Some helpers for dealing with buffers.
 
 #+begin_src emacs-lisp
-  (save-place-mode +1)
-  (setq save-interprogram-paste-before-kill t)
+  ;;;;; buffer helpers
+
+  ;; use `ibuffer' instead of buffer list
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+  (defun tr/kill-other-buffers ()
+    "Kill all other buffers."
+    (interactive)
+    (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+
+  (defun tr/kill-mode-buffers (mode)
+    "Kill all buffers with major mode MODE."
+    (interactive
+     (list
+      (intern
+       (completing-read
+	"Mode: "
+	(delete-dups
+	 (mapcar
+	  (lambda (buffer)
+	    (buffer-local-value 'major-mode buffer))
+	  (buffer-list)))))))
+    (mapc (lambda (buffer)
+	    (when (eq mode (buffer-local-value 'major-mode buffer))
+	      (kill-buffer buffer)))
+	  (buffer-list))
+    (message "Killed buffers with major mode %s" mode))
+
+  (defun tr/kill-dired-buffers ()
+    "Kill all dired buffers."
+    (interactive)
+    (tr/kill-mode-buffers 'dired-mode))
+
+  (defun tr/kill-help-buffers ()
+    "Kill all help buffers."
+    (interactive)
+    (tr/kill-mode-buffers 'help-mode)
+    (tr/kill-mode-buffers 'helpful-mode))
 
 #+end_src
 
@@ -1505,44 +1463,40 @@ This part is heavily inspired (or even copied!) from Doom Emacs and daviwil conf
 
 #+begin_src emacs-lisp
     ;;;;;; eshell prompt
-
-  (defun tr/prompt-path ()
-    "Path (pwd) that will be displayed in prompt."
-    (let* ((pwd (eshell/pwd)))
-      (if (equal pwd "~")
-	  pwd
-	;; (abbreviate-file-name (shrink-path-file-pwd)))))
-	(abbreviate-file-name pwd))))
-
-  (defun tr/eshell-prompt ()
-    "The eshell prompt."
-    (let ((current-branch (when (fboundp 'magit-get-current-branch)
-			    (magit-get-current-branch))))
-      (concat
-       (if (bobp) "" "\n")
-       (propertize user-login-name 'face `(:foreground "#62aeed"))
-       (propertize " • " 'face `(:foreground "white"))
-       (propertize (tr/prompt-path) 'face `(:foreground "#82cfd3"))
-       (when current-branch
-	 (concat
-	  (propertize " • " 'face `(:foreground "white"))
-	  (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
-       (propertize " • " 'face `(:foreground "white"))
-       (propertize (format-time-string "%H:%M:%S") 'face `(:foreground "#5a5b7f"))
-       (let ((user-prompt
-	      (if (= (user-uid) 0) "\n#" "\nλ")))
-	 (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
-       " ")))
-
-  (defun tr/conf-eshell-prompt ()
-    "Configure eshell prompt."
+  
+  (with-eval-after-load 'em-prompt
+    (defun tr/prompt-path ()
+      "Path (pwd) that will be displayed in prompt."
+      (let* ((pwd (eshell/pwd)))
+	(if (equal pwd "~")
+	    pwd
+	  ;; (abbreviate-file-name (shrink-path-file-pwd)))))
+	  (abbreviate-file-name pwd))))
+  
+    (defun tr/eshell-prompt ()
+      "The eshell prompt."
+      (let ((current-branch (when (fboundp 'magit-get-current-branch)
+			      (magit-get-current-branch))))
+	(concat
+	 (if (bobp) "" "\n")
+	 (propertize user-login-name 'face `(:foreground "#62aeed"))
+	 (propertize " • " 'face `(:foreground "white"))
+	 (propertize (tr/prompt-path) 'face `(:foreground "#82cfd3"))
+	 (when current-branch
+	   (concat
+	    (propertize " • " 'face `(:foreground "white"))
+	    (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
+	 (propertize " • " 'face `(:foreground "white"))
+	 (propertize (format-time-string "%H:%M:%S") 'face `(:foreground "#5a5b7f"))
+	 (let ((user-prompt
+		(if (= (user-uid) 0) "\n#" "\nλ")))
+	   (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
+	 " ")))
+  
     (setq eshell-prompt-function #'tr/eshell-prompt
 	  eshell-prompt-regexp "^.*λ "
 	  eshell-highlight-prompt t))
-
-  (with-eval-after-load 'em-prompt
-    (tr/conf-eshell-prompt))
-
+  
 #+end_src
 
 *** Banner
@@ -1551,19 +1505,15 @@ The banner is the welcome message in eshell.
 
 #+begin_src emacs-lisp
   ;;;;;; eshell banner
-
-  (defun tr/conf-eshell-banner ()
-    "Configure eshell banner."
+  
+  (with-eval-after-load 'em-banner
     (setq eshell-banner-message
 	  '(format "%s %s\n\n"
 		   (propertize (format " %s " (string-trim (buffer-name)))
 			       'face 'mode-line-highlight)
 		   (propertize (current-time-string)
 			       'face 'font-lock-keyword-face))))
-
-  (with-eval-after-load 'em-banner
-    (tr/conf-eshell-banner))
-
+  
 #+end_src
 
 *** Keys and aliases
@@ -1573,8 +1523,7 @@ Optimize evil mode in eshell and add useful aliases.
 #+begin_src emacs-lisp
   ;;;;;; eshell keybindings and aliases
 
-  (defun tr/conf-eshell-keys ()
-    "Configure keybindings and aliases in eshell with evil mode."
+  (with-eval-after-load 'em-alias
     (evil-collection-eshell-setup)
     (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-R") 'consult-history)
     (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-l") 'eshell/clear)
@@ -1597,9 +1546,6 @@ Optimize evil mode in eshell and add useful aliases.
       (add-to-list 'eshell-command-aliases-list alias))
     (eshell-write-aliases-list))
 
-  (with-eval-after-load 'em-alias
-    (tr/conf-eshell-keys))
-
 #+end_src
 
 *** Colors
@@ -1613,8 +1559,7 @@ Colors are not so easy to setup correctly in eshell.  Here is what I found in so
     ;; let's rely only on xterm-color autoloads
     :defer t)
 
-  (defun tr/conf-eshell-colors ()
-    "Configure eshell colors."
+  (with-eval-after-load 'eshell 		; don't know if there is a specific module
     (delq 'eshell-handle-ansi-color eshell-output-filter-functions)
 
     (push 'xterm-color-filter eshell-preoutput-filter-functions)
@@ -1632,9 +1577,6 @@ Colors are not so easy to setup correctly in eshell.  Here is what I found in so
     (add-hook 'eshell-post-command-hook
 	      #'(lambda () (setenv "TERM" "dumb"))))
 
-  (with-eval-after-load 'eshell 		; don't know if there is a specific module
-    (tr/conf-eshell-colors))
-
 #+end_src
 
 *** History
@@ -1644,8 +1586,7 @@ Configure eshell history.
 #+begin_src emacs-lisp
   ;;;;;; eshell history
 
-  (defun tr/conf-eshell-history ()
-    "Configure eshell history."
+  (with-eval-after-load 'em-hist
     (add-hook 'eshell-pre-command-hook #'eshell-save-some-history)
     (setq eshell-history-size 10000
 	  eshell-history-ignoredups t
@@ -1653,9 +1594,6 @@ Configure eshell history.
 	  ;; don't record command in history if prefixed with whitespace
 	  eshell-input-filter #'eshell-input-filter-initial-space)
     (eshell-hist-initialize))
-
-  (with-eval-after-load 'em-hist
-    (tr/conf-eshell-history))
 
 #+end_src
 
@@ -1667,13 +1605,9 @@ like the ones based on curses/ncurses, and they are opened in a term buffer inst
 #+begin_src emacs-lisp
   ;;;;;; eshell visual commands
 
-  (defun tr/conf-visual-commands ()
-    "Configure visual commands in eshell."
+  (with-eval-after-load 'em-term
     (dolist (cmd '("htop" "vim" "nvim"))
       (add-to-list 'eshell-visual-commands cmd)))
-
-  (with-eval-after-load 'em-term
-    (tr/conf-visual-commands))
 
 #+end_src
 
@@ -1684,8 +1618,7 @@ Set some eshell defaults and generic configuration.
 #+begin_src emacs-lisp
   ;;;;;; eshell defaults and generic conf
 
-  (defun tr/conf-eshell ()
-    "Generic configuration of eshell."
+  (with-eval-after-load 'eshell
     (setenv "PAGER" "cat")
     ;; Truncate buffer for performance
     (add-to-list 'eshell-output-filter-functions #'eshell-truncate-buffer)
@@ -1703,9 +1636,6 @@ Set some eshell defaults and generic configuration.
 	  eshell-kill-processes-on-exit t
 	  eshell-glob-case-insensitive t
 	  eshell-error-if-no-glob t))
-
-  (with-eval-after-load 'eshell
-    (tr/conf-eshell))
 
 #+end_src
 
@@ -1852,6 +1782,31 @@ Magit is a really superlative git interface and works greatly out the box withou
 
 #+end_src
 
+** Parentheses
+
+Configure parentheses and delimiters.
+
+#+begin_src emacs-lisp
+  ;;;;; Configure parentheses
+
+  ;; highlight mathing parentesis
+  (show-paren-mode 1)
+
+  ;; auto close parentheses in prog mode
+  (use-package smartparens
+    :hook
+    (prog-mode . smartparens-mode)
+    (inferior-emacs-lisp-mode . smartparens-mode)
+    :config
+    (require 'smartparens-config))
+
+  ;; highlight matching delimiters with rainbow colors
+  (use-package rainbow-delimiters
+    :hook
+    (prog-mode . rainbow-delimiters-mode)
+    (inferior-emacs-lisp-mode . rainbow-delimiters-mode))
+#+end_src
+
 ** Syntax checking
 
 Setup syntax checking with the builtin =flycheck= package.  Integration with =consult= is provided too.
@@ -1871,6 +1826,28 @@ Setup syntax checking with the builtin =flycheck= package.  Integration with =co
     :after (consult flycheck)
     :bind (:map flycheck-command-map
 		("!" . consult-flycheck)))
+
+#+end_src
+
+** Compilation buffer
+
+Enhance compilation buffer.
+
+#+begin_src emacs-lisp
+  ;;;;; Enhance compilation buffer
+
+  (with-eval-after-load 'compilation-mode (require 'ansi-color))
+
+  ;; colorize compilation buffer
+  (defun tr/colorize-compilation-buffer ()
+    "Support ANSI colors in compilation buffer."
+    (when (eq major-mode 'compilation-mode)
+      (ansi-color-apply-on-region compilation-filter-start (point-max))))
+
+  (add-hook 'compilation-filter-hook #'tr/colorize-compilation-buffer)
+
+  ;; follow output with scroll in compilation buffer
+  (setq compilation-scroll-output t)
 
 #+end_src
 
@@ -1990,6 +1967,20 @@ Language specific configuration.
     :mode "\\.groovy\\'"
     :hook (groovy-mode . lsp-deferred))
   
+#+end_src
+
+*** Clojure
+
+#+begin_src emacs-lisp
+  ;;;;;; Clojure
+  
+  (use-package clojure-mode
+    :mode "\\.clj\\'"
+    :hook (clojure-mode . lsp-deferred))
+  
+  (use-package cider
+    :defer t)
+
 #+end_src
 
 *** Node.js
