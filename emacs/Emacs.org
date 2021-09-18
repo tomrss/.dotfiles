@@ -1679,8 +1679,7 @@ https://github.com/xuchunyang/eshell-z
 
 *** Help, highlighting and completions
 
-Configure help, suggestions, highlighting and completions.
-TODO write something more here.
+Configure help, highlighting and completions.
 
 #+begin_src emacs-lisp
   ;;;;;; eshell help, highlighting, suggestions, completions
@@ -1688,17 +1687,6 @@ TODO write something more here.
   (use-package esh-help
     :after eshell
     :config (setup-esh-help-eldoc))
-
-  ;; from Doom Emacs
-  (use-package eshell-did-you-mean
-    :after esh-mode ; Specifically esh-mode, not eshell
-    :config
-    (eshell-did-you-mean-setup)
-    ;; HACK There is a known issue with `eshell-did-you-mean' where it does not
-    ;;      work on first invocation, so we invoke it once manually by setting the
-    ;;      last command and then calling the output filter.
-    (setq eshell-last-command-name "catt")
-    (eshell-did-you-mean-output-filter "catt: command not found"))
 
   (use-package eshell-syntax-highlighting
     :after eshell
