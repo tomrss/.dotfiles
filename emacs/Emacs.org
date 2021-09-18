@@ -34,9 +34,8 @@ That's why comments are tangled in source too.
   - [[#early-ui-cleanups][Early UI cleanups]]
   - [[#change-config-directories][Change config directories]]
   - [[#footer][Footer]]
-- [[#initial-config][Initial config]]
-  - [[#header][Header]]
-  - [[#some-early-configuration][Some early configuration]]
+- [[#header][Header]]
+- [[#some-early-configuration][Some early configuration]]
 - [[#packaging][Packaging]]
   - [[#bootstrap-the-package-manager][Bootstrap the package manager]]
   - [[#manage-lockfile-and-profiles][Manage lockfile and profiles]]
@@ -255,9 +254,7 @@ Footer of the early init file:
   ;;; early-init.el ends here
 #+end_src
 
-* Initial config
-
-** Header
+* Header
 
 Header of the init file:
 
@@ -295,7 +292,7 @@ Header of the init file:
 
 #+end_src
 
-** Some early configuration
+* Some early configuration
 
 Display startup time in seconds to better monitoring.
 
