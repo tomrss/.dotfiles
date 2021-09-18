@@ -1851,7 +1851,7 @@ Highlight indent guides for some modes.
   ;; show indent guides in some modes
   (use-package highlight-indent-guides
     :hook
-    (python-mode . highlight-indent-guides-mode)
+    ((python-mode yaml-mode) . highlight-indent-guides-mode)
     ;; TODO add some more modes.
     :custom
     (highlight-indent-guides-method 'character))
