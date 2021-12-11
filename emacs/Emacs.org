@@ -772,23 +772,23 @@ TODO: find out an acceptable workflow for yasnippet.  can't use it right now
 =yasnippet= is used for getting code (and other) snippets as you write.
 
 #+begin_src emacs-lisp
-  ;; (use-package yasnippet
-  ;;   :if (not noninteractive)
-  ;;   :diminish yas-minor-mode
-  ;;   :commands (yas-global-mode yas-minor-mode)
-  ;;   :hook
-  ;;   ((prog-mode . yas-minor-mode)
-  ;;    (conf-mode . yas-minor-mode))
-  ;;   :config
-  ;;   (add-to-list 'company-backends 'company-yasnippet)
-  ;;   ;; disable TAB key for yasnippet, just rely on yas company backend
-  ;;   (define-key yas-minor-mode-map (kbd "TAB") nil)
-  ;;   (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  ;;   (yas-reload-all))
-
-  ;; (use-package yasnippet-snippets
-  ;;   :after yasnippet)
-
+  (use-package yasnippet
+    :if (not noninteractive)
+    :diminish yas-minor-mode
+    :commands (yas-global-mode yas-minor-mode)
+    :hook
+    ((prog-mode . yas-minor-mode)
+     (conf-mode . yas-minor-mode))
+    :config
+    ;; (add-to-list 'company-backends 'company-yasnippet)
+    ;; disable TAB key for yasnippet, just rely on yas company backend
+    (define-key yas-minor-mode-map (kbd "TAB") nil)
+    (define-key yas-minor-mode-map (kbd "<tab>") nil)
+    (yas-reload-all))
+  
+  (use-package yasnippet-snippets
+    :after yasnippet)
+  
 #+end_src
 
 * User interface
@@ -1879,6 +1879,8 @@ Many language servers can be installed automatically from Emacs after a prompt.
 If not, refer to the documentation: https://emacs-lsp.github.io/lsp-mode/page/languages
 
 DAP mode (Debug Adapter Protocol) is the LSP counterpart for debugging.
+
+TODO: apparently does not work with corfu
 
 #+begin_src emacs-lisp
   ;;;;; lsp and dap mode
