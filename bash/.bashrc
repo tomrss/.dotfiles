@@ -163,3 +163,5 @@ alias l="ls -lh"
 alias ll="ls -lah"
 alias xclip="xclip -selection c"
 alias pvpn="protonvpn"
+alias python="python3"
+
