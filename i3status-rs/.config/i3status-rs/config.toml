@@ -2,11 +2,24 @@ theme = "solarized-dark"
 icons = "awesome5"
 
 [[block]]
-block = "net"
-device = "wlan0"
-format = "{signal_strength} {speed_down}"
-interval = 5
+block = "custom"
+command = "echo `uname` `uname -r` `uname -o`"
+interval = "once"
+
+# [[block]]
+# block = "net"
+# device = "wlp1s0"
+# format = "{signal_strength} {speed_down}"
+# interval = 5
 # use_bits = false
+
+[[block]]
+block = "networkmanager"
+on_click = "alacritty -e nmtui"
+interface_name_exclude = ["br\\-[0-9a-f]{12}", "docker\\d+"]
+interface_name_include = []
+device_format = "{icon}{name} {ap}"
+ap_format = "{ssid^10} {strength}"
 
 [[block]]
 block = "disk_space"
