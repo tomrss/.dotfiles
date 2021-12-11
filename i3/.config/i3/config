@@ -105,7 +105,7 @@ exec --no-startup-id nm-applet
     floating_modifier $mod
 
     # Reload the configuration file
-    bindsym $mod+Shift+c reload
+    bindsym $mod+Shift+c restart
 
     # Exit sway (logs you out of your Wayland session)
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
@@ -258,7 +258,7 @@ bindsym $mod+r mode "resize"
 bar {
     font pango:JetBrains Mono, FontAwesome 12
     position top
-    status_command i3blocks
+    status_command i3status-rs ~/.config/i3status-rs/config.toml
     colors {
         separator #666666
         background #222222
