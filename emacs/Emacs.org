@@ -1161,17 +1161,17 @@ Add useful text selection and navigation commands.
 
 #+begin_src emacs-lisp
   ;;;;; Text selection and navigation commands
-  
+
   ;; increases the selected region by semantic units
   (use-package expand-region
     ;; this binding makes sense only in italian keyboard
     :bind ("C-ò" . er/expand-region))
-  
+
   ;; navigate text with char-based hints
   (use-package avy
-    :bind (("C-," . avy-goto-char)
-	   :map org-mode-map ("C-," . avy-goto-char))) 
-  
+    :bind (("C-," . avy-goto-char)))
+	   ;; :map org-mode-map ("C-," . avy-goto-char)))
+
 #+end_src
 
 * Org mode
