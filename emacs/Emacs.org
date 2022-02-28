@@ -2018,11 +2018,13 @@ Language specific configuration.
 
 #+begin_src emacs-lisp
   ;;;;;; Python
-  
+
   (use-package elpy
     :defer t
     :init
     (advice-add 'python-mode :before 'elpy-enable)
+    (setq python-shell-interpreter "python3.8"
+	  python-shell-interpreter-args "-i")
     :custom
     (elpy-get-info-from-shell t)
     (elpy-shell-echo-input nil)
@@ -2033,7 +2035,7 @@ Language specific configuration.
       (message "loading flycheck for elpy")
       (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
       (add-hook 'elpy-mode-hook 'flycheck-mode)))
-  
+
 #+end_src
 
 *** Rust
