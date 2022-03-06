@@ -21,103 +21,6 @@ Main features:
 Note: sometimes I found clearer to read directly the tangled source instead of the Org file.
 That's why comments are tangled in source too.
 
-* Table of contents
-:PROPERTIES:
-:TOC:      :include all :force (nothing) :ignore (this) :local (nothing)
-:END:
-:CONTENTS:
-- [[#early-init][Early init]]
-  - [[#header][Header]]
-  - [[#garbage-collections][Garbage collections]]
-  - [[#file-name-handlers-at-startup][File name handlers at startup]]
-  - [[#disable-packageel][Disable package.el]]
-  - [[#early-ui-cleanups][Early UI cleanups]]
-  - [[#change-config-directories][Change config directories]]
-  - [[#footer][Footer]]
-- [[#header][Header]]
-- [[#some-early-configuration][Some early configuration]]
-- [[#packaging][Packaging]]
-  - [[#bootstrap-the-package-manager][Bootstrap the package manager]]
-  - [[#manage-lockfile-and-profiles][Manage lockfile and profiles]]
-  - [[#initialize-use-package][Initialize use-package]]
-- [[#keep-folders-clean][Keep folders clean]]
-- [[#completion-framework][Completion framework]]
-  - [[#getting-help-and-docs][Getting help and docs]]
-    - [[#improve-self-documentation][Improve self-documentation]]
-    - [[#hint-keybindings][Hint keybindings]]
-  - [[#minibuffer-completions][Minibuffer completions]]
-    - [[#completion-ui][Completion UI]]
-    - [[#completion-styles][Completion styles]]
-    - [[#contextual-info-in-minibuffer][Contextual info in minibuffer]]
-    - [[#completing-read-functions][Completing read functions]]
-    - [[#minibuffer-actions][Minibuffer actions]]
-  - [[#autocomplete-in-buffer][Autocomplete in-buffer]]
-    - [[#completions-in-region][Completions in region]]
-    - [[#snippets][Snippets]]
-- [[#user-interface][User interface]]
-  - [[#fonts-and-icons][Fonts and icons]]
-  - [[#theme][Theme]]
-  - [[#modeline][Modeline]]
-  - [[#line-and-column-numbers][Line and column numbers]]
-  - [[#smooth-scrolling][Smooth scrolling]]
-  - [[#highlight-current-line][Highlight current line]]
-  - [[#highlight-edits][Highlight edits]]
-- [[#projects-and-file-management][Projects and file management]]
-  - [[#file-manager][File manager]]
-  - [[#projects][Projects]]
-  - [[#project-tree-layout][Project tree layout]]
-  - [[#process-management][Process management]]
-- [[#editing-and-behaviour][Editing and behaviour]]
-  - [[#navigable-undo-tree][Navigable undo tree]]
-  - [[#vim-emulation][Vim emulation]]
-  - [[#short-command-confirmation][Short command confirmation]]
-  - [[#save-point][Save point]]
-  - [[#auto-update-buffers][Auto update buffers]]
-  - [[#share-clipboard][Share clipboard]]
-  - [[#text-selection-and-navigation][Text selection and navigation]]
-- [[#org-mode][Org mode]]
-  - [[#org-and-org-babel][Org and Org Babel]]
-  - [[#auto-tangle][Auto tangle]]
-  - [[#org-roam][Org Roam]]
-- [[#windows-and-buffers-management][Windows and buffers management]]
-  - [[#optimize-window-placement][Optimize window placement]]
-  - [[#popup-buffers][Popup buffers]]
-  - [[#window-navigation][Window navigation]]
-  - [[#buffer-helpers][Buffer helpers]]
-- [[#terminals][Terminals]]
-  - [[#term][Term]]
-  - [[#vterm][Vterm]]
-  - [[#eshell][Eshell]]
-    - [[#prompt][Prompt]]
-    - [[#banner][Banner]]
-    - [[#keys-and-aliases][Keys and aliases]]
-    - [[#colors][Colors]]
-    - [[#history][History]]
-    - [[#visual-commands][Visual commands]]
-    - [[#generic-configuration-and-eshell-defaults][Generic configuration and eshell defaults]]
-    - [[#navigation][Navigation]]
-    - [[#help-highlighting-and-completions][Help, highlighting and completions]]
-    - [[#eshell-popup][Eshell popup]]
-- [[#development][Development]]
-  - [[#version-control][Version control]]
-  - [[#parentheses][Parentheses]]
-  - [[#syntax-checking][Syntax checking]]
-  - [[#compilation-buffer][Compilation buffer]]
-  - [[#indentation][Indentation]]
-  - [[#lsp-mode][LSP mode]]
-  - [[#languages][Languages]]
-    - [[#java][Java]]
-    - [[#groovy][Groovy]]
-    - [[#clojure][Clojure]]
-    - [[#nodejs][Node.js]]
-    - [[#python][Python]]
-    - [[#rust][Rust]]
-    - [[#c][C#]]
-    - [[#latex][LaTeX]]
-    - [[#configuration-and-markup][Configuration and markup]]
-- [[#footer][Footer]]
-:END:
-
 * Early init
 
 The early init file is loaded before the =init.el= file.  Is loaded even before the GUI is
@@ -1161,17 +1064,16 @@ Add useful text selection and navigation commands.
 
 #+begin_src emacs-lisp
   ;;;;; Text selection and navigation commands
-  
+
   ;; increases the selected region by semantic units
   (use-package expand-region
     ;; this binding makes sense only in italian keyboard
     :bind ("C-ò" . er/expand-region))
-  
+
   ;; navigate text with char-based hints
   (use-package avy
-    :bind (("C-," . avy-goto-char)
-	   :map org-mode-map ("C-," . avy-goto-char))) 
-  
+    :bind (("C-," . avy-goto-char)))
+
 #+end_src
 
 * Org mode
@@ -2020,11 +1922,13 @@ Language specific configuration.
 
 #+begin_src emacs-lisp
   ;;;;;; Python
-  
+
   (use-package elpy
     :defer t
     :init
     (advice-add 'python-mode :before 'elpy-enable)
+    (setq python-shell-interpreter "python3.8"
+	  python-shell-interpreter-args "-i")
     :custom
     (elpy-get-info-from-shell t)
     (elpy-shell-echo-input nil)
@@ -2035,7 +1939,7 @@ Language specific configuration.
       (message "loading flycheck for elpy")
       (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
       (add-hook 'elpy-mode-hook 'flycheck-mode)))
-  
+
 #+end_src
 
 *** Rust
