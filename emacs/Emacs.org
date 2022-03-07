@@ -534,6 +534,8 @@ TODO: this is almost literally copied from =consult= page, but many of this comm
 #+begin_src emacs-lisp
   ;; add useful functions with consult
   (use-package consult
+    :config
+    (setq consult-narrow-key "<")
     :bind (;; C-c bindings (mode-specific-map)
 	   ("C-c h" . consult-history)
 	   ("C-c m" . consult-mode-command)
@@ -555,7 +557,7 @@ TODO: this is almost literally copied from =consult= page, but many of this comm
 	   ("M-g m" . consult-mark)
 	   ("M-g k" . consult-global-mark)
 	   ("M-g i" . consult-imenu)
-	   ("M-g I" . consult-project-imenu)
+	   ("M-g I" . consult-imenu-multi)
 	   ;; M-s bindings (search-map)
 	   ("M-s f" . consult-find)
 	   ("M-s L" . consult-locate)
@@ -570,6 +572,18 @@ TODO: this is almost literally copied from =consult= page, but many of this comm
 	   (:map minibuffer-local-map
 		 ("C-r" . consult-history))))
 
+#+end_src
+
+Recognize =use-package= declaration in =imenu= (useful for narrowing with =consult-imenu=).
+
+#+begin_src emacs-lisp
+  (defun tr/add-use-package-to-imenu()
+    "Add use-package declarations to imenu expressions."
+    ;; TODO not the cleanest regex, but emacs regex hard wo weird...
+    (add-to-list 'imenu-generic-expression '("Packages" "^\\s-*(use-package\\(?:-local\\)?\\s-+\\(\\(?:\\sw\\|\\s_\\|\\\\.\\)+\\)[[:space:]\n]+[^)]" 1)))
+
+  (add-hook 'emacs-lisp-mode-hook #'tr/add-use-package-to-imenu)
+ 
 #+end_src
 
 *** Minibuffer actions
