@@ -1130,6 +1130,15 @@ This section is dedicated to (try) to fix some of these issues.
 
 #+end_src
 
+** Restore window setup
+
+Use builtin winner mode to restore window setup if needed.
+
+#+begin_src emacs-lisp
+  (winner-mode +1)
+  
+#+end_src
+
 ** Optimize window placement
 
 Or at least try to.  =shackle= is a good starting point: it allows defining rules for how windows are displayed.
@@ -1186,6 +1195,18 @@ The =popper= package helps in treating them like "popups".
   ;; great window navigation and selection command
   (use-package ace-window
     :bind (("M-o" . ace-window)))
+
+#+end_src
+
+** Resize windows
+
+Add keybindings to easily resize windows.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "M-H") 'shrink-window-horizontally)
+  (global-set-key (kbd "M-J") 'shrink-window)
+  (global-set-key (kbd "M-K") 'enlarge-window)
+  (global-set-key (kbd "M-L") 'enlarge-window-horizontally)
 
 #+end_src
 
