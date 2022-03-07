@@ -487,6 +487,7 @@ https://github.com/minad/vertico
   (use-package savehist
     :straight nil
     :init
+    (setq history-length 20)
     (savehist-mode +1))
 
   (use-package orderless
