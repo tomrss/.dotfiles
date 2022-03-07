@@ -887,12 +887,6 @@ Manage projects with builtin =project.el=.
     (treemacs-resize-icons 16)
     (add-hook 'treemacs-mode-hook #'hide-mode-line-mode))
   
-  (use-package treemacs-magit
-    :after treemacs magit)
- 
-  (use-package treemacs-evil
-    :after treemacs evil)
-  
 #+end_src
 
 ** Process management
@@ -964,6 +958,10 @@ section is rather slim.
     (setq evil-collection-company-use-tng nil) ; i read somewhere that in most cases this is needed for a bug in evil-collection, but don't remember
     :config
     (evil-collection-init))
+
+  ;; integrate with treemacs
+  (use-package treemacs-evil
+    :after treemacs evil)
 
   (add-hook 'with-editor-mode-hook 'evil-insert-state)
 
@@ -1603,6 +1601,10 @@ Magit is a really superlative git interface and works greatly out the box withou
     :init
     ;; just mute this annoying message
     (setq magit-no-message '("Turning on magit-auto-revert-mode...")))
+
+  ;; integrate with treemacs
+  (use-package treemacs-magit
+    :after treemacs magit)
 
   ;; highlight uncommitted changes (git gutters)
   (use-package diff-hl
