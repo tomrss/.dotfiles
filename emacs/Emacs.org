@@ -1136,7 +1136,9 @@ Use builtin winner mode to restore window setup if needed.
 
 #+begin_src emacs-lisp
   (winner-mode +1)
-  
+  (global-set-key (kbd "C-c w") 'winner-undo)
+  (global-set-key (kbd "C-c W") 'winner-redo)
+
 #+end_src
 
 ** Optimize window placement
