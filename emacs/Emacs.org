@@ -127,24 +127,12 @@ Remove useless stuff from UI and other optimizations
 
 #+end_src
 
-** Change config directories
-
-The =user-emacs-directory= defaults to =~/.emacs.d/= and it tends to be cluttered with files that you don't really want to be checked into source control.  Either keep a gigantic gitignore or move all of that out the way, as in the following:
+** Move backups elsewhere
 
 #+begin_src emacs-lisp :tangle .emacs.d/early-init.el :mkdirp yes
-  ;;;; Change the user emacs directory in order to have a clean .emacs.d folder
+  ;;;; Move backups elsewhere
 
-  (setq user-emacs-directory "~/.cache/emacs/")
-  (setq user-init-file "~/.emacs.d/init.el")
   (setq default-directory "~/")
-
-#+end_src
-
-The following line is from the =no-littering= package.  As I really (really) hate Emacs spamming
-tilde files (backups) everywhere, I put this line here in case everything goes wrong.  Because, if
-=no-littering= cannot be loaded but I have to edit a file, I don't want to pollute my filesystem with pesky tilde files.
-
-#+begin_src emacs-lisp :tangle .emacs.d/early-init.el :mkdirp yes
   (setq backup-directory-alist `(("." . "~/.cache/emacs/var/backup/")))
 
 #+end_src
@@ -802,6 +790,15 @@ Highlight current line.
     (special-mode . hl-line-mode)
     :custom
     (hl-line-sticky-flag nil))
+
+#+end_src
+
+** Disable dialog box
+
+Disable UI dialogs and keep keyboard-driven.
+
+#+begin_src emacs-lisp
+  (setq use-dialog-box nil)
 
 #+end_src
 

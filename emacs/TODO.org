@@ -28,3 +28,7 @@ It should be placed in project root.
 ** Use more Emacs internal features
 *** Dismiss projectile and use project
 * Tab bar or whathever
+* Symlink only init.el and early-init.el
+
+Recently I dismissed no-littering package, so everything is now in .emacs.d.
+This could be fine, if the folder was not entirely symlinked.
