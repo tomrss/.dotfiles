@@ -1,0 +1,30 @@
+#+title: Emacs TODO
+#+author: Tommaso Rossi
+
+* Corfu
+** Better keybindings
+
+Current keybindings are not confortable. Find a way to correctly use TAB and cicle to candidates.
+
+** Explore configuration options
+** Filtering candidates
+Find a confortable worflow for filtering candidates with orderless
+* Yasnippet
+** I never managed to get it work
+* Eglot
+** Explore this mode
+Check if it can replace LSP
+** Check if it works good with corfu
+* Window management
+** Sometimes magit goes bottom instead of right
+** Some windows are random, use shackle on them
+* Debloat
+** Remove useless packages
+*** Find out which of them are useless
+*** Dismiss eshell-popup
+Write small function for having eshell, term, shell or vterm popup.
+It should be placed in project root.
+
+** Use more Emacs internal features
+*** Dismiss projectile and use project
+* Tab bar or whathever
