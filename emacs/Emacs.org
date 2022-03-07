@@ -355,21 +355,6 @@ For starters, disable lockfiles.
 
 #+end_src
 
-Then, put every backup file in the same folder using the =no-littering= package.
-This package does more than that: it cleans the config folder by putting (almost) everything in
-=etc/= and =var/= subfolders of the emacs config folder (which we set in =~/.cache/emacs= in early
-init).
-
-#+begin_src emacs-lisp
-  ;; clean emacs folder with `no-littering'
-  (use-package no-littering)
-
-  ;; use `no-littering' for collect autosaves in one folder
-  (setq auto-save-file-name-transforms
-	`((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-
-#+end_src
-
 Change some backup defaults:
 
 #+begin_src emacs-lisp
@@ -515,15 +500,15 @@ https://github.com/minad/vertico
     :straight nil
     :init
     (savehist-mode +1))
-  
+
   (use-package orderless
     :init
     (setq orderless-matching-styles '(orderless-literal
 				      orderless-initialism
 				      orderless-regexp))
-    (setq orderless-component-separator "[ +]+") 
+    (setq orderless-component-separator "[ +]+")
     (setq completion-styles '(orderless)))
-  
+
 #+end_src
 
 *** Contextual info in minibuffer
@@ -593,11 +578,7 @@ TODO: this is almost literally copied from =consult= page, but many of this comm
 	   ("M-s k" . consult-keep-lines)
 	   ("M-s u" . consult-focus-lines)
 	   (:map minibuffer-local-map
-		 ("C-r" . consult-history)))
-
-    :config
-    (autoload 'projectile-project-root "projectile")
-    (setq consult-project-root-function #'projectile-project-root))
+		 ("C-r" . consult-history))))
 
 #+end_src
 
@@ -655,16 +636,11 @@ Completions in region with =corfu=.
     (setq corfu-cycle t)
     ;; quit corfu popup on space, for using orderless fuzzy match use the "+":
     (setq corfu-quit-at-boundary t)
+    (setq corfu-preselect-first t)
     (setq corfu-echo-documentation 0))
 
-  (use-package dabbrev
-    ;; TODO this bindings have no sense in italian keyboard
-    ;; Swap M-/ and C-M-/
-    :bind (("M-/" . dabbrev-completion)
-	   ("C-M-/" . dabbrev-expand)))
-  
   (setq tab-always-indent 'complete)
-  
+
 #+end_src
 
 *** Snippets
@@ -675,23 +651,23 @@ TODO: find out an acceptable workflow for yasnippet.  can't use it right now
 =yasnippet= is used for getting code (and other) snippets as you write.
 
 #+begin_src emacs-lisp
-  (use-package yasnippet
-    :if (not noninteractive)
-    :diminish yas-minor-mode
-    :commands (yas-global-mode yas-minor-mode)
-    :hook
-    ((prog-mode . yas-minor-mode)
-     (conf-mode . yas-minor-mode))
-    :config
-    ;; (add-to-list 'company-backends 'company-yasnippet)
-    ;; disable TAB key for yasnippet, just rely on yas company backend
-    (define-key yas-minor-mode-map (kbd "TAB") nil)
-    (define-key yas-minor-mode-map (kbd "<tab>") nil)
-    (yas-reload-all))
-  
-  (use-package yasnippet-snippets
-    :after yasnippet)
-  
+  ;; (use-package yasnippet
+  ;;   :if (not noninteractive)
+  ;;   :diminish yas-minor-mode
+  ;;   :commands (yas-global-mode yas-minor-mode)
+  ;;   :hook
+  ;;   ((prog-mode . yas-minor-mode)
+  ;;    (conf-mode . yas-minor-mode))
+  ;;   :config
+  ;;   ;; (add-to-list 'company-backends 'company-yasnippet)
+  ;;   ;; disable TAB key for yasnippet, just rely on yas company backend
+  ;;   (define-key yas-minor-mode-map (kbd "TAB") nil)
+  ;;   (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  ;;   (yas-reload-all))
+
+  ;; (use-package yasnippet-snippets
+  ;;   :after yasnippet)
+
 #+end_src
 
 * User interface
@@ -829,20 +805,6 @@ Highlight current line.
 
 #+end_src
 
-** Highlight edits
-
-Highlight edits as you type.
-
-#+begin_src emacs-lisp
-  ;;;;; Highlight edits
-
-  (use-package goggles
-    :hook ((prog-mode text-mode) . goggles-mode)
-    :config
-    (setq-default goggles-pulse t))
-
-#+end_src
-
 * Projects and file management
 
 This section is dedicated to manage projects, intended as a collection of closely related files checked into source control, and file management and explorer.
@@ -908,18 +870,12 @@ Base configuration:
 
 ** Projects
 
-Manage projects with =projectile=.
+Manage projects with builtin =project.el=.
 
 #+begin_src emacs-lisp
-  (use-package projectile
-    :commands (projectile-switch-project
-	       projectile-ripgrep
-	       projectile-find-file)
-    :bind-keymap
-    ("C-c p" . projectile-command-map)
-    :config
-    (setq projectile-switch-project-action #'projectile-dired))
 
+  ;; nothing to do?
+  
   #+end_src
 
 ** Project tree layout
@@ -932,9 +888,6 @@ Manage projects with =projectile=.
     :config
     (treemacs-resize-icons 16)
     (add-hook 'treemacs-mode-hook #'hide-mode-line-mode))
-  
-  (use-package treemacs-projectile
-    :after treemacs projectile)
   
   (use-package treemacs-magit
     :after treemacs magit)
@@ -1024,6 +977,18 @@ Typing "yes" or "no" in confirmations is too slow, replace it with "y" or "n".
 
 #+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
+
+#+end_src
+
+** Recent files
+
+Easily reopen recent files.
+
+#+begin_src emacs-lisp
+  (recentf-mode +1)
+
+  ;; overrides `set-fill-column'
+  (global-set-key (kbd "C-x f") 'recentf-open-files)
 
 #+end_src
 
@@ -1136,14 +1101,6 @@ Visual fill column: center text with margins, improving readability and look.
   (use-package visual-fill-column
     :after org
     :hook (org-mode . tr/org-mode-visual-fill))
-  
-#+end_src
-
-Make table of contents:
-
-#+begin_src emacs-lisp
-  (use-package org-make-toc
-    :hook (org-mode . org-make-toc-mode))
   
 #+end_src
 
@@ -1283,7 +1240,7 @@ Some helpers for dealing with buffers.
     (message "Killed buffers with major mode %s" mode))
 
   (defun tr/kill-dired-buffers ()
-    "Kill all dired buffers."
+    "Kill all Dired buffers."
     (interactive)
     (tr/kill-mode-buffers 'dired-mode))
 
@@ -1603,6 +1560,7 @@ In addition to a normal eshell buffer, sometimes is useful to be able to toggle 
 under the current window just to run a couple of quick commands.
 
 #+begin_src emacs-lisp
+  ;; TODO: remove this, drop eshell-toggle and write simple popup with shackle and popper
   (defun tr/eshell-toggle-init-eshell (dir)
     "Init eshell in DIR for `eshell-toggle'."
     (let* ((buffer-name (format "*eshell-popup:%s*"
@@ -1618,13 +1576,9 @@ under the current window just to run a couple of quick commands.
 
   (use-package eshell-toggle
     :bind ("C-M-'" . eshell-toggle)
-    :init
-    ;; these autoloads are needed in case of `projectile' is not yet loaded
-    (autoload 'projectile-project-root "projectile")
-    (autoload 'projectile-project-name "projectile")
     :custom				; TODO don't really like custom
     (eshell-toggle-size-fraction 3)
-    (eshell-toggle-use-projectile-root t)
+    (eshell-toggle-use-git-root t)
     (eshell-toggle-run-command nil)
     (eshell-toggle-init-function #'tr/eshell-toggle-init-eshell))
 
@@ -1872,7 +1826,7 @@ Language specific configuration.
 
 #+begin_src emacs-lisp
   ;;;;;; Node.js
-  
+
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :hook (typescript-mode . lsp-deferred)
@@ -1880,14 +1834,14 @@ Language specific configuration.
     (require 'dap-node)
     (dap-node-setup)
     (setq typescript-indent-level 2))
-  
+
   (use-package npm-mode
     :after typescript-mode)		; TODO js, react
-  
+
   (use-package nvm
     :after typescript-mode		; TODO js, react
     :commands (nvm-use nvm-use-for nvm-use-for-buffer))
-  
+
   ;; TODO: this is global but should be buffer local
   (defun tr/nvm-use (version)
     "Interactive wrapper of `nvm-use'.  Choose node VERSION amongst installed versions."
@@ -1896,26 +1850,25 @@ Language specific configuration.
       (completing-read "Version: " (mapcar 'car (nvm--installed-versions)))))
     (nvm-use version)
     (message "Using node version %s" version))
-  
+
   (require 's)
   (require 'f)
-  
+
   ;; TODO: continue prompt of node version in case of missing .nvmrc
-  (defun tr/nvm-projectile ()
-    "Set up projectile project node interpreter with nvm.
+  ;; TODO: this probably sucks
+  (defun tr/nvm-project ()
+    "Set up project node interpreter with nvm.
   If .nvmrc is present in project root, it will be used.  Otherwise node
   version will be prompted."
     (interactive)
-    (when (file-exists-p (expand-file-name "package.json" (projectile-project-root)))
-      (let ((nvmrc (expand-file-name ".nvmrc" (projectile-project-root))))
+    (when (file-exists-p (expand-file-name "package.json" (project-root (project-current))))
+      (let ((nvmrc (expand-file-name ".nvmrc" (project-root (project-current)))))
 	(if (file-exists-p nvmrc)
 	    (let ((version (s-trim (f-read nvmrc))))
 	      (nvm-use version)
 	      (message "Using node version %s" version))
 	  (call-interactively 'tr/nvm-use)))))
-  
-  (add-hook 'projectile-find-file-hook #'tr/nvm-projectile)
-  
+
 #+end_src
 
 *** Python
@@ -2007,10 +1960,10 @@ Add a preview pane of the current edited LaTeX buffer.
 
 #+begin_src emacs-lisp
   ;;;;;; configuration and markup
-  
+
   (use-package dockerfile-mode
     :mode "Dockerfile")
-  
+
   (use-package markdown-mode
     :mode ("\\.md\\'"
 	   "\\.mkd\\'"
@@ -2018,15 +1971,18 @@ Add a preview pane of the current edited LaTeX buffer.
     :commands (markdown-mode gfm-mode)
     :init
     (setq mardown-command "multimarkdown"))
-  
+
   (use-package yaml-mode
     :mode "\\.ya?ml\\'")
-  
+
   (use-package toml-mode
     :mode "\\.toml\\'")
-  
+
   (use-package csv-mode
     :mode "\\.csv\\'")
+
+  (use-package terraform-mode
+    :mode "\\.tf\\'")
   
 #+end_src
 
