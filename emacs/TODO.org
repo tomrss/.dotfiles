@@ -32,3 +32,11 @@ It should be placed in project root.
 
 Recently I dismissed no-littering package, so everything is now in .emacs.d.
 This could be fine, if the folder was not entirely symlinked.
+
+* Define keys
+
+Find a clever way of defining keys without getting overriden by other mode.
+Possible solutions:
+- define-prefix-command
+- minor mode holding all keys
+  

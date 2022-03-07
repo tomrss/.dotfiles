@@ -184,6 +184,7 @@ Header of the init file:
 #+end_src
 
 * Some early configuration
+** Measure startup time
 
 Display startup time in seconds to better monitoring.
 
@@ -201,6 +202,8 @@ Display startup time in seconds to better monitoring.
   
 #+end_src
 
+** Remove mouse based interface
+
 Disable menus and some mouse-based interface.
 
 #+begin_src emacs-lisp
@@ -211,6 +214,8 @@ Disable menus and some mouse-based interface.
   (tool-bar-mode -1)
 
 #+end_src
+
+** Trick for removing annoying startup message
 
 The following is a dirty trick to avoid the annoying startup message:
 #+begin_quote
@@ -1018,10 +1023,6 @@ Add useful text selection and navigation commands.
     ;; this binding makes sense only in italian keyboard
     :bind ("C-ò" . er/expand-region))
 
-  ;; navigate text with char-based hints
-  (use-package avy
-    :bind (("C-," . avy-goto-char)))
-
 #+end_src
 
 * Org mode
@@ -1191,24 +1192,25 @@ The =popper= package helps in treating them like "popups".
 
 ** Window navigation
 
-=ace-window= is like =avy= but for windows and can avoid window ciclying with =C-x o=.
-
 #+begin_src emacs-lisp
-  ;; great window navigation and selection command
-  (use-package ace-window
-    :bind (("M-o" . ace-window)))
+  (global-set-key (kbd "M-o") 'other-window)
+  ;; TODO gets overridden
+  (global-set-key (kbd "M-h") 'windmove-left)
+  (global-set-key (kbd "M-j") 'windmove-down)
+  (global-set-key (kbd "M-k") 'windmove-up)
+  (global-set-key (kbd "M-l") 'windmove-right)
 
 #+end_src
-
-** Resize windows
 
 Add keybindings to easily resize windows.
 
 #+begin_src emacs-lisp
-  (global-set-key (kbd "M-H") 'shrink-window-horizontally)
-  (global-set-key (kbd "M-J") 'shrink-window)
-  (global-set-key (kbd "M-K") 'enlarge-window)
-  (global-set-key (kbd "M-L") 'enlarge-window-horizontally)
+  ;; TODO
+  (global-set-key (kbd "C-M-H") 'shrink-window-horizontally)
+  (global-set-key (kbd "C-M-J") 'shrink-window)
+  (global-set-key (kbd "C-M-K") 'enlarge-window)
+  (global-set-key (kbd "C-M-l") 'recenter-other-window)
+  (global-set-key (kbd "C-M-L") 'enlarge-window-horizontally)
 
 #+end_src
 
