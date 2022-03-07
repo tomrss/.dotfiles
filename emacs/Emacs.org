@@ -986,8 +986,6 @@ Easily reopen recent files.
 
 #+end_src
 
-** Save point
-
 Reopen files at the same point.
 
 #+begin_src emacs-lisp
