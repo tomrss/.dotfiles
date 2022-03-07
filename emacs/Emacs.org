@@ -416,23 +416,6 @@ https://github.com/Wilfred/helpful
 
 #+end_src
 
-*** Hint keybindings
-
-Getting helps and hints about keybinding is really helpful.  The =which-key= package provides this
-feature and integrates well with other packages, expecially big ones with key prefix and lots of keys.
-
-https://github.com/justbur/emacs-which-key
-
-#+begin_src emacs-lisp
-  ;; hint keybindings
-  (use-package which-key
-    :init
-    (which-key-mode +1)
-    :config
-    (setq which-key-idle-delay 0.5))
-
-#+end_src
-
 ** Minibuffer completions
 
 This section is dedicated to minibuffer completions, using the well-known stack of packages by
@@ -602,13 +585,7 @@ packages, most notably =consult=.  See the =embark= README for some interesting 
      (:map embark-symbol-map ("h" . helpful-symbol)))
     :init
     ;; Optionally replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command)
-    ;; (setq embark-prompter 'embark-completing-read-prompter)
-    (setq embark-action-indicator
-	  (lambda (map _target)
-	    (which-key--show-keymap "Embark" map nil nil 'no-paging)
-	    #'which-key--hide-popup-ignore-command)
-	  embark-become-indicator embark-action-indicator))
+    (setq prefix-help-command #'embark-prefix-help-command))
 
   (use-package embark-consult
     :after (:all embark consult)
