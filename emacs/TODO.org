@@ -40,3 +40,9 @@ Possible solutions:
 - define-prefix-command
 - minor mode holding all keys
   
+
+* Remove =redisplay-dont-pause=
+* make flycheck work in emacs lisp code
+* Remove eshell-toggle
+use project.el, buffer name and shackle for enabling shell toggling.
+not only eshell. 
