@@ -899,7 +899,16 @@ to."
 (defun +setup-groovy ()
   "Setup groovy with LSP"
   (unless (+consult-preview-p)
-    (lsp-deferred)))
+    ;; TODO: this classpath stuff was added because groovy ls seems
+    ;;  to autocomplete only with java but not with groovy.
+    ;;  sadly this doesn't work either!
+    (setq lsp-groovy-classpath
+	  (vconcat
+	   (split-string
+	    (with-temp-buffer
+	      (call-process-shell-command "find /usr -wholename '*/groovy/lib/*.jar'" nil t nil)
+	      (buffer-string)))))
+    (lsp)))
 
 (add-hook 'groovy-mode-hook #'+setup-groovy)
 
