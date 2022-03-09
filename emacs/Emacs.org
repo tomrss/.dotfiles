@@ -328,6 +328,7 @@ https://github.com/jwiegley/use-package
 	(lambda (name &rest _)
 	  (message "Ignoring ':ensure t' in '%s' config" name)))
 
+  (setq use-package-expand-minimally t)
   ;; uncomment for enabling package auditing:
   ;; (setq use-package-verbose t)
   ;; (setq use-package-compute-statistics t)
