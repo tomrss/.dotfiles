@@ -849,7 +849,7 @@ to."
 	  ;; TODO handle error
 	  (goto-char (point-max))
 	  (insert "git clone done.\n")
-	  (let ((default-directory groovy-ls-install-dir))
+	  (let ((default-directory ls-install-dir))
 	    (display-buffer (current-buffer))
 	    (call-process-shell-command build-command nil t t))
 	  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
