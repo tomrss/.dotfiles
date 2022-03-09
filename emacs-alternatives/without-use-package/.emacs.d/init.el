@@ -159,6 +159,13 @@
 (+define-key (kbd "M-s u")   #'consult-focus-lines)
 (define-key minibuffer-local-map (kbd "C-r") #'consult-history)
 
+(defun +consult-preview-p ()
+  "Helper function to find out if Consult is previewing."
+  (when-let (win (active-minibuffer-window))
+    (not (eq nil (buffer-local-value
+                  'consult--preview-function
+                  (window-buffer win))))))
+
 ;; enable acting on minibuffer candidates (and much more)
 (straight-use-package 'embark)
 (setq prefix-help-command #'embark-prefix-help-command)
@@ -819,8 +826,8 @@ to."
 ;;;;; lsp and dap mode
 
 (straight-use-package 'lsp-mode)
+(setq lsp-keymap-prefix "M-RET")
 (with-eval-after-load 'lsp-mode
-  (setq lsp-keymap-prefix "M-RET")
   (setq lsp-enable-which-key-integration t)
   (setq lsp-headerline-breadcrumb-segments
 	'(path-up-to-project file symbols))
@@ -831,6 +838,22 @@ to."
   (with-eval-after-load 'dap-mode
     (dap-auto-configure-mode)))
 
+(defun +build-lsp-server-from-git (url ls-install-dir build-command)
+  "Build LSP language server in LS-INSTALL-DIR from git source at URL with BUILD-COMMAND."
+  (unless (file-directory-p (expand-file-name ".git" ls-install-dir))
+    (when (y-or-n-p "Language server not found. Do you want to build one from source? ")
+      (with-current-buffer (get-buffer-create "*custom-language-server-build*")
+	(display-buffer (current-buffer))
+	(let ((git-clone-cmd (format "git clone %s %s" url ls-install-dir)))
+	  (call-process-shell-command git-clone-cmd nil t t)
+	  ;; TODO handle error
+	  (goto-char (point-max))
+	  (insert "git clone done.\n")
+	  (let ((default-directory groovy-ls-install-dir))
+	    (display-buffer (current-buffer))
+	    (call-process-shell-command build-command nil t t))
+	  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
+
 ;;;;; Languages
 
 ;;;;;; Java
@@ -838,32 +861,53 @@ to."
 ;; TODO parse lombok version from pom
 (defvar lombok-jar-path
   (expand-file-name
-   "~/.m2/repository/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar"))
+   "~/.m2/repository/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar")
+  "Path of the lombok jar.")
 
 (straight-use-package 'lsp-java)
 (with-eval-after-load 'lsp-java
-  (add-hook 'java-mode-hook 'lsp)
-  (when
-      (file-exists-p lombok-jar-path)
+  (when (file-exists-p lombok-jar-path)
     (setq lsp-java-vmargs
 	  `("-XX:+UseStringDeduplication" ,(concat "-javaagent:" lombok-jar-path)
 	    ,(concat "-Xbootclasspath/a:" lombok-jar-path)
 	    "--add-modules=ALL-SYSTEM"))))
-(add-hook 'java-mode-hook #'lsp-java)
+
+(defun +setup-java ()
+  "Setup java with LSP."
+  (unless (+consult-preview-p)
+    (lsp-deferred)
+    (require 'lsp-java)
+    (require 'dap-java)))
+
+(add-hook 'java-mode-hook #'+setup-java)
 
 ;;;;;; Groovy
 
 (straight-use-package 'groovy-mode)
-(add-hook 'groovy-mode-hook #'lsp-deferred)
-(add-to-list 'auto-mode-alist
-	     '("\\.groovy\\'" . groovy-mode))
+(add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
+(with-eval-after-load 'groovy-mode
+  (defvar groovy-ls-install-dir "~/.emacs.d/.cache/lsp/groovy-language-server/"
+    "Groovy language server installation folder")
+  ;; TODO check if default server exists before installing custom
+  (+build-lsp-server-from-git "https://github.com/GroovyLanguageServer/groovy-language-server.git"
+			      groovy-ls-install-dir
+			      "./gradlew build")
+  ;; TODO handle execution status
+  (setq lsp-groovy-server-file
+	(expand-file-name "build/libs/groovy-language-server-all.jar" groovy-ls-install-dir)))
+
+(defun +setup-groovy ()
+  "Setup groovy with LSP"
+  (unless (+consult-preview-p)
+    (lsp-deferred)))
+
+(add-hook 'groovy-mode-hook #'+setup-groovy)
 
 ;;;;;; Clojure
 
 (straight-use-package 'clojure-mode)
 (add-hook 'clojure-mode-hook #'lsp-deferred)
-(add-to-list 'auto-mode-alist
-	     '("\\.clj\\'" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
 
 (straight-use-package 'cider)
 
