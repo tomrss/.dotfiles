@@ -836,6 +836,11 @@ to."
 (straight-use-package 'dap-mode)
 (with-eval-after-load 'lsp-mode
   (with-eval-after-load 'dap-mode
+    (define-key dap-mode-map (kbd "<f8>") #'dap-next)
+    (define-key dap-mode-map (kbd "<f9>") #'dap-continue)
+    (define-key dap-mode-map (kbd "<f7>") #'dap-step-in)
+    (define-key dap-mode-map (kbd "S-<f8>") #'dap-step-out)
+    (define-key dap-mode-map (kbd "M-<f8>") #'dap-evaluate)
     (dap-auto-configure-mode)))
 
 (defun +build-lsp-server-from-git (url ls-install-dir build-command)
