@@ -1055,6 +1055,7 @@ version will be prompted."
 (add-to-list 'auto-mode-alist
 	     '("\\.csv\\'" . csv-mode))
 
+(straight-use-package 'terraform-mode)
 (add-to-list 'auto-mode-alist
 	     '("\\.tf\\'" . terraform-mode))
 
