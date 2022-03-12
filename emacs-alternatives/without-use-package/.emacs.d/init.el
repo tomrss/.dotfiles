@@ -111,6 +111,12 @@
 (+define-key (kbd "C-h o") #'helpful-symbol)
 (+define-key (kbd "C-h p") #'helpful-at-point)
 
+;;;;; Key help
+(straight-use-package 'which-key)
+(which-key-mode +1)
+(with-eval-after-load 'which-key-mode
+  (setq which-key-idle-delay 0.5))
+
 ;;;;; Minibuffer completions
 
 ;; completion UI
