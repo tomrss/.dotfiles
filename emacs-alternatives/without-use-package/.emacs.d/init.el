@@ -539,8 +539,6 @@
   (setq vterm-max-scrollback 10000)
   (setq vterm-kill-buffer-on-exit t))
 
-;; TODO try vterm-toggle: https://github.com/jixiuf/vterm-toggle
-
 ;;;;; eshell
 
 ;;;;;; eshell prompt
@@ -720,28 +718,6 @@ to."
 (with-eval-after-load 'esh-autosuggest
   (setq esh-autosuggest-delay 0.5))
 (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
-
-;; TODO: remove this, drop eshell-toggle and write simple popup with shackle and popper
-(defun +eshell-toggle-init-eshell (dir)
-  "Init eshell in DIR for `eshell-toggle'."
-  (let* ((buffer-name (format "*eshell-popup:%s*"
-			      (file-name-nondirectory
-			       (directory-file-name default-directory))))
-	 (eshell-buffer (get-buffer-create buffer-name)))
-    (with-current-buffer (switch-to-buffer eshell-buffer)
-      (if (eq major-mode 'eshell-mode)
-	  (run-hooks 'eshell-mode-hook)
-	(eshell-mode))
-      (hide-mode-line-mode 1))
-    (pop-to-buffer eshell-buffer)))
-
-(straight-use-package 'eshell-toggle)
-(with-eval-after-load 'eshell-toggle
-  (setq eshell-toggle-size-fraction 3)
-  (setq eshell-toggle-use-git-root t)
-  (setq eshell-toggle-run-command nil)
-  (setq eshell-toggle-init-function #'+eshell-toggle-init-eshell))
-(+define-key (kbd "C-M-'") #'eshell-toggle)
 
 ;;;; Development
 
