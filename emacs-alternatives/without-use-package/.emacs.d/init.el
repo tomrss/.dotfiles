@@ -814,6 +814,9 @@ to."
 
 ;;;;; Indentation
 
+;; human tab with
+(add-hook 'prog-mode-hook (lambda () (setq tab-width 4)))
+
 ;; show indent guides in some modes
 (straight-use-package 'highlight-indent-guides)
 (with-eval-after-load 'highlight-indent-guides
