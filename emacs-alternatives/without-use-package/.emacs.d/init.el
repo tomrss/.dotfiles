@@ -439,9 +439,10 @@
 (shackle-mode 1)
 (setq shackle-rules
       '((compilation-mode :noselect t)
-	(help-mode :popup t :select t :align bottom :size 0.33)
-	(helpful-mode :popup t :select t :align bottom :size 0.33)
-	("\\*Warnings\\*" :regexp t :noselect t))
+		(help-mode :popup t :select t :align bottom :size 0.33)
+		(helpful-mode :popup t :select t :align bottom :size 0.33)
+		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
+		("\\*Warnings\\*" :regexp t :noselect t))
       shackle-default-rule
       '(:noselect t))
 
