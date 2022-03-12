@@ -36,7 +36,7 @@
 ;; remove graphical dialog box and keep it keyboard driven
 (setq use-dialog-box nil)
 ;; suppress initial message
-(setq inhibit-startup-echo-area-message "tomrss")
+(setq inhibit-startup-echo-area-message "user")
 ;; start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; silent native compilation warning
@@ -396,14 +396,16 @@
 ;;;; Org mode
 
 (straight-use-package 'visual-fill-column)
+(defun +setup-visual-fill (width)
+  "Setup visual line and column centered with WIDTH."
+  (setq visual-fill-column-width width)
+  (setq visual-fill-column-center-text t)
+  (visual-line-mode +1)
+  (visual-fill-column-mode +1))
 
 (with-eval-after-load 'org
   ;; setup visual fill
-  (add-hook 'org-mode-hook 'visual-line-mode)
-  (setq visual-fill-column-width 100)
-  (setq visual-fill-column-center-text t)
-  (add-hook 'org-mode-hook 'visual-fill-column-mode)
-
+  (add-hook 'org-mode-hook (lambda () (+setup-visual-fill 100)))
   ;; org babel languages
   (require 'org-tempo)
   (org-babel-do-load-languages
@@ -1102,3 +1104,142 @@ version will be prompted."
 (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
 
 ;;; init.el ends here
+
+(defvar welcome-buffer-name "*Welcome*")
+
+(defvar welcome-window-width 50)
+
+(defvar welcome-menu-entries
+  '(("Recent files"
+     :key "f"
+     :action consult-recent-file
+     :icon "history")
+    ("Projects"
+     :key "p"
+     :action project-switch-project
+     :icon "code")
+    ("Edit Emacs configuration"
+     :key "c"
+     :action welcome--edit-emacs-config
+     :icon "gear")
+    ("Open Eshell"
+     :key "e"
+     :action eshell
+     :icon "terminal")))
+
+(defvar welcome-menu-entry-width 50)
+
+(defface welcome-menu-title '((t (:inherit font-lock-keyword-face)))
+  "Face used for the title of menu widgets on the dashboard")
+
+(defun welcome--pad-for-centering (width)
+  (make-string
+   (floor (/ (- welcome-window-width width) 2)) ?\ ))
+
+(defun welcome--insert-centered-line (str)
+  (insert (welcome--pad-for-centering (length str)))
+  (insert str)
+  (insert "\n"))
+
+(defun welcome--insert-image (image)
+  "Insert IMAGE."
+  (unless (file-exists-p image)
+    (error "Image file %s does not exist" image))
+  (let* ((spec
+          (apply 'create-image image nil nil
+                 (when (and (fboundp 'image-transforms-p)
+                            (memq 'scale (funcall 'image-transforms-p)))
+                   '())))
+         (size (when (fboundp 'image-size) (image-size spec)))
+         (width (car size)))
+    (goto-char (point-min))
+    (insert "\n")
+    (insert (welcome--pad-for-centering width))
+    (insert-image spec)
+    (insert "\n\n")))
+
+(defun welcome--init-info ()
+  (let ((package-count (hash-table-count straight--profile-cache))
+        (time (emacs-init-time)))
+    (format "%d packages loaded in %s" package-count time)))
+
+(defun welcome--edit-emacs-config ()
+  (interactive)
+  (find-file (expand-file-name "init.el" user-emacs-directory)))
+
+(defun welcome-open-menu-item (&optional point)
+  (interactive)
+  (save-excursion
+    (when point
+      (goto-char point))
+    (let* ((beg (line-beginning-position))
+           (end (line-end-position))
+           (line (buffer-substring-no-properties beg end)))
+      (when-let ((matched-item (car (-filter
+                                     (lambda (menu-item)
+                                       (message "menu %s against line %s" (car menu-item) line)
+                                       (string-match (car menu-item) line))
+                                     welcome-menu-entries))))
+        (message "matched")
+        (funcall (plist-get (cdr matched-item) :action))))))
+
+(defvar welcome-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "j") #'next-line)
+    (define-key map (kbd "k") #'previous-line)
+    (define-key map (kbd "RET") #'welcome-open-menu-item)
+    map)
+  "Keymap used in welcome screen.")
+
+(define-derived-mode welcome-mode special-mode "Welcome"
+  "Simple mode for welcome screen.")
+
+(evil-set-initial-state 'welcome-mode 'emacs)
+(add-hook 'welcome-mode-hook (lambda () (display-line-numbers-mode -1)))
+(add-hook 'welcome-mode-hook (lambda () (+setup-visual-fill welcome-window-width)))
+
+(defun welcome-register-menu-entry (menu-entry-spec)
+  (let* ((title (car menu-entry-spec))
+         (entry-plist (cdr menu-entry-spec))
+         (key (plist-get entry-plist :key))
+         (action (plist-get entry-plist :action))
+         (icon (plist-get entry-plist :icon))
+         (all-the-icons-scale-factor 1.45)
+         (all-the-icons-default-adjust -0.02))
+    ;; TODO why this doesn't work here?
+    ;; (evil-define-key 'normal welcome-mode-map (kbd key) action)
+    (define-key welcome-mode-map (kbd key) action)
+    (insert (welcome--pad-for-centering welcome-window-width))
+    (when icon
+      (insert (all-the-icons-octicon icon :face 'welcome-menu-title))
+      (insert "  "))
+    (insert (propertize (format "(%s)  " key) 'face 'font-lock-comment-face))
+    ;; TODO do it properly with align-regexp (but seems broken with icons)
+    (insert (make-string (max 0 (- 5 (length key))) ?\ ))
+    (insert (propertize title 'face 'welcome-menu-title))
+    (insert "\n")))
+
+(defun welcome-setup-menu ()
+  (welcome--insert-centered-line (make-string welcome-menu-entry-width ?\u2500))
+  (insert "\n")
+  (dolist (menu-entry welcome-menu-entries)
+    (welcome-register-menu-entry menu-entry)))
+
+(with-current-buffer (get-buffer-create welcome-buffer-name)
+  (welcome--insert-image "/home/user/.emacs.d/straight/repos/emacs-dashboard/banners/emacs.png")
+  (goto-char (point-max))
+  (let ((welcome-message "Welcome to GNU Emacs.")
+        (init-info (welcome--init-info)))
+    (welcome--insert-centered-line welcome-message)
+    (insert "\n")
+    (welcome--insert-centered-line (propertize init-info 'face 'font-lock-comment-face)))
+  (insert "\n\n")
+  (welcome-setup-menu)
+  (welcome-mode))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (switch-to-buffer welcome-buffer-name)))
+
+;; (straight-use-package 'dashboard)
+;; (dashboard-setup-startup-hook)
