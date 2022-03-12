@@ -17,11 +17,11 @@
 (defconst emacs-start-time (current-time))
 
 (add-hook 'after-init-hook
-	  `(lambda ()
-	     (let ((elapsed
-		    (float-time
-		     (time-subtract (current-time) emacs-start-time))))
-	       (message "Initialized in %.2fs with %d garbage collections" elapsed gcs-done))) t)
+		  `(lambda ()
+			 (let ((elapsed
+					(float-time
+					 (time-subtract (current-time) emacs-start-time))))
+			   (message "Initialized in %.2fs with %d garbage collections" elapsed gcs-done))) t)
 
 ;; disable really ugly stuff
 (menu-bar-mode -1)
@@ -52,9 +52,9 @@
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	 'silent 'inhibit-cookies)
+		(url-retrieve-synchronously
+		 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+		 'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
@@ -77,9 +77,9 @@
 ;; custom file to temp file (practically disable `customize')
 (setq custom-file
       (if (boundp 'server-socket-dir)
-	  (expand-file-name "custom.el" server-socket-dir)
-	(expand-file-name (format "emacs-custom-%s.el" (user-uid))
-			  temporary-file-directory)))
+		  (expand-file-name "custom.el" server-socket-dir)
+		(expand-file-name (format "emacs-custom-%s.el" (user-uid))
+						  temporary-file-directory)))
 
 ;;;; Key bindings
 
@@ -221,7 +221,7 @@
 (when (symbol-value 'window-system)
   (unless (x-list-fonts "all-the-icons")
     (if IS-WINDOWS
-	(warn "Run M-x all-the-icons-install-fonts to download the fonts, then install them manually")
+		(warn "Run M-x all-the-icons-install-fonts to download the fonts, then install them manually")
       (all-the-icons-install-fonts t)))
   (require 'all-the-icons nil nil))
 
@@ -383,19 +383,19 @@
 
   (require 'org-tempo)
   (org-babel-do-load-languages 'org-babel-load-languages
-			       '((emacs-lisp . t)
-				 (python . t)
-				 (shell . t)))
+							   '((emacs-lisp . t)
+								 (python . t)
+								 (shell . t)))
   (add-to-list 'org-structure-template-alist
-	       '("el" . "src emacs-lisp"))
+			   '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist
-	       '("sh" . "src shell"))
+			   '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist
-	       '("py" . "src python"))
+			   '("py" . "src python"))
   (add-to-list 'org-structure-template-alist
-	       '("yml" . "src yaml"))
+			   '("yml" . "src yaml"))
   (add-to-list 'org-structure-template-alist
-	       '("json" . "src json"))
+			   '("json" . "src json"))
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-edit-src-content-indentation 2)
@@ -497,13 +497,13 @@
       "Mode: "
       (delete-dups
        (mapcar
-	(lambda (buffer)
-	  (buffer-local-value 'major-mode buffer))
-	(buffer-list)))))))
+		(lambda (buffer)
+		  (buffer-local-value 'major-mode buffer))
+		(buffer-list)))))))
   (mapc (lambda (buffer)
-	  (when (eq mode (buffer-local-value 'major-mode buffer))
-	    (kill-buffer buffer)))
-	(buffer-list))
+		  (when (eq mode (buffer-local-value 'major-mode buffer))
+			(kill-buffer buffer)))
+		(buffer-list))
   (message "Killed buffers with major mode %s" mode))
 
 (defun +kill-dired-buffers ()
@@ -544,43 +544,43 @@
     "Path (pwd) that will be displayed in prompt."
     (let* ((pwd (eshell/pwd)))
       (if (equal pwd "~")
-	  pwd
-	;; (abbreviate-file-name (shrink-path-file-pwd)))))
-	(abbreviate-file-name pwd))))
+		  pwd
+		;; (abbreviate-file-name (shrink-path-file-pwd)))))
+		(abbreviate-file-name pwd))))
 
   (defun +eshell-prompt ()
     "The eshell prompt."
     (let ((current-branch (when (fboundp 'magit-get-current-branch)
-			    (magit-get-current-branch))))
+							(magit-get-current-branch))))
       (concat
        (if (bobp) "" "\n")
        (propertize user-login-name 'face `(:foreground "#62aeed"))
        (propertize " • " 'face `(:foreground "white"))
        (propertize (+prompt-path) 'face `(:foreground "#82cfd3"))
        (when current-branch
-	 (concat
-	  (propertize " • " 'face `(:foreground "white"))
-	  (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
+		 (concat
+		  (propertize " • " 'face `(:foreground "white"))
+		  (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
        (propertize " • " 'face `(:foreground "white"))
        (propertize (format-time-string "%H:%M:%S") 'face `(:foreground "#5a5b7f"))
        (let ((user-prompt
-	      (if (= (user-uid) 0) "\n#" "\nλ")))
-	 (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
+			  (if (= (user-uid) 0) "\n#" "\nλ")))
+		 (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
        " ")))
 
   (setq eshell-prompt-function #'+eshell-prompt
-	eshell-prompt-regexp "^.*λ "
-	eshell-highlight-prompt t))
+		eshell-prompt-regexp "^.*λ "
+		eshell-highlight-prompt t))
 
 ;;;;;; eshell banner
 
 (with-eval-after-load 'em-banner
   (setq eshell-banner-message
-	'(format "%s %s\n\n"
-		 (propertize (format " %s " (string-trim (buffer-name)))
-			     'face 'mode-line-highlight)
-		 (propertize (current-time-string)
-			     'face 'font-lock-keyword-face))))
+		'(format "%s %s\n\n"
+				 (propertize (format " %s " (string-trim (buffer-name)))
+							 'face 'mode-line-highlight)
+				 (propertize (current-time-string)
+							 'face 'font-lock-keyword-face))))
 
 ;;;;;; eshell keybindings and aliases
 
@@ -593,17 +593,17 @@
   (dolist
       (alias
        '(("q"     "exit")
-	 ("f"     "find-file $1")
-	 ("ff"    "find-file $1")
-	 ("d"     "dired $1")
-	 ("pd"    "proced $1")
-	 ("rg"    "rg --color=always $*")
-	 ("l"     "ls -lh $*")
-	 ("ll"    "ls -lah $*")
-	 ("git"   "git --no-pager $*")
-	 ("gg"    "magit-status")
-	 ("clear" "clear-scrollback")
-	 ("u"     "eshell-up $1")))	; see section below for `eshell-up' command and package
+		 ("f"     "find-file $1")
+		 ("ff"    "find-file $1")
+		 ("d"     "dired $1")
+		 ("pd"    "proced $1")
+		 ("rg"    "rg --color=always $*")
+		 ("l"     "ls -lh $*")
+		 ("ll"    "ls -lah $*")
+		 ("git"   "git --no-pager $*")
+		 ("gg"    "magit-status")
+		 ("clear" "clear-scrollback")
+		 ("u"     "eshell-up $1")))	; see section below for `eshell-up' command and package
     (add-to-list 'eshell-command-aliases-list alias))
   (eshell-write-aliases-list))
 
@@ -616,8 +616,8 @@
 
   (push 'xterm-color-filter eshell-preoutput-filter-functions)
   (add-hook 'eshell-before-prompt-hook
-	    (lambda ()
-	      (setq xterm-color-preserve-properties t)))
+			(lambda ()
+			  (setq xterm-color-preserve-properties t)))
 
   (setq eshell-term-name "xterm-256color")
 
@@ -625,19 +625,19 @@
   ;; in eshell but not during other times when we might be launching
   ;; a shell command to gather its output (from daviwil conf)
   (add-hook 'eshell-pre-command-hook
-	    (lambda () (setenv "TERM" "xterm-256color")))
+			(lambda () (setenv "TERM" "xterm-256color")))
   (add-hook 'eshell-post-command-hook
-	    (lambda () (setenv "TERM" "dumb"))))
+			(lambda () (setenv "TERM" "dumb"))))
 
 ;;;;;; eshell history
 
 (with-eval-after-load 'em-hist
   (add-hook 'eshell-pre-command-hook #'eshell-save-some-history)
   (setq eshell-history-size 10000
-	eshell-history-ignoredups t
-	eshell-input-filter #'eshell-input-filter-initial-space
-	;; don't record command in history if prefixed with whitespace
-	eshell-input-filter #'eshell-input-filter-initial-space)
+		eshell-history-ignoredups t
+		eshell-input-filter #'eshell-input-filter-initial-space
+		;; don't record command in history if prefixed with whitespace
+		eshell-input-filter #'eshell-input-filter-initial-space)
   (eshell-hist-initialize))
 
 ;;;;;; eshell visual commands
@@ -658,14 +658,14 @@
   (add-hook 'eshell-mode-hook #'smartparens-mode)
 
   (setq password-cache t
-	password-cache-expiry 3600)
+		password-cache-expiry 3600)
 
   (setq eshell-buffer-maximum-lines 10000
-	eshell-scroll-to-bottom-on-input 'all
-	eshell-scroll-to-bottom-on-output 'all
-	eshell-kill-processes-on-exit t
-	eshell-glob-case-insensitive t
-	eshell-error-if-no-glob t)
+		eshell-scroll-to-bottom-on-input 'all
+		eshell-scroll-to-bottom-on-output 'all
+		eshell-kill-processes-on-exit t
+		eshell-glob-case-insensitive t
+		eshell-error-if-no-glob t)
 
   (defun eshell-up-closest-parent-dir (file)
     "Find the closest parent directory of a file.
@@ -686,10 +686,10 @@ Argument MATCH a string that identifies the parent directory to search for."
                                       (let ((dir (file-name-nondirectory
                                                   (expand-file-name
                                                    (directory-file-name parent)))))
-					(if (string-match match dir)
+										(if (string-match match dir)
                                             dir
                                           nil)))))
-	closest-parent)))
+		closest-parent)))
 
   (defun eshell-up (&optional match)
     "Go to a specific parent directory in eshell.
@@ -874,16 +874,16 @@ to."
   (unless (file-directory-p (expand-file-name ".git" ls-install-dir))
     (when (y-or-n-p "Language server not found. Do you want to build one from source? ")
       (with-current-buffer (get-buffer-create "*custom-language-server-build*")
-	(display-buffer (current-buffer))
-	(let ((git-clone-cmd (format "git clone %s %s" url ls-install-dir)))
-	  (call-process-shell-command git-clone-cmd nil t t)
-	  ;; TODO handle error
-	  (goto-char (point-max))
-	  (insert "git clone done.\n")
-	  (let ((default-directory ls-install-dir))
-	    (display-buffer (current-buffer))
-	    (call-process-shell-command build-command nil t t))
-	  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
+		(display-buffer (current-buffer))
+		(let ((git-clone-cmd (format "git clone %s %s" url ls-install-dir)))
+		  (call-process-shell-command git-clone-cmd nil t t)
+		  ;; TODO handle error
+		  (goto-char (point-max))
+		  (insert "git clone done.\n")
+		  (let ((default-directory ls-install-dir))
+			(display-buffer (current-buffer))
+			(call-process-shell-command build-command nil t t))
+		  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
 
 ;;;;; Languages
 
@@ -899,9 +899,9 @@ to."
 (with-eval-after-load 'lsp-java
   (when (file-exists-p lombok-jar-path)
     (setq lsp-java-vmargs
-	  `("-XX:+UseStringDeduplication" ,(concat "-javaagent:" lombok-jar-path)
-	    ,(concat "-Xbootclasspath/a:" lombok-jar-path)
-	    "--add-modules=ALL-SYSTEM"))))
+		  `("-XX:+UseStringDeduplication" ,(concat "-javaagent:" lombok-jar-path)
+			,(concat "-Xbootclasspath/a:" lombok-jar-path)
+			"--add-modules=ALL-SYSTEM"))))
 
 ;; Not sure if this is useful
 (defun +setup-java ()
@@ -932,11 +932,11 @@ to."
     "Groovy language server installation folder")
   ;; TODO check if default server exists before installing custom
   (+build-lsp-server-from-git "https://github.com/GroovyLanguageServer/groovy-language-server.git"
-			      groovy-ls-install-dir
-			      "./gradlew build")
+							  groovy-ls-install-dir
+							  "./gradlew build")
   ;; TODO handle execution status
   (setq lsp-groovy-server-file
-	(expand-file-name "build/libs/groovy-language-server-all.jar" groovy-ls-install-dir)))
+		(expand-file-name "build/libs/groovy-language-server-all.jar" groovy-ls-install-dir)))
 
 (add-hook 'groovy-mode-hook #'+lsp-really-deferred)
 
@@ -986,10 +986,10 @@ version will be prompted."
   (when (file-exists-p (expand-file-name "package.json" (project-root (project-current))))
     (let ((nvmrc (expand-file-name ".nvmrc" (project-root (project-current)))))
       (if (file-exists-p nvmrc)
-	  (let ((version (s-trim (f-read nvmrc))))
-	    (nvm-use version)
-	    (message "Using node version %s" version))
-	(call-interactively '+nvm-use)))))
+		  (let ((version (s-trim (f-read nvmrc))))
+			(nvm-use version)
+			(message "Using node version %s" version))
+		(call-interactively '+nvm-use)))))
 
 ;;;;;; Python
 
@@ -1006,7 +1006,7 @@ version will be prompted."
       (load "flycheck" t t)
     (message "loading flycheck for elpy")
     (setq elpy-modules
-	  (delq 'elpy-module-flymake elpy-modules))
+		  (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)))
 
 ;;;;;; Rust
@@ -1026,10 +1026,10 @@ version will be prompted."
   (add-hook 'rust-mode-hook 'flycheck-mode)
   (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
   (add-hook 'before-save-hook
-	    (lambda nil
-	      (when
-		  (eq major-mode 'rust-mode)
-		(rust-format-buffer))))
+			(lambda nil
+			  (when
+				  (eq major-mode 'rust-mode)
+				(rust-format-buffer))))
   (define-key rust-mode-map ("C-c C-t") #'racer-describe))
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
