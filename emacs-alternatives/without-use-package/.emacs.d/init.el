@@ -833,15 +833,31 @@ to."
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'scheme-mode-hook #'aggressive-indent-mode)
 
+;;;;; Code snippets
+
+(straight-use-package 'yasnippet)
+
 ;;;;; lsp and dap mode
 
 (straight-use-package 'lsp-mode)
-(setq lsp-keymap-prefix "M-RET")
+(setq lsp-keymap-prefix "M-RET")	; don't know why, if inside after load doesn't work...
 (with-eval-after-load 'lsp-mode
+  ;; TODO corfu do not work really well with lsp
+  (defun +corfu-lsp-setup ()
+    "Try to setup corfu in lsp mode."
+    (setq-local completion-styles '(orderless))
+    (setq-local completion-category-defaults nil))
+  (add-hook 'lsp-mode-hook #'+corfu-lsp-setup)
+  (add-hook 'lsp-mode-hook #'yas-minor-mode)
   (setq lsp-enable-which-key-integration t)
-  (setq lsp-headerline-breadcrumb-segments
-	'(path-up-to-project file symbols))
+  (setq lsp-completion-provider :none)
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
+
+(defun +lsp-really-deferred ()
+  "Load LSP deferred excluding consult previews."
+  (unless (+consult-preview-p)
+    (lsp-deferred)))
 
 (straight-use-package 'dap-mode)
 (with-eval-after-load 'lsp-mode
@@ -887,6 +903,7 @@ to."
 	    ,(concat "-Xbootclasspath/a:" lombok-jar-path)
 	    "--add-modules=ALL-SYSTEM"))))
 
+;; Not sure if this is useful
 (defun +setup-java ()
   "Setup java with LSP."
   (unless (+consult-preview-p)
@@ -901,6 +918,16 @@ to."
 (straight-use-package 'groovy-mode)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (with-eval-after-load 'groovy-mode
+  ;; TODO: this classpath stuff was added because groovy ls seems
+  ;;  to autocomplete only with java but not with groovy.
+  ;;  sadly this doesn't work either!
+  ;; (setq lsp-groovy-classpath
+  ;; 	(vconcat
+  ;; 	 (split-string
+  ;; 	  (with-temp-buffer
+  ;; 	    (call-process-shell-command "find /usr -wholename '*/groovy/lib/*.jar'" nil t nil)
+  ;; 	    (buffer-string)))))
+  ;; TODO move server installation in lsp-groovy source
   (defvar groovy-ls-install-dir "~/.emacs.d/.cache/lsp/groovy-language-server/"
     "Groovy language server installation folder")
   ;; TODO check if default server exists before installing custom
@@ -911,26 +938,12 @@ to."
   (setq lsp-groovy-server-file
 	(expand-file-name "build/libs/groovy-language-server-all.jar" groovy-ls-install-dir)))
 
-(defun +setup-groovy ()
-  "Setup groovy with LSP"
-  (unless (+consult-preview-p)
-    ;; TODO: this classpath stuff was added because groovy ls seems
-    ;;  to autocomplete only with java but not with groovy.
-    ;;  sadly this doesn't work either!
-    (setq lsp-groovy-classpath
-	  (vconcat
-	   (split-string
-	    (with-temp-buffer
-	      (call-process-shell-command "find /usr -wholename '*/groovy/lib/*.jar'" nil t nil)
-	      (buffer-string)))))
-    (lsp)))
-
-(add-hook 'groovy-mode-hook #'+setup-groovy)
+(add-hook 'groovy-mode-hook #'+lsp-really-deferred)
 
 ;;;;;; Clojure
 
 (straight-use-package 'clojure-mode)
-(add-hook 'clojure-mode-hook #'lsp-deferred)
+(add-hook 'clojure-mode-hook #'+lsp-really-deferred)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
 
 (straight-use-package 'cider)
@@ -942,9 +955,8 @@ to."
   (require 'dap-node)
   (dap-node-setup)
   (setq typescript-indent-level 2))
-(add-hook 'typescript-mode-hook #'lsp-deferred)
-(add-to-list 'auto-mode-alist
-	     '("\\.ts\\'" . typescript-mode))
+(add-hook 'typescript-mode-hook #'+lsp-really-deferred)
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 
 (straight-use-package 'npm-mode)
 (with-eval-after-load 'typescript-mode
@@ -1019,15 +1031,19 @@ version will be prompted."
 		  (eq major-mode 'rust-mode)
 		(rust-format-buffer))))
   (define-key rust-mode-map ("C-c C-t") #'racer-describe))
-(add-to-list 'auto-mode-alist
-	     '("\\.rs\\'" . rust-mode))
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
 ;;;;;; C#
 
 (straight-use-package 'csharp-mode)
 (add-hook 'csharp-mode-hook 'lsp)
-(add-to-list 'auto-mode-alist
-	     '("\\.cs\\'" . csharp-mode))
+(add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
+
+;;;;;; Go
+
+(straight-use-package 'go-mode)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(add-hook 'go-mode-hook #'+lsp-really-deferred)
 
 ;;;;;; LaTeX
 
@@ -1038,35 +1054,28 @@ version will be prompted."
 ;;;;;; configuration and markup
 
 (straight-use-package 'dockerfile-mode)
-(add-to-list 'auto-mode-alist
-	     '("Dockerfile" . dockerfile-mode))
+(add-to-list 'auto-mode-alist '("Dockerfile" . dockerfile-mode))
 
 (straight-use-package 'markdown-mode)
 (unless
     (fboundp 'gfm-mode)
   (autoload #'gfm-mode "markdown-mode" nil t))
 (setq mardown-command "multimarkdown")
-(add-to-list 'auto-mode-alist
-	     '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist
-	     '("\\.mkd\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist
-	     '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mkd\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 
 (straight-use-package 'yaml-mode)
-(add-to-list 'auto-mode-alist
-	     '("\\.ya?ml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
 
 (straight-use-package 'toml-mode)
-(add-to-list 'auto-mode-alist
-	     '("\\.toml\\'" . toml-mode))
+(add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
 
 (straight-use-package 'csv-mode)
-(add-to-list 'auto-mode-alist
-	     '("\\.csv\\'" . csv-mode))
+(add-to-list 'auto-mode-alist '("\\.csv\\'" . csv-mode))
 
 (straight-use-package 'terraform-mode)
-(add-to-list 'auto-mode-alist
-	     '("\\.tf\\'" . terraform-mode))
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
+(add-hook 'terraform-mode-hook #'+lsp-really-deferred)
 
 ;;; init.el ends here
