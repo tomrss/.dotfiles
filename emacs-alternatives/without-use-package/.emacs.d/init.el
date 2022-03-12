@@ -728,7 +728,11 @@ to."
   (autoload #'magit-get-current-branch "magit" nil t))
 (with-eval-after-load 'magit
   (setq magit-no-message
-	'("Turning on magit-auto-revert-mode...")))
+		'("Turning on magit-auto-revert-mode...")))
+
+;; integrate with project
+(define-key project-prefix-map (kbd "G") #'magit-status)
+(add-to-list 'project-switch-commands '(magit-status "Magit"))
 
 ;; integrate with treemacs
 (straight-use-package 'treemacs-magit)
