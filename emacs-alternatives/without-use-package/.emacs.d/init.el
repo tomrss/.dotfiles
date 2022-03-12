@@ -97,6 +97,11 @@
   "Define customized KEY with definition DEF."
   (define-key customized-keys-minor-mode-map key def))
 
+;;;; Pull libs
+
+;; TODO not sure about this
+(straight-use-package 'dash)
+
 ;;;; Completion framework
 
 ;;;;; Getting help and docs
@@ -449,10 +454,11 @@
 ;; define and manage popup buffers
 (straight-use-package 'popper)
 (setq popper-reference-buffers
-      '("\\*Messages\\*" "Output\\*$" help-mode helpful-mode compilation-mode))
+	  (mapcar #'car
+			  (-filter (lambda (rule) (plist-get (cdr rule) :popup))
+					   shackle-rules)))
 (setq popper-mode-line
-      '(:eval
-	(propertize " P " 'face 'mode-line-emphasis)))
+      '(:eval (propertize " P " 'face 'mode-line-emphasis)))
 (setq popper-display-control nil)
 (popper-mode 1)
 (+define-key (kbd "C-è") #'popper-toggle-latest)
