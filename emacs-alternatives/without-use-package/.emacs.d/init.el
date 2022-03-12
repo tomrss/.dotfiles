@@ -12,10 +12,11 @@
 
 ;;; Code:
 
-;;;; Measure init time
+;;;; Early configuration
+
+;;; Measure init time
 
 (defconst emacs-start-time (current-time))
-
 (add-hook 'after-init-hook
 		  `(lambda ()
 			 (let ((elapsed
@@ -23,27 +24,50 @@
 					 (time-subtract (current-time) emacs-start-time))))
 			   (message "Initialized in %.2fs with %d garbage collections" elapsed gcs-done))) t)
 
-;; disable really ugly stuff
+;;; Early UI tweaks
+
+;; disable unwanted ui components
 (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
-
+;; mute the bell
+(setq ring-bell-function 'ignore)
+;; remove graphical dialog box and keep it keyboard driven
+(setq use-dialog-box nil)
+;; suppress initial message
 (setq inhibit-startup-echo-area-message "tomrss")
-
+;; start fullscreen
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; silent native compilation warning
 (setq native-comp-async-report-warnings-errors 'silent)
 
-;; start fullscreen
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;;; Manage backups
 
-;; add lisp folder to load path
-(eval-when-compile
-  (add-to-list 'load-path "~/.emacs.d/lisp/"))
+;; disable lockfiles
+(setq create-lockfiles nil)
 
-;;;; packaging
+;; put backups in one folder
+(setq backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups"))))
 
-;;;;; Configure `straight.el' as package manager
+;; change some backup default
+(setq backup-by-copying t)
+(setq delete-old-versions t)
+(setq kept-new-versions 4)
+(setq kept-old-versions 2)
+(setq version-control t)
+
+;; custom file to temp file (practically disable `customize')
+(setq custom-file
+      (if (boundp 'server-socket-dir)
+		  (expand-file-name "custom.el" server-socket-dir)
+		(expand-file-name (format "emacs-custom-%s.el" (user-uid))
+						  temporary-file-directory)))
+
+;;;; Packaging
+
+;;; Configure `straight.el' as package manager
 
 ;; bootstrap `straight.el'
 (defvar bootstrap-version)
@@ -62,27 +86,9 @@
 ;; configure straight lockfile (it can be committed)
 (setq straight-profiles '((nil . "~/.emacs.d/lockfile.el")))
 
-;;;;; Keep folders clean
-
-;; disable pesky lockfiles
-(setq create-lockfiles nil)
-
-;; change some backup default
-(setq backup-by-copying t)
-(setq delete-old-versions t)
-(setq kept-new-versions 4)
-(setq kept-old-versions 2)
-(setq version-control t)
-
-;; custom file to temp file (practically disable `customize')
-(setq custom-file
-      (if (boundp 'server-socket-dir)
-		  (expand-file-name "custom.el" server-socket-dir)
-		(expand-file-name (format "emacs-custom-%s.el" (user-uid))
-						  temporary-file-directory)))
-
 ;;;; Key bindings
 
+;; define one centralized minor mode holding custom keys
 (defvar customized-keys-minor-mode-map (make-sparse-keymap)
   "Keymap for the customized-keys-minor-mode.")
 
@@ -97,14 +103,14 @@
   "Define customized KEY with definition DEF."
   (define-key customized-keys-minor-mode-map key def))
 
-;;;; Pull libs
+;;;; Libraries
 
-;; TODO not sure about this
 (straight-use-package 'dash)
+(require 'dash)
 
 ;;;; Completion framework
 
-;;;;; Getting help and docs
+;;; Getting help and docs
 
 ;; improve self documentation
 (straight-use-package 'helpful)
@@ -116,35 +122,30 @@
 (+define-key (kbd "C-h o") #'helpful-symbol)
 (+define-key (kbd "C-h p") #'helpful-at-point)
 
-;;;;; Key help
+;; hint keybindings
 (straight-use-package 'which-key)
 (which-key-mode +1)
 (with-eval-after-load 'which-key-mode
   (setq which-key-idle-delay 0.5))
 
-;;;;; Minibuffer completions
+;; help and docs in minibuffer
+(straight-use-package 'marginalia)
+(marginalia-mode +1)
 
-;; completion UI
-(straight-use-package 'vertico)
-(vertico-mode 1)
-(define-key vertico-map (kbd "C-j") #'vertico-next)
-(define-key vertico-map (kbd "C-k") #'vertico-previous)
+;;; Completion styles and functions
 
-;; builtin `savehist-mode' allows to persist orderless selections
-(setq history-length 20)
-(savehist-mode +1)
-
+;; completion style (how completion candidates are narrowed)
 (straight-use-package 'orderless)
 (setq orderless-matching-styles
       '(orderless-literal orderless-initialism orderless-regexp))
 (setq orderless-component-separator "[ +]+")
 (setq completion-styles '(orderless))
 
-;; get help and docs in minibuffer
-(straight-use-package 'marginalia)
-(marginalia-mode 1)
+;; persist selections with builtin savehist mode
+(setq history-length 20)
+(savehist-mode +1)
 
-;; add useful functions with consult
+;; completing read functions
 (straight-use-package 'consult)
 (with-eval-after-load 'consult
   (setq consult-narrow-key "<"))
@@ -177,6 +178,14 @@
                   'consult--preview-function
                   (window-buffer win))))))
 
+;;; Minibuffer completions
+
+;; completion UI
+(straight-use-package 'vertico)
+(vertico-mode +1)
+(define-key vertico-map (kbd "C-j") #'vertico-next)
+(define-key vertico-map (kbd "C-k") #'vertico-previous)
+
 ;; enable acting on minibuffer candidates (and much more)
 (straight-use-package 'embark)
 (setq prefix-help-command #'embark-prefix-help-command)
@@ -187,8 +196,9 @@
 (straight-use-package 'embark-consult)
 (add-hook 'embark-collect-mode-hook #'embark-consult-preview-minor-mode)
 
-;;;;;  Autocomplete in-buffer
+;;; Completions in region
 
+;; completion UI
 (straight-use-package 'corfu)
 (setq corfu-auto t)
 (setq corfu-auto-delay 0.1)
@@ -200,138 +210,15 @@
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
 
-;; TODO whats this, why is it here
 (setq tab-always-indent 'complete)
 
-;;;; User interface
-
-;; recognize system
-(defconst IS-GNU     (eq system-type 'gnu/linux))
-(defconst IS-MAC     (eq system-type 'darwin))
-(defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
-
-;; disable the really annoying bell
-(setq ring-bell-function 'ignore)
-
-;;;;; Fonts
-
-(when (symbol-value 'window-system)
-  (when (x-list-fonts "JetBrains Mono")
-    (set-face-attribute 'default     nil :font "JetBrains Mono" :height 110 :weight 'regular)
-    (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 110 :weight 'regular))
-  (when (x-list-fonts "Cantarell")
-    (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'regular)))
-
-(straight-use-package 'all-the-icons)
-(when (symbol-value 'window-system)
-  (unless (x-list-fonts "all-the-icons")
-    (if IS-WINDOWS
-		(warn "Run M-x all-the-icons-install-fonts to download the fonts, then install them manually")
-      (all-the-icons-install-fonts t)))
-  (require 'all-the-icons nil nil))
-
-;;;;; Theme
-
-(if (symbol-value 'window-system)
-    (progn
-      (straight-use-package 'doom-themes)
-      (load-theme 'doom-nord t)
-      (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
-      (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
-  (load-theme 'misterioso))
-
-;;;;; Modeline
-
-;; minions is a package that hides minor modes and provides a menu for managing them
-(straight-use-package 'minions)
-(minions-mode 1)
-
-(when (symbol-value 'window-system)
-  (straight-use-package 'doom-modeline)
-  (doom-modeline-mode 1))
-
-;; some modes do not need modeline
-(straight-use-package 'hide-mode-line)
-(add-hook 'help-mode-hook #'hide-mode-line-mode)
-(add-hook 'helpful-mode-hook #'hide-mode-line-mode)
-(add-hook 'vterm-mode-hook #'hide-mode-line-mode)
-(add-hook 'treemacs-mode-hook #'hide-mode-line-mode)
-
-;;;;; Line and column numbers
-
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
-(add-hook 'conf-mode-hook 'display-line-numbers-mode)
-(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
-
-(column-number-mode)
-
-;;;;; Smooth scrolling
-
-(setq scroll-margin 1)
-(setq scroll-step 1)
-(setq scroll-conservatively 10000)
-(setq scroll-preserve-screen-position 1)
-
-;; highlight current line
-(straight-use-package 'hl-line)
-(setq hl-line-sticky-flag nil)
-(add-hook 'dired-mode-hook #'hl-line-mode)
-(add-hook 'prog-mode-hook #'hl-line-mode)
-(add-hook 'special-mode-hook #'hl-line-mode)
-
-(setq use-dialog-box nil)
-
-;;;; Projects and file management
-
-;;;;; File managing with `dired'
-
-;; base `dired' tweaks
-(with-eval-after-load 'dired
-  (setq dired-auto-revert-buffer t)
-  (setq dired-dwim-target t)
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'top)
-  (setq dired-create-destination-dirs 'ask)
-  (setq dired-listing-switches "-agho --group-directories-first")
-  (when IS-MAC
-    (setq dired-use-ls-dired nil))
-  (setq delete-by-moving-to-trash t))
-(+define-key (kbd "C-x j") #'dired-jump)
-
-;; use icons in dired
-(when (symbol-value 'window-system)
-  (straight-use-package 'all-the-icons-dired)
-  (with-eval-after-load 'dired
-    (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
-
-;; minor mode for hiding dotfiles
-(straight-use-package 'dired-hide-dotfiles)
-;; TODO map key
-
-;; colorize dired
-(straight-use-package 'diredfl)
-(with-eval-after-load 'dired
-  (add-hook 'dired-mode-hook #'diredfl-mode))
-
-(straight-use-package 'treemacs)
-(with-eval-after-load 'treemacs
-  (treemacs-resize-icons 16)
-  (add-hook 'treemacs-mode-hook #'hide-mode-line-mode))
-
-;;;;; Process management
-
-(with-eval-after-load 'proced
-  (setq proced-auto-update-interval 5)
-  (proced-toggle-auto-update 1))
-
-;;;; Editing features
+;;;; Editing
 
 ;; navigable undo/redo tree
 (straight-use-package 'undo-tree)
-(global-undo-tree-mode 1)
+(global-undo-tree-mode +1)
 
-;;;;; Vim emulation
+;;; Vim emulation
 
 ;; base evil configuration
 (straight-use-package 'evil)
@@ -356,51 +243,183 @@
 
 (add-hook 'with-editor-mode-hook 'evil-insert-state)
 
+;;; Editing defaults
+
+;; ask y or n instead of yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
-
+;; recent files
 (recentf-mode +1)
-
+;; reopen file at same point
 (save-place-mode +1)
-
-;; auto revert non file buffers
+;; keep all buffers updated if external program change content
 (setq global-auto-revert-non-file-buffers t)
-
-;; auto revert file buffers (when file changes)
-(global-auto-revert-mode 1)
-
+(global-auto-revert-mode +1)
+;; share system clipboard
 (setq save-interprogram-paste-before-kill t)
 
-;;;;; Text selection and navigation commands
+;;; Text selection and navigation
 
 ;; increases the selected region by semantic units
 (straight-use-package 'expand-region)
 (+define-key (kbd "C-ò") #'er/expand-region)
 
-;;;; Configure Org mode
+;;;; User interface
+
+;; recognize system
+(defconst IS-GNU     (eq system-type 'gnu/linux))
+(defconst IS-MAC     (eq system-type 'darwin))
+(defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
+
+;;; Fonts and icons
+
+(when (symbol-value 'window-system)
+  (when (x-list-fonts "JetBrains Mono")
+    (set-face-attribute 'default     nil :font "JetBrains Mono" :height 110 :weight 'regular)
+    (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 110 :weight 'regular))
+  (when (x-list-fonts "Cantarell")
+    (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'regular)))
+
+(straight-use-package 'all-the-icons)
+(when (symbol-value 'window-system)
+  (unless (x-list-fonts "all-the-icons")
+    (if IS-WINDOWS
+		(warn "Run M-x all-the-icons-install-fonts to download the fonts, then install them manually")
+      (all-the-icons-install-fonts t)))
+  (require 'all-the-icons nil nil))
+
+;;; Theme
+
+(if (symbol-value 'window-system)
+    (progn
+	  ;; use doom themes
+      (straight-use-package 'doom-themes)
+      (load-theme 'doom-nord t)
+      (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
+      (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
+  ;; use builtin theme
+  (load-theme 'misterioso))
+
+;;; Modeline
+
+;; put all minor modes in one place
+(straight-use-package 'minions)
+(minions-mode +1)
+
+(when (symbol-value 'window-system)
+  (straight-use-package 'doom-modeline)
+  (doom-modeline-mode +1))
+
+;;; Line and column numbers
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
+(add-hook 'conf-mode-hook 'display-line-numbers-mode)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+
+(column-number-mode +1)
+
+;;; Smooth scrolling
+
+(setq scroll-margin 1)
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+(setq scroll-preserve-screen-position 1)
+
+;;; Highlight current line
+(straight-use-package 'hl-line)
+(setq hl-line-sticky-flag nil)
+(add-hook 'dired-mode-hook #'hl-line-mode)
+(add-hook 'prog-mode-hook #'hl-line-mode)
+(add-hook 'special-mode-hook #'hl-line-mode)
+
+;;; File management
+
+;; configure Dired
+(with-eval-after-load 'dired
+  ;; dired defualts
+  (setq dired-auto-revert-buffer t)
+  (setq dired-dwim-target t)
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'top)
+  (setq dired-create-destination-dirs 'ask)
+  (setq dired-listing-switches "-agho --group-directories-first")
+  (when IS-MAC
+    (setq dired-use-ls-dired nil))
+  (setq delete-by-moving-to-trash t)
+
+  ;; hide/show dotfiles in Dired (taken from 'dired-hide-dotfiles' package)
+  (defun dired-hide-dotfiles--hide ()
+	"Hide all dot-files in the current `dired' buffer."
+	(let ((inhibit-message t))
+      (dired-mark-files-regexp "^\\."))
+	(dired-do-kill-lines nil "Hidden %d dotfile%s."))
+
+  (define-minor-mode dired-hide-dotfiles-mode
+	"Toggle `dired-hide-dotfiles-mode'"
+	:init-value nil
+	:lighter " !."
+	:group 'dired
+	(if dired-hide-dotfiles-mode
+		(progn
+          (add-hook 'dired-after-readin-hook 'dired-hide-dotfiles--hide)
+          (dired-hide-dotfiles--hide))
+      (remove-hook 'dired-after-readin-hook 'dired-hide-dotfiles--hide)
+      (revert-buffer)))
+
+  (evil-define-key 'normal dired-mode-map (kbd "g h") #'dired-hide-dotfiles-mode))
+
+(+define-key (kbd "C-x j") #'dired-jump)
+
+;; use icons in dired
+(when (symbol-value 'window-system)
+  (straight-use-package 'all-the-icons-dired)
+  (with-eval-after-load 'dired
+    (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
+
+;; colorize dired
+(straight-use-package 'diredfl)
+(with-eval-after-load 'dired
+  (add-hook 'dired-mode-hook #'diredfl-mode))
+
+;;; Project tree view
+
+(straight-use-package 'treemacs)
+(with-eval-after-load 'treemacs
+  (treemacs-resize-icons 16))
+
+;;; Process management
+
+(with-eval-after-load 'proced
+  (setq proced-auto-update-interval 5)
+  (proced-toggle-auto-update 1))
+
+;;;; Org mode
 
 (straight-use-package 'visual-fill-column)
 
 (with-eval-after-load 'org
+  ;; setup visual fill
   (add-hook 'org-mode-hook 'visual-line-mode)
   (setq visual-fill-column-width 100)
   (setq visual-fill-column-center-text t)
   (add-hook 'org-mode-hook 'visual-fill-column-mode)
 
+  ;; org babel languages
   (require 'org-tempo)
-  (org-babel-do-load-languages 'org-babel-load-languages
-							   '((emacs-lisp . t)
-								 (python . t)
-								 (shell . t)))
-  (add-to-list 'org-structure-template-alist
-			   '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist
-			   '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist
-			   '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist
-			   '("yml" . "src yaml"))
-  (add-to-list 'org-structure-template-alist
-			   '("json" . "src json"))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+	 (python . t)
+	 (shell . t)))
+
+  ;; templates for adding code snippets
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("yml" . "src yaml"))
+  (add-to-list 'org-structure-template-alist '("json" . "src json"))
+
+  ;; some defaults
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-edit-src-content-indentation 2)
@@ -412,16 +431,18 @@
   (setq org-cycle-separator-lines 2)
   (setq org-return-follows-link t)
   (setq org-startup-truncated nil)
-  (setq org-startup-with-inline-images t))
+  (setq org-startup-with-inline-images t)
 
-;;;;; Auto tangle on save
+  ;; auto tangle on save
+  (defun +org-auto-tangle ()
+	"Set hook for auto tangling org files on save."
+	(let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle)))
 
-(defun +org-auto-tangle ()
-  "Set hook for auto tangling org files on save."
-  (let ((org-confirm-babel-evaluate nil))
-    (org-babel-tangle)))
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'+org-auto-tangle 0 t)))
+;;; Org Roam
+;; TODO work in progress
 
 (straight-use-package 'org-roam)
 (setq org-roam-v2-ack t)
@@ -435,37 +456,14 @@
 
 ;;;; Windows and buffer management
 
+;;; Stateful window layout
+
 (winner-mode +1)
 (+define-key (kbd "C-c w") 'winner-undo)
 (+define-key (kbd "C-c W") 'winner-redo)
 
-;; define window placement rules
-(straight-use-package 'shackle)
-(shackle-mode 1)
-(setq shackle-rules
-      '((compilation-mode :noselect t)
-		(help-mode :popup t :select t :align bottom :size 0.33)
-		(helpful-mode :popup t :select t :align bottom :size 0.33)
-		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
-		("\\*Warnings\\*" :regexp t :noselect t))
-      shackle-default-rule
-      '(:noselect t))
+;;; Window selection and navigation
 
-;; define and manage popup buffers
-(straight-use-package 'popper)
-(setq popper-reference-buffers
-	  (mapcar #'car
-			  (-filter (lambda (rule) (plist-get (cdr rule) :popup))
-					   shackle-rules)))
-(setq popper-mode-line
-      '(:eval (propertize " P " 'face 'mode-line-emphasis)))
-(setq popper-display-control nil)
-(popper-mode 1)
-(+define-key (kbd "C-è") #'popper-toggle-latest)
-(+define-key (kbd "M-è") #'popper-cycle)
-(+define-key (kbd "C-M-è") #'popper-toggle-type)
-
-;; window commands 
 (+define-key (kbd "M-o") #'other-window)
 
 (+define-key (kbd "M-h") #'windmove-left)
@@ -484,7 +482,36 @@
 (+define-key (kbd "C-M-S-k") #'windmove-swap-states-up)
 (+define-key (kbd "C-M-S-l") #'windmove-swap-states-right)
 
-;;;;; buffer helpers
+;;; Window placement and popups
+
+;; define window placement rules 
+(straight-use-package 'shackle)
+(shackle-mode +1)
+(setq shackle-rules
+      '((compilation-mode :noselect t)
+		(help-mode :popup t :select t :align bottom :size 0.33)
+		(helpful-mode :popup t :select t :align bottom :size 0.33)
+		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
+		("\\*Warnings\\*" :regexp t :noselect t))
+      shackle-default-rule
+      '(:noselect t))
+
+;; define and manage popup buffers
+(straight-use-package 'popper)
+(setq popper-reference-buffers
+	  (mapcar #'car
+			  (-filter (lambda (rule) (plist-get (cdr rule) :popup))
+					   shackle-rules)))
+(setq popper-mode-line
+      '(:eval (propertize " P " 'face 'mode-line-emphasis)))
+(setq popper-display-control nil)
+(popper-mode +1)
+(+define-key (kbd "C-è") #'popper-toggle-latest)
+(+define-key (kbd "M-è") #'popper-cycle)
+(+define-key (kbd "C-M-è") #'popper-toggle-type)
+
+
+;;; Buffer helpers
 
 ;; use `ibuffer' instead of buffer list
 (+define-key (kbd "C-x C-b") 'ibuffer)
@@ -525,13 +552,14 @@
 
 ;;;; Terminals
 
-;;;;; term
+;;; term
 
+;; colorize term
 (straight-use-package 'eterm-256color)
 (with-eval-after-load 'term
   (add-hook 'term-mode-hook #'eterm-256color-mode))
 
-;;;;; vterm
+;;; vterm
 
 (straight-use-package 'vterm)
 (with-eval-after-load 'vterm
@@ -539,10 +567,9 @@
   (setq vterm-max-scrollback 10000)
   (setq vterm-kill-buffer-on-exit t))
 
-;;;;; eshell
+;;; eshell
 
-;;;;;; eshell prompt
-
+;; eshell prompt
 (with-eval-after-load 'em-prompt
   (defun +prompt-path ()
     "Path (pwd) that will be displayed in prompt."
@@ -576,8 +603,7 @@
 		eshell-prompt-regexp "^.*λ "
 		eshell-highlight-prompt t))
 
-;;;;;; eshell banner
-
+;; eshell banner
 (with-eval-after-load 'em-banner
   (setq eshell-banner-message
 		'(format "%s %s\n\n"
@@ -586,8 +612,7 @@
 				 (propertize (current-time-string)
 							 'face 'font-lock-keyword-face))))
 
-;;;;;; eshell keybindings and aliases
-
+;; eshell keys and aliases
 (with-eval-after-load 'em-alias
   (evil-collection-eshell-setup)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-R") #'consult-history)
@@ -611,10 +636,8 @@
     (add-to-list 'eshell-command-aliases-list alias))
   (eshell-write-aliases-list))
 
-;;;;;; eshell colors
-
+;; eshell colors
 (straight-use-package 'xterm-color)
-
 (with-eval-after-load 'eshell 		; don't know if there is a specific module
   (delq 'eshell-handle-ansi-color eshell-output-filter-functions)
 
@@ -633,8 +656,7 @@
   (add-hook 'eshell-post-command-hook
 			(lambda () (setenv "TERM" "dumb"))))
 
-;;;;;; eshell history
-
+;; eshell history
 (with-eval-after-load 'em-hist
   (add-hook 'eshell-pre-command-hook #'eshell-save-some-history)
   (setq eshell-history-size 10000
@@ -644,21 +666,19 @@
 		eshell-input-filter #'eshell-input-filter-initial-space)
   (eshell-hist-initialize))
 
-;;;;;; eshell visual commands
-
+;; eshell visual commands
 (with-eval-after-load 'em-term
   (dolist (cmd '("htop" "vim" "nvim"))
     (add-to-list 'eshell-visual-commands cmd)))
 
-;;;;;; eshell defaults and generic conf
-
+;; eshell defaults and generic conf
 (with-eval-after-load 'eshell
   (setenv "PAGER" "cat")
-  ;; Truncate buffer for performance
+  ;; truncate buffer for performance
   (add-to-list 'eshell-output-filter-functions #'eshell-truncate-buffer)
   ;; use TRAMP
   (add-to-list 'eshell-modules-list 'eshell-tramp)
-  ;; Enable autopairing in eshell
+  ;; enable autopairing in eshell
   (add-hook 'eshell-mode-hook #'smartparens-mode)
 
   (setq password-cache t
@@ -671,6 +691,7 @@
 		eshell-glob-case-insensitive t
 		eshell-error-if-no-glob t)
 
+  ;; directory navigation
   (defun eshell-up-closest-parent-dir (file)
     "Find the closest parent directory of a file.
 Argument FILE the file to find the closest parent directory for."
@@ -685,14 +706,13 @@ Argument MATCH a string that identifies the parent directory to search for."
     (let ((closest-parent (eshell-up-closest-parent-dir path)))
       (if match
           (let ((case-fold-search nil))
-            (locate-dominating-file closest-parent
-                                    (lambda (parent)
-                                      (let ((dir (file-name-nondirectory
-                                                  (expand-file-name
-                                                   (directory-file-name parent)))))
-										(if (string-match match dir)
-                                            dir
-                                          nil)))))
+            (locate-dominating-file
+			 closest-parent
+             (lambda (parent)
+               (let ((dir (file-name-nondirectory (expand-file-name (directory-file-name parent)))))
+				 (if (string-match match dir)
+                     dir
+                   nil)))))
 		closest-parent)))
 
   (defun eshell-up (&optional match)
@@ -705,15 +725,16 @@ to."
       (when parent-dir
         (eshell/cd parent-dir)))))
 
-;;;;;; eshell help, highlighting, suggestions, completions
-
+;; eshell help and docs
 (straight-use-package 'esh-help)
 (with-eval-after-load 'eshell
   (setup-esh-help-eldoc))
 
+;; eshell syntax highlighting
 (straight-use-package 'eshell-syntax-highlighting)
 (add-hook 'eshell-mode-hook #'eshell-syntax-highlighting-mode)
 
+;; eshell suggestions in fish style
 (straight-use-package 'esh-autosuggest)
 (with-eval-after-load 'esh-autosuggest
   (setq esh-autosuggest-delay 0.5))
@@ -721,8 +742,9 @@ to."
 
 ;;;; Development
 
-;;;;; Version control
+;;; Version control
 
+;; magit package
 (straight-use-package 'magit)
 (unless (fboundp 'magit-get-current-branch)
   (autoload #'magit-get-current-branch "magit" nil t))
@@ -734,13 +756,15 @@ to."
 (define-key project-prefix-map (kbd "G") #'magit-status)
 (add-to-list 'project-switch-commands '(magit-status "Magit"))
 
+(+define-key (kbd "C-x g") #'magit-status) ; is the default but it's somehow deleted
+
 ;; integrate with treemacs
 (straight-use-package 'treemacs-magit)
 (with-eval-after-load 'magit
   (with-eval-after-load 'treemacs
     (require 'treemacs-magit nil nil)))
 
-;; highlight uncommitted changes (git gutters)
+;; highlight changes (git gutters)
 (straight-use-package 'diff-hl)
 (autoload #'diff-hl-magit-post-refresh "diff-hl" nil t)
 (add-hook 'dired-mode-hook #'diff-hl-dired-mode-unless-remote)
@@ -749,10 +773,10 @@ to."
 (add-hook 'prog-mode-hook #'diff-hl-mode)
 (add-hook 'prog-mode-hook #'diff-hl-margin-mode)
 
-;;;;; Configure parentheses
+;;; Configure parentheses
 
 ;; highlight mathing parentesis
-(show-paren-mode 1)
+(show-paren-mode +1)
 
 ;; auto close parentheses in prog mode
 (straight-use-package 'smartparens)
@@ -766,28 +790,24 @@ to."
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'inferior-emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 
-;;;;; Syntax checking
+;;; Syntax checking
 
-;; (progn
-;;   (add-hook 'prog-mode-hook #'flycheck-mode))
+(straight-use-package 'flycheck)
+(straight-use-package 'flycheck-inline)
+(straight-use-package 'consult-flycheck)
+(with-eval-after-load 'flycheck
+  (add-hook 'flycheck-mode-hook #'flycheck-inline-mode)
+  (with-eval-after-load 'consult
+	(define-key flycheck-command-map (kbd "!") #'consult-flycheck)))
 
-;; (progn
-;;   (straight-use-package 'flycheck-inline)
-;;   (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
+;; (add-hook 'prog-mode-hook #'flycheck-mode)
 
-;; (progn
-;;   (straight-use-package 'consult-flycheck)
-;;   (eval-after-load 'flycheck
-;;     '(eval-after-load 'consult
-;;        '(progn
-;; 	  (define-key flycheck-command-map (kbd "!") #'consult-flycheck)))))
+;;; Enhance compilation buffer
 
-;;;;; Enhance compilation buffer
-
+;; colorize compilation buffer
 (with-eval-after-load 'compilation-mode
   (require 'ansi-color))
 
-;; colorize compilation buffer
 (defun +colorize-compilation-buffer ()
   "Support ANSI colors in compilation buffer."
   (when (eq major-mode 'compilation-mode)
@@ -798,17 +818,17 @@ to."
 ;; follow output with scroll in compilation buffer
 (setq compilation-scroll-output t)
 
-;;;;; Indentation
+;;; Indentation
 
 ;; human tab with
 (add-hook 'prog-mode-hook (lambda () (setq tab-width 4)))
+;; indent with spaces
+(setq-default indent-tabs-mode nil)
 
-;; show indent guides in some modes
+;; setup for showing indent guides (configure hook in specific mode)
 (straight-use-package 'highlight-indent-guides)
 (with-eval-after-load 'highlight-indent-guides
   (setq highlight-indent-guides-method 'character))
-(add-hook 'python-mode-hook #'highlight-indent-guides-mode)
-(add-hook 'yaml-mode-hook #'highlight-indent-guides-mode)
 
 ;; aggressively indent as you type
 (straight-use-package 'aggressive-indent)
@@ -819,32 +839,37 @@ to."
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'scheme-mode-hook #'aggressive-indent-mode)
 
-;;;;; Code snippets
+;;; LSP mode
 
+;; code snippets
 (straight-use-package 'yasnippet)
 
-;;;;; lsp and dap mode
-
+;; language server protocol
 (straight-use-package 'lsp-mode)
 (setq lsp-keymap-prefix "M-RET")	; don't know why, if inside after load doesn't work...
 (with-eval-after-load 'lsp-mode
+  ;; try to fix completions
   ;; TODO corfu do not work really well with lsp
   (defun +corfu-lsp-setup ()
     "Try to setup corfu in lsp mode."
     (setq-local completion-styles '(orderless))
     (setq-local completion-category-defaults nil))
   (add-hook 'lsp-mode-hook #'+corfu-lsp-setup)
-  (add-hook 'lsp-mode-hook #'yas-minor-mode)
-  (setq lsp-enable-which-key-integration t)
   (setq lsp-completion-provider :none)
+  ;; enable snippets
+  (add-hook 'lsp-mode-hook #'yas-minor-mode)
+  ;; show path of current file
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (lsp-headerline-breadcrumb-mode)
+  ;; suggest keys
+  (setq lsp-enable-which-key-integration t))
 
 (defun +lsp-really-deferred ()
   "Load LSP deferred excluding consult previews."
   (unless (+consult-preview-p)
     (lsp-deferred)))
 
+;; debugger
 (straight-use-package 'dap-mode)
 (with-eval-after-load 'lsp-mode
   (with-eval-after-load 'dap-mode
@@ -855,10 +880,12 @@ to."
     (define-key dap-mode-map (kbd "M-<f8>") #'dap-evaluate)
     (dap-auto-configure-mode)))
 
+;; quick and dirty auto download and compile ls from source
 (defun +build-lsp-server-from-git (url ls-install-dir build-command)
   "Build LSP language server in LS-INSTALL-DIR from git source at URL with BUILD-COMMAND."
   (unless (file-directory-p (expand-file-name ".git" ls-install-dir))
     (when (y-or-n-p "Language server not found. Do you want to build one from source? ")
+      ;; todo use compilation-start
       (with-current-buffer (get-buffer-create "*custom-language-server-build*")
 		(display-buffer (current-buffer))
 		(let ((git-clone-cmd (format "git clone %s %s" url ls-install-dir)))
@@ -871,9 +898,7 @@ to."
 			(call-process-shell-command build-command nil t t))
 		  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
 
-;;;;; Languages
-
-;;;;;; Java
+;;; Java
 
 ;; TODO parse lombok version from pom
 (defvar lombok-jar-path
@@ -889,7 +914,6 @@ to."
 			,(concat "-Xbootclasspath/a:" lombok-jar-path)
 			"--add-modules=ALL-SYSTEM"))))
 
-;; Not sure if this is useful
 (defun +setup-java ()
   "Setup java with LSP."
   (unless (+consult-preview-p)
@@ -899,7 +923,7 @@ to."
 
 (add-hook 'java-mode-hook #'+setup-java)
 
-;;;;;; Groovy
+;;; Groovy
 
 (straight-use-package 'groovy-mode)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
@@ -926,7 +950,7 @@ to."
 
 (add-hook 'groovy-mode-hook #'+lsp-really-deferred)
 
-;;;;;; Clojure
+;;; Clojure
 
 (straight-use-package 'clojure-mode)
 (add-hook 'clojure-mode-hook #'+lsp-really-deferred)
@@ -934,7 +958,7 @@ to."
 
 (straight-use-package 'cider)
 
-;;;;;; Node.js
+;;; Node.js
 
 (straight-use-package 'typescript-mode)
 (with-eval-after-load 'typescript-mode
@@ -977,8 +1001,8 @@ version will be prompted."
 			(message "Using node version %s" version))
 		(call-interactively '+nvm-use)))))
 
-;;;;;; Python
-
+;;; Python
+;; TODO refactor with lsp
 (straight-use-package 'elpy)
 (advice-add 'python-mode :before 'elpy-enable)
 (setq python-shell-interpreter "python3.8" python-shell-interpreter-args "-i")
@@ -995,7 +1019,9 @@ version will be prompted."
 		  (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)))
 
-;;;;;; Rust
+(add-hook 'python-mode-hook #'highlight-indent-guides-mode)
+
+;;; Rust
 
 (straight-use-package 'rust-mode)
 (with-eval-after-load 'rust-mode
@@ -1006,7 +1032,6 @@ version will be prompted."
   (straight-use-package 'racer)
   (with-eval-after-load 'racer
     (progn
-      (add-hook 'racer-mode-hook #'company-mode)
       (add-hook 'racer-mode-hook #'eldoc-mode)))
   (add-hook 'rust-mode-hook #'racer-mode)
   (add-hook 'rust-mode-hook 'flycheck-mode)
@@ -1019,29 +1044,32 @@ version will be prompted."
   (define-key rust-mode-map ("C-c C-t") #'racer-describe))
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
-;;;;;; C#
+;;; C#
 
 (straight-use-package 'csharp-mode)
 (add-hook 'csharp-mode-hook 'lsp)
 (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
 
-;;;;;; Go
+;;; Go
 
 (straight-use-package 'go-mode)
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (add-hook 'go-mode-hook #'+lsp-really-deferred)
+(add-hook 'go-mode-hook (lambda () (setq indent-tabs-mode t)))
 
-;;;;;; LaTeX
+;;; LaTeX
 
 ;; add a preview pane of the current edited LaTeX buffer.
 (straight-use-package 'latex-preview-pane)
 (add-hook 'latex-mode-hook #'latex-preview-pane-mode)
 
-;;;;;; configuration and markup
+;;; Configuration and markup
 
+;; dockerfile
 (straight-use-package 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile" . dockerfile-mode))
 
+;; markdown
 (straight-use-package 'markdown-mode)
 (unless
     (fboundp 'gfm-mode)
@@ -1051,15 +1079,24 @@ version will be prompted."
 (add-to-list 'auto-mode-alist '("\\.mkd\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 
+;; yaml
 (straight-use-package 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
+(add-hook 'yaml-mode-hook #'highlight-indent-guides-mode)
+(add-hook 'yaml-mode-hook 
+          (lambda ()
+            (set (make-local-variable 'font-lock-variable-name-face)
+                 'font-lock-type-face)))
 
+;; toml
 (straight-use-package 'toml-mode)
 (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
 
+;; csv
 (straight-use-package 'csv-mode)
 (add-to-list 'auto-mode-alist '("\\.csv\\'" . csv-mode))
 
+;; terraform
 (straight-use-package 'terraform-mode)
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
 (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
