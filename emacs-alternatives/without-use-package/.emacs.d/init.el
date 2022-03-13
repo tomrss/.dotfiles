@@ -14,16 +14,6 @@
 
 ;;;; Early configuration
 
-;;; Measure init time
-
-(defconst emacs-start-time (current-time))
-(add-hook 'after-init-hook
-		  `(lambda ()
-			 (let ((elapsed
-					(float-time
-					 (time-subtract (current-time) emacs-start-time))))
-			   (message "Initialized in %.2fs with %d garbage collections" elapsed gcs-done))) t)
-
 ;;; Early UI tweaks
 
 ;; disable unwanted ui components
@@ -35,8 +25,6 @@
 (setq ring-bell-function 'ignore)
 ;; remove graphical dialog box and keep it keyboard driven
 (setq use-dialog-box nil)
-;; suppress initial message
-(setq inhibit-startup-echo-area-message "user")
 ;; start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; silent native compilation warning
@@ -215,8 +203,9 @@
 ;;;; Editing
 
 ;; navigable undo/redo tree
-(straight-use-package 'undo-tree)
-(global-undo-tree-mode +1)
+;; TODO disabled because at some point it started to put ~undo-tree~ junk files everywhere...
+;; (straight-use-package 'undo-tree)
+;; (global-undo-tree-mode +1)
 
 ;;; Vim emulation
 
@@ -227,7 +216,7 @@
 (setq evil-want-C-u-scroll t)
 (setq evil-want-C-i-jump nil)
 (setq evil-respect-visual-line-mode t)
-(setq evil-undo-system 'undo-tree)
+;; (setq evil-undo-system 'undo-tree)
 (evil-mode 1)
 
 ;; automatically configure evil for some common modes
@@ -393,15 +382,33 @@
   (setq proced-auto-update-interval 5)
   (proced-toggle-auto-update 1))
 
-;;;; Org mode
+;;; Visual fill mode
 
 (straight-use-package 'visual-fill-column)
+
 (defun +setup-visual-fill (width)
   "Setup visual line and column centered with WIDTH."
   (setq visual-fill-column-width width)
   (setq visual-fill-column-center-text t)
   (visual-line-mode +1)
   (visual-fill-column-mode +1))
+
+;;; Starting screen
+(defvar +custom-packages "~/sources/emacs-packages/")
+(straight-use-package
+ `(welcome
+   :local-repo ,(expand-file-name "welcome.el/" +custom-packages)
+   :files ("welcome.el" "asset")))
+
+(with-eval-after-load 'welcome
+  (evil-set-initial-state 'welcome-mode 'emacs)
+  (define-key welcome-mode-map (kbd "j") #'next-line)
+  (define-key welcome-mode-map (kbd "k") #'previous-line)
+  (add-hook 'welcome-mode-hook (lambda () (+setup-visual-fill welcome-window-width))))
+
+(add-hook 'emacs-startup-hook #'welcome-screen)
+
+;;;; Org mode
 
 (with-eval-after-load 'org
   ;; setup visual fill
@@ -511,7 +518,6 @@
 (+define-key (kbd "C-è") #'popper-toggle-latest)
 (+define-key (kbd "M-è") #'popper-cycle)
 (+define-key (kbd "C-M-è") #'popper-toggle-type)
-
 
 ;;; Buffer helpers
 
@@ -728,19 +734,22 @@ to."
         (eshell/cd parent-dir)))))
 
 ;; eshell help and docs
-(straight-use-package 'esh-help)
-(with-eval-after-load 'eshell
-  (setup-esh-help-eldoc))
+;; TODO not convinced about this one
+;; (straight-use-package 'esh-help)
+;; (with-eval-after-load 'eshell
+;;   (setup-esh-help-eldoc))
 
 ;; eshell syntax highlighting
 (straight-use-package 'eshell-syntax-highlighting)
 (add-hook 'eshell-mode-hook #'eshell-syntax-highlighting-mode)
 
 ;; eshell suggestions in fish style
-(straight-use-package 'esh-autosuggest)
-(with-eval-after-load 'esh-autosuggest
-  (setq esh-autosuggest-delay 0.5))
-(add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
+;; TODO this package requires company...
+;; TODO find another
+;; (straight-use-package 'esh-autosuggest)
+;; (with-eval-after-load 'esh-autosuggest
+;;   (setq esh-autosuggest-delay 0.5))
+;; (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
 
 ;;;; Development
 
@@ -755,6 +764,7 @@ to."
 		'("Turning on magit-auto-revert-mode...")))
 
 ;; integrate with project
+(require 'project)			; not sure if needed
 (define-key project-prefix-map (kbd "G") #'magit-status)
 (add-to-list 'project-switch-commands '(magit-status "Magit"))
 
@@ -1104,142 +1114,3 @@ version will be prompted."
 (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
 
 ;;; init.el ends here
-
-(defvar welcome-buffer-name "*Welcome*")
-
-(defvar welcome-window-width 50)
-
-(defvar welcome-menu-entries
-  '(("Recent files"
-     :key "f"
-     :action consult-recent-file
-     :icon "history")
-    ("Projects"
-     :key "p"
-     :action project-switch-project
-     :icon "code")
-    ("Edit Emacs configuration"
-     :key "c"
-     :action welcome--edit-emacs-config
-     :icon "gear")
-    ("Open Eshell"
-     :key "e"
-     :action eshell
-     :icon "terminal")))
-
-(defvar welcome-menu-entry-width 50)
-
-(defface welcome-menu-title '((t (:inherit font-lock-keyword-face)))
-  "Face used for the title of menu widgets on the dashboard")
-
-(defun welcome--pad-for-centering (width)
-  (make-string
-   (floor (/ (- welcome-window-width width) 2)) ?\ ))
-
-(defun welcome--insert-centered-line (str)
-  (insert (welcome--pad-for-centering (length str)))
-  (insert str)
-  (insert "\n"))
-
-(defun welcome--insert-image (image)
-  "Insert IMAGE."
-  (unless (file-exists-p image)
-    (error "Image file %s does not exist" image))
-  (let* ((spec
-          (apply 'create-image image nil nil
-                 (when (and (fboundp 'image-transforms-p)
-                            (memq 'scale (funcall 'image-transforms-p)))
-                   '())))
-         (size (when (fboundp 'image-size) (image-size spec)))
-         (width (car size)))
-    (goto-char (point-min))
-    (insert "\n")
-    (insert (welcome--pad-for-centering width))
-    (insert-image spec)
-    (insert "\n\n")))
-
-(defun welcome--init-info ()
-  (let ((package-count (hash-table-count straight--profile-cache))
-        (time (emacs-init-time)))
-    (format "%d packages loaded in %s" package-count time)))
-
-(defun welcome--edit-emacs-config ()
-  (interactive)
-  (find-file (expand-file-name "init.el" user-emacs-directory)))
-
-(defun welcome-open-menu-item (&optional point)
-  (interactive)
-  (save-excursion
-    (when point
-      (goto-char point))
-    (let* ((beg (line-beginning-position))
-           (end (line-end-position))
-           (line (buffer-substring-no-properties beg end)))
-      (when-let ((matched-item (car (-filter
-                                     (lambda (menu-item)
-                                       (message "menu %s against line %s" (car menu-item) line)
-                                       (string-match (car menu-item) line))
-                                     welcome-menu-entries))))
-        (message "matched")
-        (funcall (plist-get (cdr matched-item) :action))))))
-
-(defvar welcome-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "j") #'next-line)
-    (define-key map (kbd "k") #'previous-line)
-    (define-key map (kbd "RET") #'welcome-open-menu-item)
-    map)
-  "Keymap used in welcome screen.")
-
-(define-derived-mode welcome-mode special-mode "Welcome"
-  "Simple mode for welcome screen.")
-
-(evil-set-initial-state 'welcome-mode 'emacs)
-(add-hook 'welcome-mode-hook (lambda () (display-line-numbers-mode -1)))
-(add-hook 'welcome-mode-hook (lambda () (+setup-visual-fill welcome-window-width)))
-
-(defun welcome-register-menu-entry (menu-entry-spec)
-  (let* ((title (car menu-entry-spec))
-         (entry-plist (cdr menu-entry-spec))
-         (key (plist-get entry-plist :key))
-         (action (plist-get entry-plist :action))
-         (icon (plist-get entry-plist :icon))
-         (all-the-icons-scale-factor 1.45)
-         (all-the-icons-default-adjust -0.02))
-    ;; TODO why this doesn't work here?
-    ;; (evil-define-key 'normal welcome-mode-map (kbd key) action)
-    (define-key welcome-mode-map (kbd key) action)
-    (insert (welcome--pad-for-centering welcome-window-width))
-    (when icon
-      (insert (all-the-icons-octicon icon :face 'welcome-menu-title))
-      (insert "  "))
-    (insert (propertize (format "(%s)  " key) 'face 'font-lock-comment-face))
-    ;; TODO do it properly with align-regexp (but seems broken with icons)
-    (insert (make-string (max 0 (- 5 (length key))) ?\ ))
-    (insert (propertize title 'face 'welcome-menu-title))
-    (insert "\n")))
-
-(defun welcome-setup-menu ()
-  (welcome--insert-centered-line (make-string welcome-menu-entry-width ?\u2500))
-  (insert "\n")
-  (dolist (menu-entry welcome-menu-entries)
-    (welcome-register-menu-entry menu-entry)))
-
-(with-current-buffer (get-buffer-create welcome-buffer-name)
-  (welcome--insert-image "/home/user/.emacs.d/straight/repos/emacs-dashboard/banners/emacs.png")
-  (goto-char (point-max))
-  (let ((welcome-message "Welcome to GNU Emacs.")
-        (init-info (welcome--init-info)))
-    (welcome--insert-centered-line welcome-message)
-    (insert "\n")
-    (welcome--insert-centered-line (propertize init-info 'face 'font-lock-comment-face)))
-  (insert "\n\n")
-  (welcome-setup-menu)
-  (welcome-mode))
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (switch-to-buffer welcome-buffer-name)))
-
-;; (straight-use-package 'dashboard)
-;; (dashboard-setup-startup-hook)
