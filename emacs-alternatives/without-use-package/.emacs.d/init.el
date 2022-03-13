@@ -182,6 +182,7 @@
   (define-key embark-symbol-map (kbd "h") #'helpful-symbol))
 
 (straight-use-package 'embark-consult)
+(autoload #'embark-consult-preview-minor-mode "embark-consult")
 (add-hook 'embark-collect-mode-hook #'embark-consult-preview-minor-mode)
 
 ;;; Completions in region
