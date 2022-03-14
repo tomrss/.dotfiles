@@ -714,7 +714,9 @@ Argument MATCH a string that identifies the parent directory to search for."
             (locate-dominating-file
 			 closest-parent
              (lambda (parent)
-               (let ((dir (file-name-nondirectory (expand-file-name (directory-file-name parent)))))
+               (let ((dir (file-name-nondirectory
+                           (expand-file-name
+                            (directory-file-name parent)))))
 				 (if (string-match match dir)
                      dir
                    nil)))))
@@ -955,7 +957,8 @@ to."
 							  "./gradlew build")
   ;; TODO handle execution status
   (setq lsp-groovy-server-file
-		(expand-file-name "build/libs/groovy-language-server-all.jar" groovy-ls-install-dir)))
+		(expand-file-name "build/libs/groovy-language-server-all.jar"
+                          groovy-ls-install-dir)))
 
 (add-hook 'groovy-mode-hook #'+lsp-really-deferred)
 
@@ -1002,7 +1005,8 @@ to."
 If .nvmrc is present in project root, it will be used.  Otherwise node
 version will be prompted."
   (interactive)
-  (when (file-exists-p (expand-file-name "package.json" (project-root (project-current))))
+  (when (file-exists-p (expand-file-name "package.json"
+                                         (project-root (project-current))))
     (let ((nvmrc (expand-file-name ".nvmrc" (project-root (project-current)))))
       (if (file-exists-p nvmrc)
 		  (let ((version (s-trim (f-read nvmrc))))
