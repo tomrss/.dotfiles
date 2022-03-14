@@ -312,11 +312,16 @@
 (setq scroll-preserve-screen-position 1)
 
 ;;; Highlight current line
+
 (straight-use-package 'hl-line)
 (setq hl-line-sticky-flag nil)
 (add-hook 'dired-mode-hook #'hl-line-mode)
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'special-mode-hook #'hl-line-mode)
+
+;;; Display fill column ruler
+
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;;; File management
 
