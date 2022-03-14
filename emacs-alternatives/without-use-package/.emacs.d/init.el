@@ -396,10 +396,9 @@
   (visual-fill-column-mode +1))
 
 ;;; Starting screen
-(defvar +custom-packages "~/sources/emacs-packages/")
 (straight-use-package
  `(welcome
-   :local-repo ,(expand-file-name "welcome.el/" +custom-packages)
+   :repo "https://github.com/tomrss/welcome.el"
    :files ("welcome.el" "asset")))
 
 (with-eval-after-load 'welcome
