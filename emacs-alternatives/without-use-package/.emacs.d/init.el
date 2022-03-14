@@ -1071,21 +1071,21 @@ version will be prompted."
 
 ;;; Python
 ;; TODO refactor with lsp
-(straight-use-package 'elpy)
-(advice-add 'python-mode :before 'elpy-enable)
-(setq python-shell-interpreter "python3.8" python-shell-interpreter-args "-i")
-(with-eval-after-load 'elpy
-  (setq elpy-get-info-from-shell t)
-  (setq elpy-shell-echo-input nil)
-  (setq elpy-syntax-check-command "pyflakes")
-  (elpy-shell-set-local-shell
-   (elpy-project-root))
-  (when
-      (load "flycheck" t t)
-    (message "loading flycheck for elpy")
-    (setq elpy-modules
-		  (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)))
+;; (straight-use-package 'elpy)
+;; (advice-add 'python-mode :before 'elpy-enable)
+;; (setq python-shell-interpreter "python3.8" python-shell-interpreter-args "-i")
+;; (with-eval-after-load 'elpy
+;;   (setq elpy-get-info-from-shell t)
+;;   (setq elpy-shell-echo-input nil)
+;;   (setq elpy-syntax-check-command "pyflakes")
+;;   (elpy-shell-set-local-shell
+;;    (elpy-project-root))
+;;   (when
+;;       (load "flycheck" t t)
+;;     (message "loading flycheck for elpy")
+;;     (setq elpy-modules
+;; 		  (delq 'elpy-module-flymake elpy-modules))
+;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))
 
 (add-hook 'python-mode-hook #'highlight-indent-guides-mode)
 
