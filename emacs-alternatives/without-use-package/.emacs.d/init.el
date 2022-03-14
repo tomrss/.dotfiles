@@ -279,8 +279,9 @@
 	  ;; use doom themes
       (straight-use-package 'doom-themes)
       (load-theme 'doom-nord t)
-      (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
-      (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
+      (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B"))
+  ;; TODO don't remember why i did this:
+  ;; (set-face-attribute 'shadow nil :foreground "#EBCB8B"))
   ;; use builtin theme
   (load-theme 'misterioso))
 
