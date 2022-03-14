@@ -402,6 +402,36 @@
    :files ("welcome.el" "asset")))
 
 (with-eval-after-load 'welcome
+  (setq welcome-menu-items
+        '(("Recent files"
+           :key "f"
+           :action consult-recent-file
+           :icon "history")
+          ("Projects"
+           :key "p"
+           :action project-switch-project
+           :icon "code")
+          ("Dired"
+           :key "d"
+           :action dired
+           :icon "file-directory")
+          ("Edit configuration"
+           :key "c"
+           :action (lambda ()
+                     (interactive)
+                     (find-file user-init-file))
+           :icon "gear")
+          ("Open Eshell"
+           :key "e"
+           :action eshell
+           :icon "terminal")
+          ("Scratch"
+           :key "s"
+           :action (lambda ()
+                     (interactive)
+                     (switch-to-buffer "*scratch*"))
+           :icon "file-text")))
+
   (evil-set-initial-state 'welcome-mode 'emacs)
   (define-key welcome-mode-map (kbd "j") #'next-line)
   (define-key welcome-mode-map (kbd "k") #'previous-line)
