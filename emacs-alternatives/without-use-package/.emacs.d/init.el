@@ -91,11 +91,6 @@
   "Define customized KEY with definition DEF."
   (define-key customized-keys-minor-mode-map key def))
 
-;;;; Libraries
-
-(straight-use-package 'dash)
-(require 'dash)
-
 ;;;; Completion framework
 
 ;;; Getting help and docs
