@@ -241,12 +241,6 @@
 (with-eval-after-load 'evil
   (evil-collection-init))
 
-;; integrate with treemacs
-(straight-use-package 'treemacs-evil)
-(with-eval-after-load 'evil
-  (with-eval-after-load 'treemacs
-    (require 'treemacs-evil nil nil)))
-
 (add-hook 'with-editor-mode-hook 'evil-insert-state)
 
 ;;; Editing defaults
@@ -395,9 +389,22 @@
 
 ;;; Project tree view
 
+;; i wish i could get rid of treemacs, but lsp (dap) requires it...
 (straight-use-package 'treemacs)
 (with-eval-after-load 'treemacs
   (treemacs-resize-icons 16))
+
+;; integrate with magit
+(straight-use-package 'treemacs-magit)
+(with-eval-after-load 'magit
+  (with-eval-after-load 'treemacs
+    (require 'treemacs-magit nil nil)))
+
+;; integrate with evil
+(straight-use-package 'treemacs-evil)
+(with-eval-after-load 'evil
+  (with-eval-after-load 'treemacs
+    (require 'treemacs-evil nil nil)))
 
 ;;; Process management
 
@@ -823,12 +830,6 @@ to."
 (add-to-list 'project-switch-commands '(magit-status "Magit"))
 
 (+define-key (kbd "C-x g") #'magit-status) ; is the default but it's somehow deleted
-
-;; integrate with treemacs
-(straight-use-package 'treemacs-magit)
-(with-eval-after-load 'magit
-  (with-eval-after-load 'treemacs
-    (require 'treemacs-magit nil nil)))
 
 ;; highlight changes (git gutters)
 (straight-use-package 'diff-hl)
