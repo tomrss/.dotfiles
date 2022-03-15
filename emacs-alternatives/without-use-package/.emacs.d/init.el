@@ -461,7 +461,8 @@
   (evil-set-initial-state 'welcome-mode 'emacs)
   (define-key welcome-mode-map (kbd "j") #'next-line)
   (define-key welcome-mode-map (kbd "k") #'previous-line)
-  (add-hook 'welcome-mode-hook (lambda () (+setup-visual-fill welcome-window-width))))
+  (add-hook 'welcome-mode-hook
+            (lambda () (+setup-visual-fill welcome-window-width))))
 
 (add-hook 'emacs-startup-hook #'welcome-screen)
 
@@ -505,20 +506,22 @@
 	(let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle)))
 
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
 ;;; Org Roam
 ;; TODO work in progress
-
-(straight-use-package 'org-roam)
-(setq org-roam-v2-ack t)
-(with-eval-after-load 'org-roam
-  (setq org-roam-directory "~/RoamNotes")
-  (org-roam-setup))
-;; TODO keys: (bind-keys :package org-roam
-;; 	     ("C-c n l" . org-roam-buffer-toggle)
-;; 	     ("C-c n f" . org-roam-node-find)
-;; 	     ("C-c n i" . org-roam-node-insert)))
+;; TODO disabled until i know how to use it
+;; (straight-use-package 'org-roam)
+;; (setq org-roam-v2-ack t)
+;; (with-eval-after-load 'org-roam
+;;   (setq org-roam-directory "~/RoamNotes")
+;;   (org-roam-setup))
+;; ;; TODO keys: (bind-keys :package org-roam
+;; ;; 	     ("C-c n l" . org-roam-buffer-toggle)
+;; ;; 	     ("C-c n f" . org-roam-node-find)
+;; ;; 	     ("C-c n i" . org-roam-node-insert)))
 
 ;;;; Windows and buffer management
 
@@ -641,7 +644,6 @@
     (let* ((pwd (eshell/pwd)))
       (if (equal pwd "~")
 		  pwd
-		;; (abbreviate-file-name (shrink-path-file-pwd)))))
 		(abbreviate-file-name pwd))))
 
   (defun +eshell-prompt ()
@@ -650,15 +652,15 @@
 							(magit-get-current-branch))))
       (concat
        (if (bobp) "" "\n")
-       (propertize user-login-name 'face `(:foreground "#62aeed"))
+       (propertize user-login-name 'face 'font-lock-keyword-face)
        (propertize " • " 'face `(:foreground "white"))
-       (propertize (+prompt-path) 'face `(:foreground "#82cfd3"))
+       (propertize (+prompt-path) 'face 'font-lock-function-name-face)
        (when current-branch
 		 (concat
 		  (propertize " • " 'face `(:foreground "white"))
-		  (propertize (concat " " current-branch) 'face `(:foreground "#c475f0"))))
+		  (propertize (concat " " current-branch) 'face 'font-lock-string-face)))
        (propertize " • " 'face `(:foreground "white"))
-       (propertize (format-time-string "%H:%M:%S") 'face `(:foreground "#5a5b7f"))
+       (propertize (format-time-string "%H:%M:%S") 'face 'font-lock-comment-face)
        (let ((user-prompt
 			  (if (= (user-uid) 0) "\n#" "\nλ")))
 		 (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
@@ -1074,21 +1076,6 @@ version will be prompted."
 
 ;;; Python
 ;; TODO refactor with lsp
-;; (straight-use-package 'elpy)
-;; (advice-add 'python-mode :before 'elpy-enable)
-;; (setq python-shell-interpreter "python3.8" python-shell-interpreter-args "-i")
-;; (with-eval-after-load 'elpy
-;;   (setq elpy-get-info-from-shell t)
-;;   (setq elpy-shell-echo-input nil)
-;;   (setq elpy-syntax-check-command "pyflakes")
-;;   (elpy-shell-set-local-shell
-;;    (elpy-project-root))
-;;   (when
-;;       (load "flycheck" t t)
-;;     (message "loading flycheck for elpy")
-;;     (setq elpy-modules
-;; 		  (delq 'elpy-module-flymake elpy-modules))
-;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))
 
 (add-hook 'python-mode-hook #'highlight-indent-guides-mode)
 
