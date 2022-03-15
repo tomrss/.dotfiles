@@ -844,6 +844,10 @@ to."
 
 ;; highlight mathing parentesis
 (show-paren-mode +1)
+;; propably these tree lines can be collapsed in one set face attribute
+(set-face-background 'show-paren-match nil)
+(set-face-foreground 'show-paren-match "red")
+(set-face-italic 'show-paren-match t)
 
 ;; auto close parentheses in prog mode
 (straight-use-package 'smartparens)
