@@ -25,8 +25,6 @@
 (setq ring-bell-function 'ignore)
 ;; remove graphical dialog box and keep it keyboard driven
 (setq use-dialog-box nil)
-;; start fullscreen
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;; silent native compilation warning
 (setq native-comp-async-report-warnings-errors 'silent)
 

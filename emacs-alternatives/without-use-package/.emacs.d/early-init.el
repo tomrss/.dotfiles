@@ -56,7 +56,11 @@
 (setq inhibit-startup-buffer-menu t)
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
-;; (setq initial-major-mode 'fundamental-mode)
+
+;; start fullscreen without window bar
+(setq default-frame-alist
+      '((undecorated . t)
+        (fullscreen . maximized)))
 
 ;;;; Move backups elsewhere
 
