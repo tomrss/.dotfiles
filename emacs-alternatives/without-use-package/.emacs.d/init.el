@@ -349,6 +349,7 @@
   (setq delete-by-moving-to-trash t)
 
   ;; hide/show dotfiles in Dired (taken from 'dired-hide-dotfiles' package)
+  ;; TODO could be done by hooking a setq on dired-listing-switches ?
   (defun dired-hide-dotfiles--hide ()
 	"Hide all dot-files in the current `dired' buffer."
 	(let ((inhibit-message t))
@@ -419,10 +420,12 @@
   (visual-fill-column-mode +1))
 
 ;;; Starting screen
-(straight-use-package
- `(welcome
-   :repo "https://github.com/tomrss/welcome.el"
-   :files ("welcome.el" "asset")))
+(straight-use-package '(welcome
+                        ;; i wrote this package and it's not great
+                        ;; TODO at least add a readme in it
+                        ;; TODO make it private because it sucks
+                        :repo "https://github.com/tomrss/welcome.el"
+                        :files ("welcome.el" "asset")))
 
 (with-eval-after-load 'welcome
   (setq welcome-menu-items
@@ -581,6 +584,7 @@
 ;; use `ibuffer' instead of buffer list
 (+define-key (kbd "C-x C-b") 'ibuffer)
 
+;; TODO this is probably dangerous
 (defun +kill-other-buffers ()
   "Kill all other buffers."
   (interactive)
@@ -899,6 +903,7 @@ to."
   (setq highlight-indent-guides-method 'character))
 
 ;; aggressively indent as you type
+;; TODO this sometimes interfere with undo
 (straight-use-package 'aggressive-indent)
 (with-eval-after-load 'aggressive-indent
   (setq aggressive-indent-comments-too t)
