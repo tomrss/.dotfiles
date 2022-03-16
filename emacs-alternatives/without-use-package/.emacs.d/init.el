@@ -12,6 +12,8 @@
 
 ;;; Code:
 
+(require 'seq)
+
 ;;;; Early configuration
 
 ;;; Early UI tweaks
@@ -569,8 +571,8 @@
 (straight-use-package 'popper)
 (setq popper-reference-buffers
 	  (mapcar #'car
-			  (-filter (lambda (rule) (plist-get (cdr rule) :popup))
-					   shackle-rules)))
+			  (seq-filter (lambda (rule) (plist-get (cdr rule) :popup))
+				          shackle-rules)))
 (setq popper-mode-line
       '(:eval (propertize " P " 'face 'mode-line-emphasis)))
 (setq popper-display-control nil)
