@@ -300,11 +300,8 @@
 
 ;;; Modeline
 
-;; put all minor modes in one place
-(straight-use-package 'minions)
-(minions-mode +1)
-
 (when (symbol-value 'window-system)
+  ;; TODO doom-modeline is great but it's heavy, write something smaller
   (straight-use-package 'doom-modeline)
   (doom-modeline-mode +1))
 
