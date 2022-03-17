@@ -449,7 +449,7 @@
                      (interactive)
                      (find-file user-init-file))
            :icon "gear")
-          ("Open Eshell"
+          ("Eshell"
            :key "e"
            :action eshell
            :icon "terminal")
