@@ -331,10 +331,6 @@
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'special-mode-hook #'hl-line-mode)
 
-;;; Display fill column ruler
-
-(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-
 ;;; File management
 
 ;; configure Dired
