@@ -20,9 +20,10 @@
 
 ;; disable unwanted ui components
 (menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
+(when (symbol-value 'window-system)
+  (toggle-scroll-bar -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1))
 ;; mute the bell
 (setq ring-bell-function 'ignore)
 ;; remove graphical dialog box and keep it keyboard driven
@@ -418,51 +419,52 @@
   (visual-fill-column-mode +1))
 
 ;;; Starting screen
-(straight-use-package '(welcome
-                        ;; i wrote this package and it's not great
-                        ;; TODO at least add a readme in it
-                        ;; TODO make it private because it sucks
-                        :repo "https://github.com/tomrss/welcome.el"
-                        :files ("welcome.el" "asset")))
+(when (symbol-value 'window-system)
+  (straight-use-package '(welcome
+                          ;; i wrote this package and it's not great
+                          ;; TODO at least add a readme in it
+                          ;; TODO make it private because it sucks
+                          :repo "https://github.com/tomrss/welcome.el"
+                          :files ("welcome.el" "asset")))
 
-(with-eval-after-load 'welcome
-  (setq welcome-menu-items
-        '(("Recent files"
-           :key "f"
-           :action consult-recent-file
-           :icon "history")
-          ("Projects"
-           :key "p"
-           :action project-switch-project
-           :icon "code")
-          ("Dired"
-           :key "d"
-           :action dired
-           :icon "file-directory")
-          ("Edit configuration"
-           :key "c"
-           :action (lambda ()
-                     (interactive)
-                     (find-file user-init-file))
-           :icon "gear")
-          ("Eshell"
-           :key "e"
-           :action eshell
-           :icon "terminal")
-          ("Scratch"
-           :key "s"
-           :action (lambda ()
-                     (interactive)
-                     (switch-to-buffer "*scratch*"))
-           :icon "file-text")))
+  (with-eval-after-load 'welcome
+    (setq welcome-menu-items
+          '(("Recent files"
+             :key "f"
+             :action consult-recent-file
+             :icon "history")
+            ("Projects"
+             :key "p"
+             :action project-switch-project
+             :icon "code")
+            ("Dired"
+             :key "d"
+             :action dired
+             :icon "file-directory")
+            ("Edit configuration"
+             :key "c"
+             :action (lambda ()
+                       (interactive)
+                       (find-file user-init-file))
+             :icon "gear")
+            ("Eshell"
+             :key "e"
+             :action eshell
+             :icon "terminal")
+            ("Scratch"
+             :key "s"
+             :action (lambda ()
+                       (interactive)
+                       (switch-to-buffer "*scratch*"))
+             :icon "file-text")))
 
-  (evil-set-initial-state 'welcome-mode 'emacs)
-  (define-key welcome-mode-map (kbd "j") #'next-line)
-  (define-key welcome-mode-map (kbd "k") #'previous-line)
-  (add-hook 'welcome-mode-hook
-            (lambda () (+setup-visual-fill welcome-window-width))))
+    (evil-set-initial-state 'welcome-mode 'emacs)
+    (define-key welcome-mode-map (kbd "j") #'next-line)
+    (define-key welcome-mode-map (kbd "k") #'previous-line)
+    (add-hook 'welcome-mode-hook
+              (lambda () (+setup-visual-fill welcome-window-width))))
 
-(add-hook 'emacs-startup-hook #'welcome-screen)
+  (add-hook 'emacs-startup-hook #'welcome-screen))
 
 ;;;; Org mode
 
