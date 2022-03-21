@@ -274,11 +274,11 @@
 ;;; Fonts and icons
 
 (when (symbol-value 'window-system)
-  (when (x-list-fonts "JetBrains Mono")
-    (set-face-attribute 'default     nil :font "JetBrains Mono" :height 110 :weight 'regular)
-    (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 110 :weight 'regular))
+  (when (x-list-fonts "JetBrains Mono NL")
+    (set-face-attribute 'default     nil :font "JetBrains Mono NL" :height 110 :weight 'normal)
+    (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono NL" :height 110 :weight 'normal))
   (when (x-list-fonts "Cantarell")
-    (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'regular)))
+    (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'normal)))
 
 (straight-use-package 'all-the-icons)
 (when (symbol-value 'window-system)
