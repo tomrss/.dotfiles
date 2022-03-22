@@ -184,16 +184,19 @@
 ;;; Completions in region
 
 ;; completion UI
-(straight-use-package 'corfu)
-(setq corfu-auto t)
-(setq corfu-auto-delay 0.1)
-(setq corfu-cycle t)
-(setq corfu-quit-at-boundary t)
-(setq corfu-preselect-first t)
-(setq corfu-echo-documentation 0)
-(corfu-global-mode 1)
-(define-key corfu-map (kbd "C-j") #'corfu-next)
-(define-key corfu-map (kbd "C-k") #'corfu-previous)
+(if (symbol-value 'window-system)
+    (progn
+      (straight-use-package 'corfu)
+      (setq corfu-auto t)
+      (setq corfu-auto-delay 0.1)
+      (setq corfu-cycle t)
+      (setq corfu-quit-at-boundary t)
+      (setq corfu-preselect-first t)
+      (setq corfu-echo-documentation 0)
+      (corfu-global-mode 1)
+      (define-key corfu-map (kbd "C-j") #'corfu-next)
+      (define-key corfu-map (kbd "C-k") #'corfu-previous))
+  (setq completion-in-region-function 'consult-completion-in-region))
 
 (setq tab-always-indent 'complete)
 
