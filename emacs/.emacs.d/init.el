@@ -1166,4 +1166,8 @@ version will be prompted."
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
 (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
 
+;; rest client
+(straight-use-package 'restclient)
+(add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+
 ;;; init.el ends here
