@@ -28,3 +28,21 @@ It should be placed in project root.
 ** Use more Emacs internal features
 *** Dismiss projectile and use project
 * Tab bar or whathever
+* Symlink only init.el and early-init.el
+
+Recently I dismissed no-littering package, so everything is now in .emacs.d.
+This could be fine, if the folder was not entirely symlinked.
+
+* Define keys
+
+Find a clever way of defining keys without getting overriden by other mode.
+Possible solutions:
+- define-prefix-command
+- minor mode holding all keys
+  
+
+* Remove =redisplay-dont-pause=
+* make flycheck work in emacs lisp code
+* Remove eshell-toggle
+use project.el, buffer name and shackle for enabling shell toggling.
+not only eshell. 
