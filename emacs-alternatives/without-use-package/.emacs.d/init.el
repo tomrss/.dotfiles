@@ -257,6 +257,7 @@
 (global-auto-revert-mode +1)
 ;; share system clipboard
 (setq save-interprogram-paste-before-kill t)
+(setq kill-do-not-save-duplicates t)
 
 ;;; Text selection and navigation
 
