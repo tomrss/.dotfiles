@@ -320,6 +320,7 @@
 
 ;;; Smooth scrolling
 
+(setq fast-but-imprecise-scrolling t)
 (setq scroll-margin 1)
 (setq scroll-step 1)
 (setq scroll-conservatively 10000)
