@@ -268,6 +268,14 @@
 (straight-use-package 'expand-region)
 (+define-key (kbd "C-ò") #'er/expand-region)
 
+;;; Scratch buffers
+
+(straight-use-package '(scratch
+			            :type git
+			            :host github
+                        :repo "tomrss/scratch.el"))
+(scratch-global-mode +1)
+
 ;;;; User interface
 
 ;; recognize system
@@ -425,13 +433,14 @@
 
 ;;; Starting screen
 (when (symbol-value 'window-system)
+  ;; i wrote this package and it's not great
+  ;; TODO at least add a readme in it
+  ;; TODO make it private because it sucks
   (straight-use-package '(welcome
-                          ;; i wrote this package and it's not great
-                          ;; TODO at least add a readme in it
-                          ;; TODO make it private because it sucks
-                          :repo "https://github.com/tomrss/welcome.el"
+                          :type git
+                          :host github
+                          :repo "tomrss/welcome.el"
                           :files ("welcome.el" "asset")))
-
   (with-eval-after-load 'welcome
     (setq welcome-menu-items
           '(("Recent files"
