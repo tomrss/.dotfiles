@@ -274,7 +274,8 @@
 			            :type git
 			            :host github
                         :repo "tomrss/scratch.el"))
-(scratch-global-mode +1)
+(setq scratch-persist-excluded-modes '(restclient-mode))
+(scratch-persist-mode +1)
 
 ;;;; User interface
 
