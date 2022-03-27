@@ -84,7 +84,7 @@
 (define-minor-mode customized-keys-minor-mode
   "A minor mode so that custom key settings override major modes."
   :init-value t
-  :lighter " custom-keys")
+  :lighter "")
 
 (customized-keys-minor-mode +1)
 
