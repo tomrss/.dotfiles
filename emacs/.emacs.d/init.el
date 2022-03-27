@@ -274,8 +274,9 @@
 			            :type git
 			            :host github
                         :repo "tomrss/scratch.el"))
-(setq scratch-persist-excluded-modes '(restclient-mode))
+(setq scratch-search-fn #'consult-ripgrep)
 (scratch-persist-mode +1)
+(+define-key (kbd "C-c s") scratch-key-map)
 
 ;;;; User interface
 
@@ -467,9 +468,7 @@
              :icon "terminal")
             ("Scratch"
              :key "s"
-             :action (lambda ()
-                       (interactive)
-                       (switch-to-buffer "*scratch*"))
+             :action scratch-new
              :icon "file-text")))
 
     (evil-set-initial-state 'welcome-mode 'emacs)
