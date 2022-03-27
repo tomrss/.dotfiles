@@ -567,7 +567,7 @@
 
 ;;; Window placement and popups
 
-;; define window placement rules 
+;; define window placement rules
 (straight-use-package 'shackle)
 (shackle-mode +1)
 (setq shackle-rules
@@ -575,6 +575,7 @@
 		(help-mode :popup t :select t :align bottom :size 0.33)
 		(helpful-mode :popup t :select t :align bottom :size 0.33)
 		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
+		(flycheck-error-list-mode :popup t :select t :align top :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t))
       shackle-default-rule
       '(:noselect t))
