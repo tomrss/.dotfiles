@@ -1180,4 +1180,9 @@ version will be prompted."
 (straight-use-package 'restclient)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
+;; TODO write something to persist requests/responses in `scratch' fashion.
+;; example: dump request to file on `restclient-http-do-hook',
+;; then dump response to same file on `restclient-response-loaded-hook'.
+;; just be careful on major mode
+
 ;;; init.el ends here
