@@ -13,6 +13,7 @@
 ;;; Code:
 
 (require 'seq)
+(require 'project)			; not sure if needed
 
 ;;;; Early configuration
 
@@ -583,7 +584,8 @@
       '((compilation-mode :noselect t)
 		(help-mode :popup t :select t :align bottom :size 0.33)
 		(helpful-mode :popup t :select t :align bottom :size 0.33)
-		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
+		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
+		("\\*.*v?term\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
 		(flycheck-error-list-mode :popup t :select t :align top :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t))
       shackle-default-rule
@@ -659,6 +661,25 @@
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
   (setq vterm-max-scrollback 10000)
   (setq vterm-kill-buffer-on-exit t))
+
+;; add as project popup shell
+(defun +project-vterm ()
+  "Start term in the current project's root directory.
+If a buffer already exists for running a shell in the project's root,
+switch to it.  Otherwise, create a new shell buffer.
+With \\[universal-argument] prefix arg, create a new inferior shell buffer even
+if one already exists."
+  (interactive)
+  (let* ((default-directory (project-root (project-current t)))
+         (default-project-vterm-name (project-prefixed-buffer-name "vterm"))
+         (vterm-buffer (get-buffer default-project-vterm-name)))
+    (if (and vterm-buffer (not current-prefix-arg))
+        (pop-to-buffer-same-window vterm-buffer)
+      (let ((vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
+        (vterm)))))
+
+;; overrides `project-vc-dir' but I use magit
+(define-key project-prefix-map (kbd "v") #'+project-vterm)
 
 ;;; eshell
 
@@ -850,7 +871,6 @@ to."
 		'("Turning on magit-auto-revert-mode...")))
 
 ;; integrate with project
-(require 'project)			; not sure if needed
 (define-key project-prefix-map (kbd "G") #'magit-status)
 (add-to-list 'project-switch-commands '(magit-status "Magit"))
 
