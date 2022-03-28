@@ -564,6 +564,16 @@
 (+define-key (kbd "C-M-S-k") #'windmove-swap-states-up)
 (+define-key (kbd "C-M-S-l") #'windmove-swap-states-right)
 
+;;; Workspaces (tab-bar-mode)
+
+;; (setq tab-bar-new-button nil)
+;; (setq tab-bar-close-button nil)
+;; (set-face-attribute 'tab-bar-tab nil :inherit 'font-lock-type-face :foreground nil :background nil)
+;; (set-face-attribute 'tab-bar-tab-inactive nil :inherit 'font-lock-comment-face :foreground nil)
+(setq tab-bar-show nil)
+(setq tab-bar-new-tab-choice "*Welcome*")
+(tab-bar-mode +1)
+
 ;;; Window placement and popups
 
 ;; define window placement rules
