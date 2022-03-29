@@ -196,7 +196,16 @@
       (setq corfu-echo-documentation 0)
       (corfu-global-mode 1)
       (define-key corfu-map (kbd "C-j") #'corfu-next)
-      (define-key corfu-map (kbd "C-k") #'corfu-previous))
+      (define-key corfu-map (kbd "C-k") #'corfu-previous)
+
+      ;; Ensure that pcomplete does not write to the buffer
+      ;; dont' remember where I found this piece of code
+      (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
+      (add-hook 'eshell-mode-hook
+                (lambda ()
+                  (setq-local corfu-quit-at-boundary t
+                              corfu-quit-no-match t)
+                  (corfu-mode +1))))
   (setq completion-in-region-function 'consult-completion-in-region))
 
 (setq tab-always-indent 'complete)
@@ -208,19 +217,8 @@
 (add-to-list 'completion-at-point-functions #'cape-file)
 (add-to-list 'completion-at-point-functions #'cape-dabbrev)
 
-;; TODO following commented code seems promising but is not tested
-;; ;; Silence the pcomplete capf, no errors or messages!
-;; (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
-
-;; ;; Ensure that pcomplete does not write to the buffer
-;; ;; and behaves as a pure `completion-at-point-function'.
-;; (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
-;; (add-hook 'eshell-mode-hook
-;;           (lambda ()
-;;             (setq-local corfu-quit-at-boundary t
-;;                         corfu-quit-no-match t
-;;                         corfu-auto nil)
-;;             (corfu-mode)))
+;; silence the pcomplete capf
+(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
 
 ;;;; Editing
 
