@@ -24,9 +24,3 @@ settings:
     https://www.reddit.com: false
   content.register_protocol_handler:
     https://mail.protonmail.com?to=%25s: true
-  statusbar.show:
-    global: always
-  tabs.show:
-    global: always
-  url.start_pages:
-    global: about:blank
