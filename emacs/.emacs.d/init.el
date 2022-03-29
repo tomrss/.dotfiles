@@ -524,19 +524,6 @@
             (lambda ()
               (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
-;;; Org Roam
-;; TODO work in progress
-;; TODO disabled until i know how to use it
-;; (straight-use-package 'org-roam)
-;; (setq org-roam-v2-ack t)
-;; (with-eval-after-load 'org-roam
-;;   (setq org-roam-directory "~/RoamNotes")
-;;   (org-roam-setup))
-;; ;; TODO keys: (bind-keys :package org-roam
-;; ;; 	     ("C-c n l" . org-roam-buffer-toggle)
-;; ;; 	     ("C-c n f" . org-roam-node-find)
-;; ;; 	     ("C-c n i" . org-roam-node-insert)))
-
 ;;;; Windows and buffer management
 
 ;;; Stateful window layout
@@ -567,10 +554,6 @@
 
 ;;; Workspaces (tab-bar-mode)
 
-;; (setq tab-bar-new-button nil)
-;; (setq tab-bar-close-button nil)
-;; (set-face-attribute 'tab-bar-tab nil :inherit 'font-lock-type-face :foreground nil :background nil)
-;; (set-face-attribute 'tab-bar-tab-inactive nil :inherit 'font-lock-comment-face :foreground nil)
 (setq tab-bar-show nil)
 (setq tab-bar-new-tab-choice "*Welcome*")
 (tab-bar-mode +1)
@@ -1045,16 +1028,6 @@ to."
 (straight-use-package 'groovy-mode)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (with-eval-after-load 'groovy-mode
-  ;; TODO: this classpath stuff was added because groovy ls seems
-  ;;  to autocomplete only with java but not with groovy.
-  ;;  sadly this doesn't work either!
-  ;; (setq lsp-groovy-classpath
-  ;; 	(vconcat
-  ;; 	 (split-string
-  ;; 	  (with-temp-buffer
-  ;; 	    (call-process-shell-command "find /usr -wholename '*/groovy/lib/*.jar'" nil t nil)
-  ;; 	    (buffer-string)))))
-  ;; TODO move server installation in lsp-groovy source
   (defvar groovy-ls-install-dir "~/.emacs.d/.cache/lsp/groovy-language-server/"
     "Groovy language server installation folder")
   ;; TODO check if default server exists before installing custom
