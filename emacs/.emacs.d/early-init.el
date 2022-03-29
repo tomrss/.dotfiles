@@ -57,10 +57,14 @@
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
 
-;; start fullscreen without window bar
 (setq default-frame-alist
-      '((undecorated . t)
-        (fullscreen . maximized)))
+      '(
+        ;; start fullscreen without window bar
+        (undecorated . t)
+        ;; start fullscreen
+        (fullscreen . maximized)
+        ;; avoid blinding white on startup, this is bg of `doom-nord'
+        (background-color . "#2E3440")))
 
 ;;;; Move backups elsewhere
 
