@@ -21,10 +21,10 @@
 
 ;; disable unwanted ui components
 (menu-bar-mode -1)
-(when (symbol-value 'window-system)
-  (toggle-scroll-bar -1)
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1))
+(toggle-scroll-bar -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+
 ;; mute the bell
 (setq ring-bell-function 'ignore)
 ;; remove graphical dialog box and keep it keyboard driven
