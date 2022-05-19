@@ -1062,7 +1062,7 @@ to."
   (require 'npm-mode nil nil))
 
 (straight-use-package 'nvm)
-
+(autoload 'nvm--installed-versions "nvm" nil t)
 ;; TODO: this is global but should be buffer local
 (defun +nvm-use (version)
   "Interactive wrapper of `nvm-use'.  Choose node VERSION amongst installed versions."
