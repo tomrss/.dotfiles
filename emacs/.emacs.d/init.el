@@ -1094,9 +1094,34 @@ version will be prompted."
 		(call-interactively '+nvm-use)))))
 
 ;;; Python
-;; TODO refactor with lsp
 
-(add-hook 'python-mode-hook #'highlight-indent-guides-mode)
+(straight-use-package 'pyvenv)
+(with-eval-after-load 'pyvenv
+  ;; TODO
+  ;; (setenv "WORKON_HOME" "/home/user/.virtualenv_workon_home/")
+  (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name
+                                     ("[venv:" pyvenv-virtual-env-name "] "))))
+
+(defun +setup-python ()
+  "Setup python development."
+  (highlight-indent-guides-mode +1)
+  (pyvenv-mode +1)
+  (+lsp-really-deferred))
+
+(add-hook 'python-mode-hook #'+setup-python)
+
+;; TODO this does not work, and sucks
+(defun +pyvenv-activate-project ()
+  "Activate python venv in current project."
+  (interactive)
+  (if-let ((current-project (project-current)))
+      (let* ((default-directory (project-root current-project))
+             (venv (expand-file-name "venv")))
+        (pyvenv-deactivate)
+        (if (file-exists-p venv)
+            (pyvenv-activate venv)
+          (message "create venv first. or implement this function right...")))
+    (message "no current project")))
 
 ;;; Rust
 
