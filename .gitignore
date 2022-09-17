@@ -2,3 +2,4 @@
 !**/.emacs.d/*.el
 !**/.emacs.d/packages/
 !**/.emacs.d/lisp/
+qutebrowser/.config/qutebrowser/autoconfig.yml
