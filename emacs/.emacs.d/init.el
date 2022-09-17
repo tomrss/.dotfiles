@@ -524,6 +524,22 @@
             (lambda ()
               (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
+;;; Org roam
+
+(straight-use-package 'org-roam)
+(defvar +org-roam-base-dir)
+(setq org-roam-v2-ack t)
+(+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)
+(+define-key (kbd "C-c n f") #'org-roam-node-find)
+(+define-key (kbd "C-c n i") #'org-roam-node-insert)
+(with-eval-after-load 'org-roam
+  (unless (file-exists-p +org-roam-base-dir)
+    (make-directory +org-roam-base-dir))
+  (setq org-roam-directory +org-roam-base-dir)
+  (setq org-roam-completion-everywhere t)
+  (define-key org-mode-map (kbd "C-i") #'completion-at-point)
+  (org-roam-setup))
+
 ;;;; Windows and buffer management
 
 ;;; Stateful window layout
