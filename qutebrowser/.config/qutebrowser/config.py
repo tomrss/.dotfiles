@@ -30,7 +30,7 @@ c.url.searchengines = {
 
 c.statusbar.show = 'always'
 
-c.tabs.tabs_are_windows = True
+c.tabs.tabs_are_windows = False
 c.tabs.show = 'never'
 c.tabs.last_close = 'close'
 
