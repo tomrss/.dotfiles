@@ -572,7 +572,8 @@
 		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
 		("\\*.*v?term\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
 		(flycheck-error-list-mode :popup t :select t :align top :size 0.25)
-		("\\*Warnings\\*" :regexp t :noselect t))
+		("\\*Warnings\\*" :regexp t :noselect t)
+        ("\\*terraform.*\\*" :regexp t :select t :popup t ))
       shackle-default-rule
       '(:noselect t))
 
@@ -1188,6 +1189,8 @@ version will be prompted."
 ;; yaml
 (straight-use-package 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
+;; this is for terraform templates
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\.tftpl\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'highlight-indent-guides-mode)
 (add-hook 'yaml-mode-hook 
           (lambda ()
@@ -1205,7 +1208,41 @@ version will be prompted."
 ;; terraform
 (straight-use-package 'terraform-mode)
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
-(add-hook 'terraform-mode-hook #'+lsp-really-deferred)
+;; (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
+(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
+
+(defun +terraform-command (command &optional interactive)
+  "Terrafom command"
+  (let ((default-directory (project-root (project-current t))))
+    (compilation-start
+     (concat "terraform " command)
+     interactive
+     (lambda (_) (format "*terraform: %s @ %s *" command default-directory)))))
+
+(defun +terraform-init ()
+  "Terraform plan"
+  (interactive)
+  (+terraform-command "init"))
+
+(defun +terraform-plan ()
+  "Terraform plan"
+  (interactive)
+  (+terraform-command "plan"))
+
+(defun +terraform-apply ()
+  "Terraform apply"
+  (interactive)
+  (+terraform-command "apply" t))
+
+(defun +terraform-apply-auto-approve ()
+  "Terraform apply auto approve"
+  (interactive)
+  (+terraform-command "apply -auto-approve"))
+
+(defun +terraform-destroy ()
+  "Terraform destroy"
+  (interactive)
+  (+terraform-command "destroy" t))
 
 ;; rest client
 (straight-use-package 'restclient)
