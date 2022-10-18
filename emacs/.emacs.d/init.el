@@ -660,7 +660,7 @@ if one already exists."
          (vterm-buffer (get-buffer default-project-vterm-name)))
     (if (and vterm-buffer (not current-prefix-arg))
         (pop-to-buffer-same-window vterm-buffer)
-      (let ((vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
+      (let ((+vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
         (vterm)))))
 
 ;; overrides `project-vc-dir' but I use magit
