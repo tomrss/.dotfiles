@@ -251,6 +251,8 @@
 ;; ask y or n instead of yes or no
 (fset 'yes-or-no-p 'y-or-n-p)
 ;; recent files
+(setq recentf-max-menu-items 500)
+(setq recentf-max-saved-items 500)
 (recentf-mode +1)
 ;; reopen file at same point
 (save-place-mode +1)
