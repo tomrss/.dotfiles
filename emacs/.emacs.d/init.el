@@ -934,6 +934,8 @@ to."
 ;; aggressively indent as you type
 ;; TODO this sometimes interfere with undo
 (straight-use-package 'aggressive-indent)
+(autoload 'aggressive-indent-mode "aggressive-indent")
+
 (with-eval-after-load 'aggressive-indent
   (setq aggressive-indent-comments-too t)
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
