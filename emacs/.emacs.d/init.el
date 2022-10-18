@@ -271,7 +271,7 @@
 
 ;;; Scratch buffers
 
-(straight-use-package '(scratch
+(straight-use-package '(scratch-el
 			            :type git
 			            :host github
                         :repo "tomrss/scratch.el"))
