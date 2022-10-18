@@ -30,7 +30,7 @@ c.url.searchengines = {
 
 c.statusbar.show = 'always'
 
-c.tabs.tabs_are_windows = True
+c.tabs.tabs_are_windows = False
 c.tabs.show = 'never'
 c.tabs.last_close = 'close'
 
@@ -40,6 +40,9 @@ c.fonts.completion.entry = '11pt "JetBrains Mono"'
 c.fonts.debug_console = '11pt "JetBrains Mono"'
 c.fonts.prompts = 'default_size sans-serif'
 c.fonts.statusbar = '11pt "JetBrains Mono"'
+
+# bug in qtwebengine not yet fixed in guix version
+c.qt.args=['disable-seccomp-filter-sandbox']
 
 config.bind('xb', 'config-cycle statusbar.show always never')
 config.bind('xt', 'config-cycle tabs.show always never')

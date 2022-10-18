@@ -66,6 +66,8 @@
         ;; avoid blinding white on startup, this is bg of `doom-nord'
         (background-color . "#2E3440")))
 
+(set-face-attribute 'default     nil :foreground "white")
+
 ;;;; Move backups elsewhere
 
 (setq default-directory "~/")
