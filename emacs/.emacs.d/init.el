@@ -185,28 +185,31 @@
 ;;; Completions in region
 
 ;; completion UI
-(if (symbol-value 'window-system)
-    (progn
-      (straight-use-package 'corfu)
-      (setq corfu-auto t)
-      (setq corfu-auto-delay 0.1)
-      (setq corfu-cycle t)
-      (setq corfu-quit-at-boundary t)
-      (setq corfu-preselect-first t)
-      (setq corfu-echo-documentation 0)
-      (global-corfu-mode 1)
-      (define-key corfu-map (kbd "C-j") #'corfu-next)
-      (define-key corfu-map (kbd "C-k") #'corfu-previous)
+(straight-use-package 'corfu)
+(straight-use-package
+ '(corfu-terminal
+   :type git
+   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
+(setq corfu-auto t)
+(setq corfu-auto-delay 0.1)
+(setq corfu-cycle t)
+(setq corfu-quit-at-boundary t)
+(setq corfu-preselect-first t)
+(setq corfu-echo-documentation 0)
+(global-corfu-mode 1)
+(define-key corfu-map (kbd "C-j") #'corfu-next)
+(define-key corfu-map (kbd "C-k") #'corfu-previous)
 
-      ;; Ensure that pcomplete does not write to the buffer
-      ;; dont' remember where I found this piece of code
-      (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
-      (add-hook 'eshell-mode-hook
-                (lambda ()
-                  (setq-local corfu-quit-at-boundary t
-                              corfu-quit-no-match t)
-                  (corfu-mode +1))))
-  (setq completion-in-region-function 'consult-completion-in-region))
+;; Ensure that pcomplete does not write to the buffer
+;; dont' remember where I found this piece of code
+(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq-local corfu-quit-at-boundary t
+                        corfu-quit-no-match t)
+            (corfu-mode +1)))
+(unless (display-graphic-p)
+  (corfu-terminal-mode +1))
 
 (setq tab-always-indent 'complete)
 
