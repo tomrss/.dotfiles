@@ -226,9 +226,11 @@
 ;;;; Editing
 
 ;; navigable undo/redo tree
-;; TODO disabled because at some point it started to put ~undo-tree~ junk files everywhere...
-;; (straight-use-package 'undo-tree)
-;; (global-undo-tree-mode +1)
+(straight-use-package 'undo-tree)
+(global-undo-tree-mode +1)
+;; don't make undo-tree temp files pollute everything
+(setq undo-tree-history-directory-alist
+      `(("." . ,(expand-file-name "undo" user-emacs-directory))))
 
 ;;; Vim emulation
 
@@ -239,7 +241,7 @@
 (setq evil-want-C-u-scroll t)
 (setq evil-want-C-i-jump nil)
 (setq evil-respect-visual-line-mode t)
-;; (setq evil-undo-system 'undo-tree)
+(setq evil-undo-system 'undo-tree)
 (evil-mode 1)
 
 ;; automatically configure evil for some common modes
