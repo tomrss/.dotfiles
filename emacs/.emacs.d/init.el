@@ -200,14 +200,14 @@
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
 
-;; Ensure that pcomplete does not write to the buffer
 ;; dont' remember where I found this piece of code
-(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 (add-hook 'eshell-mode-hook
           (lambda ()
             (setq-local corfu-quit-at-boundary t
                         corfu-quit-no-match t)
             (corfu-mode +1)))
+
+;; support corfu in terminal too
 (unless (display-graphic-p)
   (corfu-terminal-mode +1))
 
@@ -219,18 +219,18 @@
 
 (add-to-list 'completion-at-point-functions #'cape-file)
 (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-
-;; silence the pcomplete capf
+(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
 
 ;;;; Editing
 
-;; navigable undo/redo tree
+;;; Navigable undo/redo tree
+
 (straight-use-package 'undo-tree)
-(global-undo-tree-mode +1)
 ;; don't make undo-tree temp files pollute everything
 (setq undo-tree-history-directory-alist
       `(("." . ,(expand-file-name "undo" user-emacs-directory))))
+(global-undo-tree-mode +1)
 
 ;;; Vim emulation
 
