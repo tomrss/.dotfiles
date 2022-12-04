@@ -90,7 +90,7 @@
 (setq scroll-conservatively 10000)
 (setq scroll-preserve-screen-position 1)
 
-(load-theme 'misterioso)
+(load-theme 'modus-vivendi)
 
 (setq inhibit-startup-echo-area-message "tomrss")
 
