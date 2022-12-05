@@ -17,6 +17,7 @@
 
 (defconst +gc-cons-standard-threshold-mb 1024
   "Number of MB of consing between garbage collection during normal operativity.")
+
 (defconst +gc-cons-startup-threshold-mb 2048
   "Number of MB of consing between garbage collection during startup.")
 
@@ -67,11 +68,6 @@
         (background-color . "#000000")))
 
 (set-face-attribute 'default nil :foreground "#ffffff")
-
-;;;; Move backups elsewhere
-
-;; (setq default-directory "~/")
-(setq backup-directory-alist `(("." . "~/.cache/emacs/var/backup/")))
 
 (menu-bar-mode -1)
 ;;; early-init.el ends here

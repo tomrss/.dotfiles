@@ -38,7 +38,7 @@
 
 ;; put backups in one folder
 (setq backup-directory-alist
-      `(("." . ,(concat user-emacs-directory "backups"))))
+      `(("." . ,(locate-user-emacs-file "backups"))))
 
 ;; change some backup default
 (setq backup-by-copying t)

@@ -3,7 +3,7 @@
 !**/.emacs.d/*.sh
 !**/.emacs.d/packages/
 !**/.emacs.d/lisp/
-**/.emacs.d/*
+**/.emacs-new.d/*
 !**/.emacs-new.d/*.el
 !**/.emacs-new.d/*.sh
 !**/.emacs-new.d/packages/
