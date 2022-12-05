@@ -590,6 +590,7 @@
 		(flycheck-error-list-mode :popup t :select t :align below :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t)
         ("\\*eldoc" :regexp t :popup t :noselect t :align above :size 0.25)
+        (kubernetes-overview-mode :select t :align left :size 0.5)
         ("\\*terraform.*\\*" :regexp t :select t :popup t :align right))
       shackle-default-rule
       '(:noselect t))
@@ -1145,7 +1146,8 @@ If INTERACTIVE is non-nil, `comint-mode' will be used."
   (interactive)
   (+terraform-command "destroy" t))
 
-;; Rest client
+;;; Rest client
+
 (straight-use-package 'restclient)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
@@ -1153,5 +1155,16 @@ If INTERACTIVE is non-nil, `comint-mode' will be used."
 ;; example: dump request to file on `restclient-http-do-hook',
 ;; then dump response to same file on `restclient-response-loaded-hook'.
 ;; just be careful on major mode
+
+;;; Kubernetes
+
+(straight-use-package 'kubernetes)
+(straight-use-package 'kubernetes-evil)
+(with-eval-after-load 'kubernetes-overview
+  ;; set very low frequency because it is too dangerous and slow
+  (setq kubernetes-poll-frequency 3600)
+  (setq kubernetes-redraw-frequency 3600)
+  ;; press enter to view kubernetes resource YAML
+  (require 'kubernetes-evil))
 
 ;;; init.el ends here
