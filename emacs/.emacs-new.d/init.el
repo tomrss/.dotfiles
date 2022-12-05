@@ -199,6 +199,12 @@
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
 
+;; TODO this would be nice, but straight doesn't add corfu extensions to build
+;; (corfu-popupinfo-mode +1)
+;; (setq corfu-popupinfo-delay '(2.0 . 0.))
+;; (define-key corfu-map (kbd "C-k") #'corfu-previous)
+;; (set-face-attribute 'corfu-popupinfo nil :height 1.0)
+
 ;; dont' remember where I found this piece of code
 (add-hook 'eshell-mode-hook
           (lambda ()
