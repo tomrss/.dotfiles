@@ -11,10 +11,27 @@
 ;; Update Emacs packages with the `straight' package manager.
 
 ;;; Code:
-(require 'straight)
 
-(straight-pull-all)
-(straight-rebuild-all)
-(straight-freeze-versions)
+
+(defun +install (_)
+  "Install packages."
+  (load-file (locate-user-emacs-file "early-init.el"))
+  (load-file (locate-user-emacs-file "init.el"))
+  (straight-rebuild-all))
+
+(defun +update (force-rebuild)
+  "Update packages.
+
+If FORCE-REBUILD is non-nil, force rebuild of all packages."
+  (load-file (locate-user-emacs-file "early-init.el"))
+  (load-file (locate-user-emacs-file "init.el"))
+  (straight-pull-all)
+  (straight-freeze-versions)
+  (when force-rebuild
+    (straight-rebuild-all)))
+
+(defun +uninstall (prune-state)
+  "Uninstall packages and prune state if PRUNE-STATE is non-nil"
+  (message "Feature not implemented."))
 
 ;;; update.el ends here
