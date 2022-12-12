@@ -973,22 +973,11 @@ to."
 ;; make eglot completions work with orderless + corfu
 (setq completion-category-overrides '((eglot (styles orderless))))
 
-;; TODO hooks
-;; TODO shackle rule for *eldoc* buffers
-
 ;;; Java
 
 ;; TODO it doeesnt work
 ;; (straight-use-package 'eglot-java)
 ;; (add-hook 'java-mode-hook 'eglot-java-mode)
-;; (add-hook 'eglot-java-mode-hook
-;;           (lambda ()
-;;             (define-key eglot-java-mode-map (kbd "C-c j n") #'eglot-java-file-new)
-;;             (define-key eglot-java-mode-map (kbd "C-c j x") #'eglot-java-run-main)
-;;             (define-key eglot-java-mode-map (kbd "C-c j t") #'eglot-java-run-test)
-;;             (define-key eglot-java-mode-map (kbd "C-c j N") #'eglot-java-project-new)
-;;             (define-key eglot-java-mode-map (kbd "C-c j T") #'eglot-java-project-build-task)
-;;             (define-key eglot-java-mode-map (kbd "C-c j R") #'eglot-java-project-build-refresh)))
 
 ;;; Groovy
 
