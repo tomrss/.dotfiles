@@ -196,6 +196,7 @@
 (setq corfu-quit-at-boundary t)
 (setq corfu-preselect-first t)
 (global-corfu-mode 1)
+(keymap-unset corfu-map "RET")
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
 
