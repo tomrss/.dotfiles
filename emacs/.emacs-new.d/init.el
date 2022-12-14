@@ -196,7 +196,6 @@
 (setq corfu-quit-at-boundary t)
 (setq corfu-preselect-first t)
 (global-corfu-mode 1)
-(keymap-unset corfu-map "RET")
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
 
@@ -945,7 +944,8 @@ to."
 ;; setup for showing indent guides (configure hook in specific mode)
 (straight-use-package 'highlight-indent-guides)
 (with-eval-after-load 'highlight-indent-guides
-  (setq highlight-indent-guides-method 'character))
+  (setq highlight-indent-guides-method 'character)
+  (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "#48494b"))
 
 ;; aggressively indent as you type
 ;; TODO this sometimes interfere with undo
