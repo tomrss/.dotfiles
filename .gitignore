@@ -1,4 +1,5 @@
 **/.emacs.d/*
+!**/.emacs.d/Makefile
 !**/.emacs.d/*.el
 !**/.emacs.d/*.sh
 !**/.emacs.d/packages/
