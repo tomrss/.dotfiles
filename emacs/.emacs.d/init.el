@@ -569,7 +569,7 @@
 
 ;;; Workspaces (tab-bar-mode)
 
-;; TODO
+;; TODO find out out to use tab-bar-mode
 (setq tab-bar-show nil)
 (setq tab-bar-new-tab-choice "*Welcome*")
 (tab-bar-mode +1)
@@ -859,23 +859,9 @@ to."
       (when parent-dir
         (eshell/cd parent-dir)))))
 
-;; eshell help and docs
-;; TODO not convinced about this one
-;; (straight-use-package 'esh-help)
-;; (with-eval-after-load 'eshell
-;;   (setup-esh-help-eldoc))
-
 ;; eshell syntax highlighting
 (straight-use-package 'eshell-syntax-highlighting)
 (add-hook 'eshell-mode-hook #'eshell-syntax-highlighting-mode)
-
-;; eshell suggestions in fish style
-;; TODO this package requires company...
-;; TODO find another
-;; (straight-use-package 'esh-autosuggest)
-;; (with-eval-after-load 'esh-autosuggest
-;;   (setq esh-autosuggest-delay 0.5))
-;; (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
 
 ;;;; Development
 
