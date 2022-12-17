@@ -584,13 +584,13 @@
 		(help-mode :popup t :select t :align below :size 0.33)
 		(helpful-mode :popup t :select t :align below :size 0.33)
 		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
-		("\\*.*v?term\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
+		("\\*.*v?term\\*.*\\'" :regexp t :popup t :select t :align below :size 0.33)
 		(flycheck-error-list-mode :popup t :select t :align below :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t)
         ("\\*eldoc" :regexp t :popup t :noselect t :align right :size 80)
         (kubernetes-overview-mode :select t :align left :size 0.5)
-        ("\\*terraform.*\\*" :regexp t :select t :popup t :align right))
-      shackle-default-rule
+        ("\\*terraform.*\\*" :regexp t :select t :popup t :align right)))
+(setq shackle-default-rule
       '(:noselect t))
 
 ;; define and manage popup buffers
@@ -670,20 +670,30 @@
   (setq vterm-kill-buffer-on-exit t))
 
 ;; add as project popup shell
-(defun +project-vterm ()
-  "Start term in the current project's root directory.
+(defun +project-vterm (&optional arg)
+  "Start vterm in the current project's root directory.
+
 If a buffer already exists for running a shell in the project's root,
 switch to it.  Otherwise, create a new shell buffer.
-With \\[universal-argument] prefix arg, create a new inferior shell buffer even
-if one already exists."
-  (interactive)
+
+If a numeric universal argument ARG is passed, get or create a vterm
+named after ARG.  That allows multiple vterm project vterms for
+the same project."
+  (interactive "P")
   (let* ((default-directory (project-root (project-current t)))
-         (default-project-vterm-name (project-prefixed-buffer-name "vterm"))
-         (vterm-buffer (get-buffer default-project-vterm-name)))
-    (if (and vterm-buffer (not current-prefix-arg))
-        (pop-to-buffer-same-window vterm-buffer)
-      (let ((vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
-        (vterm)))))
+         (buf-basename (project-prefixed-buffer-name "vterm"))
+         (buf-name (cond
+                    ((numberp arg)
+                     (format "%s<%d>" buf-basename arg))
+                    ((stringp arg)
+                     (format "%s--%s" buf-basename arg))
+                    (arg
+                     (generate-new-buffer-name buf-basename))
+                    (t
+                     buf-basename))))
+    (if-let ((buf (get-buffer buf-name)))
+        (pop-to-buffer buf)
+      (vterm-other-window buf-name))))
 
 ;; overrides `project-vc-dir' but I use magit
 (define-key project-prefix-map (kbd "v") #'+project-vterm)
