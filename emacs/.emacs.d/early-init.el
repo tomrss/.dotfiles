@@ -1,6 +1,6 @@
 ;;; early-init.el --- Emacs early init -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021 Tommaso Rossi
+;; Copyright (C) 2022 Tommaso Rossi
 
 ;; Author: Tommaso Rossi <tommaso.rossi1@protonmail.com
 
@@ -17,6 +17,7 @@
 
 (defconst +gc-cons-standard-threshold-mb 1024
   "Number of MB of consing between garbage collection during normal operativity.")
+
 (defconst +gc-cons-startup-threshold-mb 2048
   "Number of MB of consing between garbage collection during startup.")
 
@@ -63,14 +64,10 @@
         (undecorated . t)
         ;; start fullscreen
         (fullscreen . maximized)
-        ;; avoid blinding white on startup, this is bg of `doom-nord'
-        (background-color . "#2E3440")))
+        ;; avoid blinding white on startup
+        (background-color . "#000000")))
 
-(set-face-attribute 'default     nil :foreground "white")
+(set-face-attribute 'default nil :foreground "#ffffff")
 
-;;;; Move backups elsewhere
-
-(setq default-directory "~/")
-(setq backup-directory-alist `(("." . "~/.cache/emacs/var/backup/")))
-
+(menu-bar-mode -1)
 ;;; early-init.el ends here

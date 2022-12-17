@@ -1,6 +1,6 @@
-;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
+;;; init.el --- Emacs configuration -*- lexical-binding: t; eval: (flymake-mode 0) -*-
 
-;; Copyright (C) 2021 Tommaso Rossi
+;; Copyright (C) 2022 Tommaso Rossi
 
 ;; Author: Tommaso Rossi <tommaso.rossi1@protonmail.com
 
@@ -12,8 +12,7 @@
 
 ;;; Code:
 
-(require 'seq)
-(require 'project)			; not sure if needed
+(require 'project)
 
 ;;;; Early configuration
 
@@ -24,7 +23,7 @@
 (toggle-scroll-bar -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
-
+(setq inhibit-startup-screen t)
 ;; mute the bell
 (setq ring-bell-function 'ignore)
 ;; remove graphical dialog box and keep it keyboard driven
@@ -39,7 +38,7 @@
 
 ;; put backups in one folder
 (setq backup-directory-alist
-      `(("." . ,(concat user-emacs-directory "backups"))))
+      `(("." . ,(locate-user-emacs-file "backups"))))
 
 ;; change some backup default
 (setq backup-by-copying t)
@@ -63,18 +62,19 @@
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
+      (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-		(url-retrieve-synchronously
-		 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-		 'silent 'inhibit-cookies)
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
 ;; configure straight lockfile (it can be committed)
-(setq straight-profiles '((nil . "~/.emacs.d/lockfile.el")))
+(setq straight-profiles
+      `((nil . ,(expand-file-name "lockfile.el" user-emacs-directory))))
 
 ;;;; Key bindings
 
@@ -195,10 +195,15 @@
 (setq corfu-cycle t)
 (setq corfu-quit-at-boundary t)
 (setq corfu-preselect-first t)
-(setq corfu-echo-documentation 0)
 (global-corfu-mode 1)
 (define-key corfu-map (kbd "C-j") #'corfu-next)
 (define-key corfu-map (kbd "C-k") #'corfu-previous)
+
+;; TODO this would be nice, but straight doesn't add corfu extensions to build
+;; (corfu-popupinfo-mode +1)
+;; (setq corfu-popupinfo-delay '(2.0 . 0.))
+;; (define-key corfu-map (kbd "C-k") #'corfu-previous)
+;; (set-face-attribute 'corfu-popupinfo nil :height 1.0)
 
 ;; dont' remember where I found this piece of code
 (add-hook 'eshell-mode-hook
@@ -206,8 +211,6 @@
             (setq-local corfu-quit-at-boundary t
                         corfu-quit-no-match t)
             (corfu-mode +1)))
-
-;; support corfu in terminal too
 (unless (display-graphic-p)
   (corfu-terminal-mode +1))
 
@@ -219,8 +222,8 @@
 
 (add-to-list 'completion-at-point-functions #'cape-file)
 (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-silent)
+(advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
 
 ;;;; Editing
 
@@ -280,8 +283,18 @@
 			            :type git
 			            :host github
                         :repo "tomrss/scratch.el"))
-(setq scratch-search-fn #'consult-ripgrep)
-(scratch-persist-mode +1)
+;;(autoload 'scratch-key-map "scratch" nil t 'keymap)
+(with-eval-after-load 'scratch
+  (message "scratch loaded my man")
+  (setq scratch-search-fn #'consult-ripgrep)
+  (scratch-persist-mode +1))
+
+(eval-and-compile
+  (define-prefix-command 'scratch-key-map))
+(define-key scratch-key-map (kbd "n") #'scratch-new)
+(define-key scratch-key-map (kbd "t") #'scratch-titled)
+(define-key scratch-key-map (kbd "o") #'scratch-open)
+(define-key scratch-key-map (kbd "r") #'scratch-search)
 (+define-key (kbd "C-c s") scratch-key-map)
 
 ;;;; User interface
@@ -292,8 +305,7 @@
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
 
 ;;; Fonts and icons
-
-(when (symbol-value 'window-system)
+(when (display-graphic-p)
   (if (x-list-fonts "JetBrains Mono NL")
       (progn
         (set-face-attribute 'default     nil :font "JetBrains Mono NL" :height 110 :weight 'normal)
@@ -303,31 +315,31 @@
     (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'normal)))
 
 (straight-use-package 'all-the-icons)
-(when (symbol-value 'window-system)
+(when (display-graphic-p)
+  (require 'all-the-icons nil nil)
   (unless (x-list-fonts "all-the-icons")
     (if IS-WINDOWS
-		(warn "Run M-x all-the-icons-install-fonts to download the fonts, then install them manually")
-      (all-the-icons-install-fonts t)))
-  (require 'all-the-icons nil nil))
+	    (warn "RuntimeWarning M-x all-the-icons-install-fonts to download the fonts, then install them manually")
+      (all-the-icons-install-fonts t))))
 
 ;;; Theme
 
-(if (symbol-value 'window-system)
-    (progn
-	  ;; use doom themes
-      (straight-use-package 'doom-themes)
-      (load-theme 'doom-nord t)
-      (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
-      (set-face-attribute 'completions-annotations nil :foreground "#EBCB8B"))
-  ;; use builtin theme
-  (load-theme 'misterioso))
+;; use doom themes
+;; (straight-use-package 'doom-themes)
+;; (load-theme 'doom-nord t)
+;; (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
+;; (set-face-attribute 'completions-annotations nil :foreground "#EBCB8B")
+
+(setq modus-themes-mode-line '(accented))
+(setq modus-themes-bold-constructs t)
+(setq modus-themes-italic-constructs t)
+(load-theme 'modus-vivendi)
 
 ;;; Modeline
 
-(when (symbol-value 'window-system)
-  ;; TODO doom-modeline is great but it's heavy, write something smaller
-  (straight-use-package 'doom-modeline)
-  (doom-modeline-mode +1))
+(straight-use-package 'doom-modeline)
+(setq doom-modeline-icon (display-graphic-p))
+(doom-modeline-mode +1)
 
 ;;; Line and column numbers
 
@@ -340,6 +352,7 @@
 
 ;;; Smooth scrolling
 
+(pixel-scroll-precision-mode +1)
 (setq fast-but-imprecise-scrolling t)
 (setq scroll-margin 1)
 (setq scroll-step 1)
@@ -349,7 +362,8 @@
 ;;; Highlight current line
 
 (straight-use-package 'hl-line)
-(setq hl-line-sticky-flag nil)
+(with-eval-after-load 'hl-line
+  (setq hl-line-sticky-flag nil))
 (add-hook 'dired-mode-hook #'hl-line-mode)
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'special-mode-hook #'hl-line-mode)
@@ -358,7 +372,7 @@
 
 ;; configure Dired
 (with-eval-after-load 'dired
-  ;; dired defualts
+  ;; dired defaults
   (setq dired-auto-revert-buffer t)
   (setq dired-dwim-target t)
   (setq dired-recursive-copies 'always)
@@ -394,34 +408,14 @@
 (+define-key (kbd "C-x j") #'dired-jump)
 
 ;; use icons in dired
-(when (symbol-value 'window-system)
-  (straight-use-package 'all-the-icons-dired)
-  (with-eval-after-load 'dired
-    (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
+(straight-use-package 'all-the-icons-dired)
+(with-eval-after-load 'dired
+  (add-hook 'dired-mode-hook #'all-the-icons-dired-mode))
 
 ;; colorize dired
 (straight-use-package 'diredfl)
 (with-eval-after-load 'dired
   (add-hook 'dired-mode-hook #'diredfl-mode))
-
-;;; Project tree view
-
-;; i wish i could get rid of treemacs, but lsp (dap) requires it...
-(straight-use-package 'treemacs)
-(with-eval-after-load 'treemacs
-  (treemacs-resize-icons 16))
-
-;; integrate with magit
-(straight-use-package 'treemacs-magit)
-(with-eval-after-load 'magit
-  (with-eval-after-load 'treemacs
-    (require 'treemacs-magit nil nil)))
-
-;; integrate with evil
-(straight-use-package 'treemacs-evil)
-(with-eval-after-load 'evil
-  (with-eval-after-load 'treemacs
-    (require 'treemacs-evil nil nil)))
 
 ;;; Process management
 
@@ -441,51 +435,51 @@
   (visual-fill-column-mode +1))
 
 ;;; Starting screen
-(when (symbol-value 'window-system)
-  ;; i wrote this package and it's not great
-  ;; TODO at least add a readme in it
-  ;; TODO make it private because it sucks
-  (straight-use-package '(welcome
-                          :type git
-                          :host github
-                          :repo "tomrss/welcome.el"
-                          :files ("welcome.el" "asset")))
-  (with-eval-after-load 'welcome
-    (setq welcome-menu-items
-          '(("Recent files"
-             :key "f"
-             :action consult-recent-file
-             :icon "history")
-            ("Projects"
-             :key "p"
-             :action project-switch-project
-             :icon "code")
-            ("Dired"
-             :key "d"
-             :action dired
-             :icon "file-directory")
-            ("Edit configuration"
-             :key "c"
-             :action (lambda ()
-                       (interactive)
-                       (find-file user-init-file))
-             :icon "gear")
-            ("Eshell"
-             :key "e"
-             :action eshell
-             :icon "terminal")
-            ("Scratch"
-             :key "s"
-             :action scratch-new
-             :icon "file-text")))
 
-    (evil-set-initial-state 'welcome-mode 'emacs)
-    (define-key welcome-mode-map (kbd "j") #'next-line)
-    (define-key welcome-mode-map (kbd "k") #'previous-line)
-    (add-hook 'welcome-mode-hook
-              (lambda () (+setup-visual-fill welcome-window-width))))
+;; i wrote this package and it's not great
+;; TODO at least add a readme in it
+;; TODO make it private because it sucks
+(straight-use-package '(welcome
+                        :type git
+                        :host github
+                        :repo "tomrss/welcome.el"
+                        :files ("welcome.el" "asset")))
+(with-eval-after-load 'welcome
+  (setq welcome-menu-items
+        '(("Recent files"
+           :key "f"
+           :action consult-recent-file
+           :icon "history")
+          ("Projects"
+           :key "p"
+           :action project-switch-project
+           :icon "code")
+          ("Dired"
+           :key "d"
+           :action dired
+           :icon "file-directory")
+          ("Edit configuration"
+           :key "c"
+           :action (lambda ()
+                     (interactive)
+                     (find-file user-init-file))
+           :icon "gear")
+          ("Eshell"
+           :key "e"
+           :action eshell
+           :icon "terminal")
+          ("Scratch"
+           :key "s"
+           :action scratch-new
+           :icon "file-text")))
 
-  (add-hook 'emacs-startup-hook #'welcome-screen))
+  (evil-set-initial-state 'welcome-mode 'emacs)
+  (define-key welcome-mode-map (kbd "j") #'next-line)
+  (define-key welcome-mode-map (kbd "k") #'previous-line)
+  (add-hook 'welcome-mode-hook
+            (lambda () (+setup-visual-fill welcome-window-width))))
+
+(add-hook 'emacs-startup-hook #'welcome-screen)
 
 ;;;; Org mode
 
@@ -531,21 +525,21 @@
             (lambda ()
               (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
-;;; Org roam
+;; ;;; Org roam
 
-(straight-use-package 'org-roam)
-(defvar +org-roam-base-dir)
-(setq org-roam-v2-ack t)
-(+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)
-(+define-key (kbd "C-c n f") #'org-roam-node-find)
-(+define-key (kbd "C-c n i") #'org-roam-node-insert)
-(with-eval-after-load 'org-roam
-  (unless (file-exists-p +org-roam-base-dir)
-    (make-directory +org-roam-base-dir))
-  (setq org-roam-directory +org-roam-base-dir)
-  (setq org-roam-completion-everywhere t)
-  (define-key org-mode-map (kbd "C-i") #'completion-at-point)
-  (org-roam-setup))
+;; (straight-use-package 'org-roam)
+;; (defvar +org-roam-base-dir)
+;; (setq org-roam-v2-ack t)
+;; (+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)
+;; (+define-key (kbd "C-c n f") #'org-roam-node-find)
+;; (+define-key (kbd "C-c n i") #'org-roam-node-insert)
+;; (with-eval-after-load 'org-roam
+;;   (unless (file-exists-p +org-roam-base-dir)
+;;     (make-directory +org-roam-base-dir))
+;;   (setq org-roam-directory +org-roam-base-dir)
+;;   (setq org-roam-completion-everywhere t)
+;;   (define-key org-mode-map (kbd "C-i") #'completion-at-point)
+;;   (org-roam-setup))
 
 ;;;; Windows and buffer management
 
@@ -577,6 +571,7 @@
 
 ;;; Workspaces (tab-bar-mode)
 
+;; TODO
 (setq tab-bar-show nil)
 (setq tab-bar-new-tab-choice "*Welcome*")
 (tab-bar-mode +1)
@@ -588,13 +583,15 @@
 (shackle-mode +1)
 (setq shackle-rules
       '((compilation-mode :noselect t)
-		(help-mode :popup t :select t :align bottom :size 0.33)
-		(helpful-mode :popup t :select t :align bottom :size 0.33)
-		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
-		("\\*.*v?term\\*\\'" :regexp t :popup t :select t :align bottom :size 0.33)
-		(flycheck-error-list-mode :popup t :select t :align top :size 0.25)
+		(help-mode :popup t :select t :align below :size 0.33)
+		(helpful-mode :popup t :select t :align below :size 0.33)
+		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
+		("\\*.*v?term\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
+		(flycheck-error-list-mode :popup t :select t :align below :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t)
-        ("\\*terraform.*\\*" :regexp t :select t :popup t ))
+        ("\\*eldoc" :regexp t :popup t :noselect t :align right :size 80)
+        (kubernetes-overview-mode :select t :align left :size 0.5)
+        ("\\*terraform.*\\*" :regexp t :select t :popup t :align right))
       shackle-default-rule
       '(:noselect t))
 
@@ -682,7 +679,7 @@ if one already exists."
          (vterm-buffer (get-buffer default-project-vterm-name)))
     (if (and vterm-buffer (not current-prefix-arg))
         (pop-to-buffer-same-window vterm-buffer)
-      (let ((+vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
+      (let ((vterm-buffer-name (generate-new-buffer-name default-project-vterm-name)))
         (vterm)))))
 
 ;; overrides `project-vc-dir' but I use magit
@@ -705,6 +702,8 @@ if one already exists."
 							(magit-get-current-branch))))
       (concat
        (if (bobp) "" "\n")
+       (when (bound-and-true-p pyvenv-virtual-env-name)
+         (propertize (concat "(" pyvenv-virtual-env-name ") ") 'face 'font-lock-type-face))
        (propertize user-login-name 'face 'font-lock-keyword-face)
        (propertize " • " 'face `(:foreground "white"))
        (propertize (+prompt-path) 'face 'font-lock-function-name-face)
@@ -891,6 +890,8 @@ to."
 (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
 (add-hook 'prog-mode-hook #'diff-hl-mode)
 (add-hook 'prog-mode-hook #'diff-hl-margin-mode)
+;; update the highlighting without saving
+(diff-hl-flydiff-mode t)
 
 ;;; Configure parentheses
 
@@ -915,17 +916,9 @@ to."
 
 ;;; Syntax checking
 
-(straight-use-package 'flycheck)
-(straight-use-package 'flycheck-inline)
-(straight-use-package 'consult-flycheck)
-(with-eval-after-load 'flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-inline-mode)
-  (with-eval-after-load 'consult
-	(define-key flycheck-command-map (kbd "!") #'consult-flycheck)))
+(add-hook 'prog-mode-hook #'flymake-mode)
 
-;; (add-hook 'prog-mode-hook #'flycheck-mode)
-
-;;; Enhance compilation buffer
+;;; Compilation buffer
 
 ;; colorize compilation buffer
 (with-eval-after-load 'compilation-mode
@@ -951,13 +944,13 @@ to."
 ;; setup for showing indent guides (configure hook in specific mode)
 (straight-use-package 'highlight-indent-guides)
 (with-eval-after-load 'highlight-indent-guides
-  (setq highlight-indent-guides-method 'character))
+  (setq highlight-indent-guides-method 'character)
+  (set-face-attribute 'highlight-indent-guides-character-face nil :foreground "#48494b"))
 
 ;; aggressively indent as you type
 ;; TODO this sometimes interfere with undo
 (straight-use-package 'aggressive-indent)
 (autoload 'aggressive-indent-mode "aggressive-indent")
-
 (with-eval-after-load 'aggressive-indent
   (setq aggressive-indent-comments-too t)
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
@@ -965,225 +958,93 @@ to."
 (add-hook 'lisp-mode-hook #'aggressive-indent-mode)
 (add-hook 'scheme-mode-hook #'aggressive-indent-mode)
 
-;;; LSP mode
+;;; Snippets
 
-;; code snippets
-(straight-use-package 'yasnippet)
+;; TODO try tempel
 
-;; language server protocol
-(straight-use-package 'lsp-mode)
-(setq lsp-keymap-prefix "M-RET")	; don't know why, if inside after load doesn't work...
-(with-eval-after-load 'lsp-mode
-  ;; try to fix completions
-  ;; TODO corfu do not work really well with lsp
-  (defun +corfu-lsp-setup ()
-    "Try to setup corfu in lsp mode."
-    (setq-local completion-styles '(orderless))
-    (setq-local completion-category-defaults nil))
-  (add-hook 'lsp-mode-hook #'+corfu-lsp-setup)
-  (setq lsp-completion-provider :none)
-  ;; enable snippets
-  (add-hook 'lsp-mode-hook #'yas-minor-mode)
-  ;; show path of current file
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode)
-  ;; suggest keys
-  (setq lsp-enable-which-key-integration t))
+;;; LSP (eglot)
 
-(defun +lsp-really-deferred ()
-  "Load LSP deferred excluding consult previews."
+(defun +eglot-deferred ()
+  "Load eglot deferred excluding consult previews."
   (unless (+consult-preview-p)
-    (lsp-deferred)))
+    (eglot-ensure)))
 
-;; debugger
-(straight-use-package 'dap-mode)
-(with-eval-after-load 'lsp-mode
-  (with-eval-after-load 'dap-mode
-    (define-key dap-mode-map (kbd "<f8>") #'dap-next)
-    (define-key dap-mode-map (kbd "<f9>") #'dap-continue)
-    (define-key dap-mode-map (kbd "<f7>") #'dap-step-in)
-    (define-key dap-mode-map (kbd "S-<f8>") #'dap-step-out)
-    (define-key dap-mode-map (kbd "M-<f8>") #'dap-evaluate)
-    (dap-auto-configure-mode)))
-
-;; quick and dirty auto download and compile ls from source
-(defun +build-lsp-server-from-git (url ls-install-dir build-command)
-  "Build LSP language server in LS-INSTALL-DIR from git source at URL with BUILD-COMMAND."
-  (unless (file-directory-p (expand-file-name ".git" ls-install-dir))
-    (when (y-or-n-p "Language server not found. Do you want to build one from source? ")
-      ;; todo use compilation-start
-      (with-current-buffer (get-buffer-create "*custom-language-server-build*")
-		(display-buffer (current-buffer))
-		(let ((git-clone-cmd (format "git clone %s %s" url ls-install-dir)))
-		  (call-process-shell-command git-clone-cmd nil t t)
-		  ;; TODO handle error
-		  (goto-char (point-max))
-		  (insert "git clone done.\n")
-		  (let ((default-directory ls-install-dir))
-			(display-buffer (current-buffer))
-			(call-process-shell-command build-command nil t t))
-		  (message "Custom LSP server install success (probably). Check *custom-language-server-build* buffer"))))))
+(+define-key (kbd "M-RET") #'eglot-code-actions)
+;; make eglot completions work with orderless + corfu
+(setq completion-category-overrides '((eglot (styles orderless))))
 
 ;;; Java
 
-;; TODO parse lombok version from pom
-(defvar lombok-jar-path
-  (expand-file-name
-   "~/.m2/repository/org/projectlombok/lombok/1.18.10/lombok-1.18.10.jar")
-  "Path of the lombok jar.")
-
-(straight-use-package 'lsp-java)
-(with-eval-after-load 'lsp-java
-  (when (file-exists-p lombok-jar-path)
-    (setq lsp-java-vmargs
-		  `("-XX:+UseStringDeduplication" ,(concat "-javaagent:" lombok-jar-path)
-			,(concat "-Xbootclasspath/a:" lombok-jar-path)
-			"--add-modules=ALL-SYSTEM"))))
-
-(defun +setup-java ()
-  "Setup java with LSP."
-  (unless (+consult-preview-p)
-    (lsp-deferred)
-    (require 'lsp-java)
-    (require 'dap-java)))
-
-(add-hook 'java-mode-hook #'+setup-java)
+;; TODO it doeesnt work
+;; (straight-use-package 'eglot-java)
+;; (add-hook 'java-mode-hook 'eglot-java-mode)
 
 ;;; Groovy
 
 (straight-use-package 'groovy-mode)
+(add-hook 'groovy-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
-(with-eval-after-load 'groovy-mode
-  (defvar groovy-ls-install-dir "~/.emacs.d/.cache/lsp/groovy-language-server/"
-    "Groovy language server installation folder")
-  ;; TODO check if default server exists before installing custom
-  (+build-lsp-server-from-git "https://github.com/GroovyLanguageServer/groovy-language-server.git"
-							  groovy-ls-install-dir
-							  "./gradlew build")
-  ;; TODO handle execution status
-  (setq lsp-groovy-server-file
-		(expand-file-name "build/libs/groovy-language-server-all.jar"
-                          groovy-ls-install-dir)))
 
-(add-hook 'groovy-mode-hook #'+lsp-really-deferred)
+;;; Kotlin
+
+(straight-use-package 'kotlin-mode)
+(add-hook 'kotlin-mode-hook #'+eglot-deferred)
+(add-to-list 'auto-mode-alist '("\\.kt\\'" . kotlin-mode))
+
+;;; Scala
+
+(straight-use-package 'scala-mode)
+(add-hook 'scala-mode-hook #'+eglot-deferred)
+(add-to-list 'auto-mode-alist '("\\.sc\(ala\)?\\'" . scala-mode))
 
 ;;; Clojure
 
 (straight-use-package 'clojure-mode)
-(add-hook 'clojure-mode-hook #'+lsp-really-deferred)
+(add-hook 'clojure-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
-
 (straight-use-package 'cider)
-
-;;; Node.js
-
-(straight-use-package 'typescript-mode)
-(with-eval-after-load 'typescript-mode
-  (require 'dap-node)
-  (dap-node-setup)
-  (setq typescript-indent-level 2))
-(add-hook 'typescript-mode-hook #'+lsp-really-deferred)
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-
-(straight-use-package 'npm-mode)
-(with-eval-after-load 'typescript-mode
-  (require 'npm-mode nil nil))
-
-(straight-use-package 'nvm)
-(autoload 'nvm--installed-versions "nvm" nil t)
-;; TODO: this is global but should be buffer local
-(defun +nvm-use (version)
-  "Interactive wrapper of `nvm-use'.  Choose node VERSION amongst installed versions."
-  (interactive
-   (list
-    (completing-read "Version: " (mapcar 'car (nvm--installed-versions)))))
-  (nvm-use version)
-  (message "Using node version %s" version))
-
-(require 's)
-(require 'f)
-
-;; TODO: continue prompt of node version in case of missing .nvmrc
-;; TODO: this probably sucks
-(defun +nvm-project ()
-  "Set up project node interpreter with nvm.
-If .nvmrc is present in project root, it will be used.  Otherwise node
-version will be prompted."
-  (interactive)
-  (when (file-exists-p (expand-file-name "package.json"
-                                         (project-root (project-current))))
-    (let ((nvmrc (expand-file-name ".nvmrc" (project-root (project-current)))))
-      (if (file-exists-p nvmrc)
-		  (let ((version (s-trim (f-read nvmrc))))
-			(nvm-use version)
-			(message "Using node version %s" version))
-		(call-interactively '+nvm-use)))))
 
 ;;; Python
 
 (straight-use-package 'pyvenv)
 (with-eval-after-load 'pyvenv
-  ;; TODO
-  ;; (setenv "WORKON_HOME" "/home/user/.virtualenv_workon_home/")
-  (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name
-                                     ("[venv:" pyvenv-virtual-env-name "] "))))
+  (setq pyvenv-mode-line-indicator
+        '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] "))))
 
-(defun +setup-python ()
-  "Setup python development."
-  (highlight-indent-guides-mode +1)
+(defun +setup-virtualenv-project (proj)
+  "Setup pyvenv in project PROJ."
   (pyvenv-mode +1)
-  (+lsp-really-deferred))
+  (let* ((proj-name (project-name proj))
+         (venv-directory (expand-file-name proj-name (pyvenv-workon-home))))
+    (when (and pyvenv-virtual-env-name
+               (not (string-equal proj-name pyvenv-virtual-env-name)))
+      (pyvenv-deactivate))
+    (unless pyvenv-virtual-env-name
+      (unless (file-directory-p venv-directory)
+        (pyvenv-create proj-name "python"))
+      (pyvenv-activate venv-directory))))
 
-(add-hook 'python-mode-hook #'+setup-python)
-
-;; TODO this does not work, and sucks
-(defun +pyvenv-activate-project ()
-  "Activate python venv in current project."
+(defun +setup-virtualenv ()
+  "Setup virtual environment."
   (interactive)
-  (if-let ((current-project (project-current)))
-      (let* ((default-directory (project-root current-project))
-             (venv (expand-file-name "venv")))
-        (pyvenv-deactivate)
-        (if (file-exists-p venv)
-            (pyvenv-activate venv)
-          (message "create venv first. or implement this function right...")))
-    (message "no current project")))
+  (+setup-virtualenv-project (project-current t)))
 
-;;; Rust
-
-(straight-use-package 'rust-mode)
-(with-eval-after-load 'rust-mode
-  (straight-use-package 'flycheck-rust)
-  (require 'flycheck-rust nil nil)
-  (straight-use-package 'cargo)
-  (add-hook 'rust-mode-hook #'cargo-minor-mode)
-  (straight-use-package 'racer)
-  (with-eval-after-load 'racer
-    (progn
-      (add-hook 'racer-mode-hook #'eldoc-mode)))
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'rust-mode-hook 'flycheck-mode)
-  (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
-  (add-hook 'before-save-hook
-			(lambda nil
-			  (when
-				  (eq major-mode 'rust-mode)
-				(rust-format-buffer))))
-  (define-key rust-mode-map ("C-c C-t") #'racer-describe))
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-hook 'python-mode-hook #'+eglot-deferred)
+(add-hook 'python-mode-hook #'highlight-indent-guides-mode)
+(add-hook 'python-mode-hook #'+setup-virtualenv)
 
 ;;; C#
 
 (straight-use-package 'csharp-mode)
-(add-hook 'csharp-mode-hook 'lsp)
+(add-hook 'csharp-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
 
 ;;; Go
 
 (straight-use-package 'go-mode)
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-(add-hook 'go-mode-hook #'+lsp-really-deferred)
+(add-hook 'go-mode-hook #'+eglot-deferred)
 (add-hook 'go-mode-hook (lambda () (setq indent-tabs-mode t)))
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
 ;;; LaTeX
 
@@ -1191,13 +1052,13 @@ version will be prompted."
 (straight-use-package 'latex-preview-pane)
 (add-hook 'latex-mode-hook #'latex-preview-pane-mode)
 
-;;; Configuration and markup
+;;; Dockerfile
 
-;; dockerfile
 (straight-use-package 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile" . dockerfile-mode))
 
-;; markdown
+;;; Markdown
+
 (straight-use-package 'markdown-mode)
 (unless
     (fboundp 'gfm-mode)
@@ -1207,33 +1068,43 @@ version will be prompted."
 (add-to-list 'auto-mode-alist '("\\.mkd\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 
-;; yaml
+;;; Yaml
+
 (straight-use-package 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
 ;; this is for terraform templates
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\.tftpl\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'highlight-indent-guides-mode)
-(add-hook 'yaml-mode-hook 
+(add-hook 'yaml-mode-hook
           (lambda ()
             (set (make-local-variable 'font-lock-variable-name-face)
                  'font-lock-type-face)))
 
-;; toml
+;; Toml
+
 (straight-use-package 'toml-mode)
 (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
 
-;; csv
+
+;; Csv
+
 (straight-use-package 'csv-mode)
 (add-to-list 'auto-mode-alist '("\\.csv\\'" . csv-mode))
 
-;; terraform
+;; Terraform
+
 (straight-use-package 'terraform-mode)
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
-;; (add-hook 'terraform-mode-hook #'+lsp-really-deferred)
+(add-hook 'terraform-mode-hook #'+eglot-deferred)
 (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(terraform-mode "terraform-ls" "serve")))
 
 (defun +terraform-command (command &optional interactive)
-  "Terrafom command"
+  "Execute Terrafom COMMAND.
+
+If INTERACTIVE is non-nil, `comint-mode' will be used."
   (let ((default-directory (project-root (project-current t))))
     (compilation-start
      (concat "terraform " command)
@@ -1241,31 +1112,32 @@ version will be prompted."
      (lambda (_) (format "*terraform: %s @ %s *" command default-directory)))))
 
 (defun +terraform-init ()
-  "Terraform plan"
+  "Terraform plan."
   (interactive)
   (+terraform-command "init"))
 
 (defun +terraform-plan ()
-  "Terraform plan"
+  "Terraform plan."
   (interactive)
   (+terraform-command "plan"))
 
 (defun +terraform-apply ()
-  "Terraform apply"
+  "Terraform apply."
   (interactive)
   (+terraform-command "apply" t))
 
 (defun +terraform-apply-auto-approve ()
-  "Terraform apply auto approve"
+  "Terraform apply auto approve."
   (interactive)
   (+terraform-command "apply -auto-approve"))
 
 (defun +terraform-destroy ()
-  "Terraform destroy"
+  "Terraform destroy."
   (interactive)
   (+terraform-command "destroy" t))
 
-;; rest client
+;;; Rest client
+
 (straight-use-package 'restclient)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
@@ -1273,5 +1145,16 @@ version will be prompted."
 ;; example: dump request to file on `restclient-http-do-hook',
 ;; then dump response to same file on `restclient-response-loaded-hook'.
 ;; just be careful on major mode
+
+;;; Kubernetes
+
+(straight-use-package 'kubernetes)
+(straight-use-package 'kubernetes-evil)
+(with-eval-after-load 'kubernetes-overview
+  ;; set very low frequency because it is too dangerous and slow
+  (setq kubernetes-poll-frequency 3600)
+  (setq kubernetes-redraw-frequency 3600)
+  ;; press enter to view kubernetes resource YAML
+  (require 'kubernetes-evil))
 
 ;;; init.el ends here
