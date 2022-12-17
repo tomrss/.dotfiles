@@ -556,16 +556,17 @@
 (+define-key (kbd "M-k") #'windmove-up)
 (+define-key (kbd "M-l") #'windmove-right)
 
-(+define-key (kbd "C-M-h") #'shrink-window-horizontally)
-(+define-key (kbd "C-M-j") #'shrink-window)
-(+define-key (kbd "C-M-k") #'enlarge-window)
-;; (+define-key (kbd "C-M-l") 'recenter-other-window)
-(+define-key (kbd "C-M-l") 'enlarge-window-horizontally)
+(+define-key (kbd "C-M--") #'shrink-window-horizontally)
+(+define-key (kbd "C-M-+") #'enlarge-window-horizontally)
+(+define-key (kbd "M--") #'shrink-window)
+(+define-key (kbd "M-+") #'enlarge-window)
 
 (+define-key (kbd "C-M-S-h") #'windmove-swap-states-left)
 (+define-key (kbd "C-M-S-j") #'windmove-swap-states-down)
 (+define-key (kbd "C-M-S-k") #'windmove-swap-states-up)
 (+define-key (kbd "C-M-S-l") #'windmove-swap-states-right)
+
+(+define-key (kbd "C-M-l") 'recenter-other-window)
 
 ;;; Workspaces (tab-bar-mode)
 
