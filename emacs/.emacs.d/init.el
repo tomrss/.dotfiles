@@ -460,9 +460,7 @@
            :icon "file-directory")
           ("Edit configuration"
            :key "c"
-           :action (lambda ()
-                     (interactive)
-                     (find-file user-init-file))
+           :action +edit-emacs-config
            :icon "gear")
           ("Eshell"
            :key "e"
@@ -613,6 +611,11 @@
 
 ;; use `ibuffer' instead of buffer list
 (+define-key (kbd "C-x C-b") 'ibuffer)
+
+(defun +edit-emacs-config ()
+  "Edit the user emacs init file."
+  (interactive)
+  (find-file user-init-file))
 
 ;; TODO this is probably dangerous
 (defun +kill-other-buffers ()
