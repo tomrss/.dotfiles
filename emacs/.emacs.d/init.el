@@ -140,6 +140,7 @@
 (+define-key (kbd "M-y")     #'consult-yank-pop)
 (+define-key (kbd "C-x f")   #'consult-recent-file)
 (+define-key (kbd "M-g e")   #'consult-compile-error)
+(+define-key (kbd "M-g w")   #'consult-flymake)
 (+define-key (kbd "M-g g")   #'consult-goto-line)
 (+define-key (kbd "M-g M-g") #'consult-goto-line)
 (+define-key (kbd "M-g o")   #'consult-outline)
