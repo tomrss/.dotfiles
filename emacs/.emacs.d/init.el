@@ -570,9 +570,9 @@
 ;;; Workspaces (tab-bar-mode)
 
 ;; TODO find out out to use tab-bar-mode
-(setq tab-bar-show nil)
-(setq tab-bar-new-tab-choice "*Welcome*")
-(tab-bar-mode +1)
+;; (setq tab-bar-show nil)
+;; (setq tab-bar-new-tab-choice "*Welcome*")
+;; (tab-bar-mode +1)
 
 ;;; Window placement and popups
 
