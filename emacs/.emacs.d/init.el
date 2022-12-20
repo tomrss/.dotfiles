@@ -261,7 +261,10 @@
 ;; recent files
 (setq recentf-max-menu-items 500)
 (setq recentf-max-saved-items 500)
+(setq recentf-auto-cleanup 120)
 (recentf-mode +1)
+(add-to-list 'recentf-exclude (locate-user-emacs-file "eshell/alias"))
+
 ;; reopen file at same point
 (save-place-mode +1)
 ;; keep all buffers updated if external program change content
