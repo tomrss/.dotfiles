@@ -700,38 +700,105 @@ the same project."
 ;; overrides `project-vc-dir' but I use magit
 (define-key project-prefix-map (kbd "v") #'+project-vterm)
 
+;; TODO: i don't want to confirm closing terminals with no real
+;; process running when closing emacs.  (get-buffer-process) and
+;; than lookup children pid?
+
 ;;; eshell
 
-;; eshell prompt
-(with-eval-after-load 'em-prompt
-  (defun +prompt-path ()
-    "Path (pwd) that will be displayed in prompt."
-    (let* ((pwd (eshell/pwd)))
-      (if (equal pwd "~")
-		  pwd
-		(abbreviate-file-name pwd))))
+(+define-key (kbd "C-x e") #'eshell)
 
+;; eshell prompt
+(defvar +eshell-prompt-kube-section-enabled nil
+  "Whether to show Kubernetes related prompt section.")
+
+(with-eval-after-load 'em-prompt
+
+  (defface +eshell-whoami-face '((t (:inherit font-lock-builtin-face)))
+    "Face for eshell prompt section displaying user and machine.")
+  
+  (defface +eshell-venv-face '((t (:inherit default :foreground "grey")))
+    "Face for eshell prompt virtualenv section.")
+
+  (defface +eshell-pwd-face '((t (:inherit font-lock-property-face)))
+    "Face for eshell prompt path section.")
+
+  (defface +eshell-git-face '((t (:inherit font-lock-type-face)))
+    "Face for eshell prompt git section.")
+
+  (defface +eshell-kube-face '((t (:inherit font-lock-doc-face)))
+    "Face for eshell prompt kubernetes section.")
+
+  (defface +eshell-time-face '((t (:inherit font-lock-comment-face)))
+    "Face for eshell prompt time section.")
+
+  (defun +kubectl-config-jsonpath (jsonpath)
+    "Get current config property of Kubectl identified by jsonpath."
+    (when (executable-find "kubectl")
+      (let ((cmd (format "kubectl config view --minify -o jsonpath='{%s}'" jsonpath)))
+        (with-temp-buffer
+          (shell-command cmd t)
+          (buffer-substring-no-properties (point-min) (point-max))))))
+  
+  (defun +eshell-prompt-pwd-section ()
+    "Eshell prompt section that displays path (pwd)."
+    (let* ((section (abbreviate-file-name (eshell/pwd))))
+      (propertize section 'face '+eshell-pwd-face)))
+
+  (defun +eshell-prompt-venv-section ()
+    "Eshell prompt section that displays virtualenv info."
+    (when (bound-and-true-p pyvenv-virtual-env-name)
+      (let ((section (concat "(" pyvenv-virtual-env-name ") ")))
+        (propertize section 'face '+eshell-venv-face))))
+
+  (defun +eshell-prompt-whoami-section ()
+    "Eshell prompt section that displays info about user and system."
+    (let ((section (format "%s@%s" user-login-name (system-name))))
+      (propertize section 'face '+eshell-whoami-face)))
+
+  (defun +eshell-prompt-git-section ()
+    "Eshell prompt section that displays git info."
+    (when-let* ((current-branch (when (fboundp 'magit-get-current-branch)
+							      (magit-get-current-branch)))
+                (section (concat "  " current-branch)))
+      (propertize section 'face '+eshell-git-face)))
+
+  (defun +eshell-prompt-kube-section ()
+    "Eshell prompt section that displays Kubernetes info."
+    (when-let* (+eshell-prompt-kube-section-enabled
+                (context (+kubectl-config-jsonpath ".contexts[0].name"))
+                (namespace (+kubectl-config-jsonpath ".contexts[0].context.namespace"))
+                (section
+                 (if (or (string-equal namespace "default")
+                         (string-blank-p namespace))
+                     context
+                   (format "%s : %s" context namespace))))
+      (propertize section 'face '+eshell-kube-face)))
+
+  (defun +eshell-prompt-time-section ()
+    "Eshell prompt section that displays time info."
+    (let ((section (format-time-string "%H:%M:%S")))
+      (propertize section 'face '+eshell-time-face)))
+
+  (defun +string-join-nonnil (separator &rest strings)
+    "Joins STRINGS with SEPARATOR removing nil."
+    (string-join (remove nil strings) separator))
+  
   (defun +eshell-prompt ()
     "The eshell prompt."
-    (let ((current-branch (when (fboundp 'magit-get-current-branch)
-							(magit-get-current-branch))))
-      (concat
-       (if (bobp) "" "\n")
-       (when (bound-and-true-p pyvenv-virtual-env-name)
-         (propertize (concat "(" pyvenv-virtual-env-name ") ") 'face 'font-lock-type-face))
-       (propertize user-login-name 'face 'font-lock-keyword-face)
-       (propertize " • " 'face `(:foreground "white"))
-       (propertize (+prompt-path) 'face 'font-lock-function-name-face)
-       (when current-branch
-		 (concat
-		  (propertize " • " 'face `(:foreground "white"))
-		  (propertize (concat " " current-branch) 'face 'font-lock-string-face)))
-       (propertize " • " 'face `(:foreground "white"))
-       (propertize (format-time-string "%H:%M:%S") 'face 'font-lock-comment-face)
-       (let ((user-prompt
-			  (if (= (user-uid) 0) "\n#" "\nλ")))
-		 (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
-       " ")))
+    (concat
+     (if (bobp) "" "\n")
+     (+string-join-nonnil
+      (propertize " • " 'face `(:foreground "white"))
+      (+eshell-prompt-venv-section)
+      (+eshell-prompt-whoami-section)
+      (+eshell-prompt-pwd-section)
+      (+eshell-prompt-git-section)
+      (+eshell-prompt-kube-section)
+      (+eshell-prompt-time-section))
+     (let ((user-prompt (if (= (user-uid) 0) "\n#" "\nλ")))
+	   (propertize user-prompt 'face (if (zerop eshell-last-command-status) 'success 'error)))
+     " "))
 
   (setq eshell-prompt-function #'+eshell-prompt
 		eshell-prompt-regexp "^.*λ "
@@ -756,11 +823,6 @@ the same project."
 
 ;; eshell keys and aliases
 (with-eval-after-load 'em-alias
-  (evil-collection-eshell-setup)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-R") #'consult-history)
-  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-l") #'eshell/clear)
-  (evil-normalize-keymaps)
-
   (dolist
       (alias
        '(("q"     "exit")
@@ -771,13 +833,15 @@ the same project."
 		 ("rg"    "rg --color=always $*")
 		 ("l"     "ls -lh $*")
 		 ("ll"    "ls -lah $*")
+		 ("k"     "kubectl $*")
+		 ("h"     "helm $*")
+         ("kk"    "kubernetes-overview")
 		 ("git"   "git --no-pager $*")
 		 ("gg"    "magit-status")
 		 ("clear" "clear-scrollback")
          ("less"  "view-file $1")
 		 ("u"     "eshell-up $1")))	; see section below for `eshell-up' command and package
-    (add-to-list 'eshell-command-aliases-list alias))
-  (eshell-write-aliases-list))
+    (add-to-list 'eshell-command-aliases-list alias)))
 
 ;; eshell colors
 (straight-use-package 'xterm-color)
@@ -816,6 +880,12 @@ the same project."
 
 ;; eshell defaults and generic conf
 (with-eval-after-load 'eshell
+  (evil-collection-eshell-setup)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-R") #'consult-history)
+  (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-l") #'eshell/clear)
+  (evil-normalize-keymaps)
+
+  ;; disable pager, no need in eshell
   (setenv "PAGER" "cat")
   ;; truncate buffer for performance
   (add-to-list 'eshell-output-filter-functions #'eshell-truncate-buffer)
@@ -833,6 +903,38 @@ the same project."
 		eshell-kill-processes-on-exit t
 		eshell-glob-case-insensitive t
 		eshell-error-if-no-glob t)
+
+  (defun +eshell-ctrl-d ()
+    "Like C-d in a shell, it exits eshell and deletes window."
+    (interactive)
+    (when (and (eolp) (looking-back eshell-prompt-regexp))
+      (eshell-life-is-too-much)
+      (ignore-errors
+        (delete-window))))
+
+  (evil-define-key '(normal insert) eshell-mode-map (kbd "C-d") #'+eshell-ctrl-d)
+
+  (defun +eshell-toggle-kube-section ()
+    "Toggle Kubernetes section in Eshell prompt."
+    (interactive)
+    (setq +eshell-prompt-kube-section-enabled
+          (not +eshell-prompt-kube-section-enabled))
+    (message "Prompt kubernetes section is now %s"
+             (if +eshell-prompt-kube-section-enabled
+                 "enabled"
+               "disabled"))
+    ;; try to RET so that new prompt is immediately visible
+    (when (save-excursion
+            (when (evil-state-p 'normal)
+              (forward-char))
+            (when (and (eolp) (looking-back eshell-prompt-regexp))
+              ;; it is safe to send input because it is empty
+              (eshell-send-input)
+              t))
+      ;; this must be outside of save-excursion...
+      (eshell-next-prompt 1)))
+  
+  (evil-define-key 'normal eshell-mode-map (kbd "g .") #'+eshell-toggle-kube-section)
 
   ;; directory navigation
   (defun eshell-up-closest-parent-dir (file)
