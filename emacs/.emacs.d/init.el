@@ -774,6 +774,7 @@ the same project."
 		 ("git"   "git --no-pager $*")
 		 ("gg"    "magit-status")
 		 ("clear" "clear-scrollback")
+         ("less"  "view-file $1")
 		 ("u"     "eshell-up $1")))	; see section below for `eshell-up' command and package
     (add-to-list 'eshell-command-aliases-list alias))
   (eshell-write-aliases-list))
