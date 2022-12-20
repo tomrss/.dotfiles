@@ -740,11 +740,19 @@ the same project."
 ;; eshell banner
 (with-eval-after-load 'em-banner
   (setq eshell-banner-message
-		'(format "%s %s\n\n"
-				 (propertize (format " %s " (string-trim (buffer-name)))
-							 'face 'mode-line-highlight)
-				 (propertize (current-time-string)
-							 'face 'font-lock-keyword-face))))
+        '(concat
+          "   __________ ________   __ 
+  / __/ __/ // / __/ /  / / 
+ / _/_\\ \\/ _  / _// /__/ /__
+/___/___/_//_/___/____/____/
+"
+          (when-let ((proj (project-current)))
+            (concat
+             "\nin project: "
+             (project-name proj)))
+          "\nGNU Emacs "
+          emacs-version
+          "\n\n")))
 
 ;; eshell keys and aliases
 (with-eval-after-load 'em-alias
