@@ -137,7 +137,7 @@
 (+define-key (kbd "C-x b")   #'consult-buffer)
 (+define-key (kbd "C-x 4 b") #'consult-buffer-other-window)
 (+define-key (kbd "C-x 5 b") #'consult-buffer-other-frame)
-(+define-key (kbd "M-y")     #'consult-yank-pop)
+;; (+define-key (kbd "M-y")     #'consult-yank-pop)
 (+define-key (kbd "C-x f")   #'consult-recent-file)
 (+define-key (kbd "M-g e")   #'consult-compile-error)
 (+define-key (kbd "M-g w")   #'consult-flymake)
