@@ -1,2 +1,5 @@
 **/.emacs.d/.cache/
+**/.emacs.d/.backups/
+**/.emacs.d/eln-cache/
+
 qutebrowser/.config/qutebrowser/autoconfig.yml

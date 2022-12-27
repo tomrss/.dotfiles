@@ -1,7 +1,8 @@
 EMACS := emacs
 MANAGE_EL := manage.el
-BACKUP_STATE_DIR := emacs-state-backup-$(shell date +'%s')
-STATE_FILES := auto-save-list backups eshell transient undo history places projects recentf
+CACHE_DIR := .cache
+BACKUP_DIR := .backups
+BACKUP_FILENAME := $(BACKUP_DIR)/emacs-cache-backup-$(shell date +'%s').tgz
 
 EVAL = $(EMACS) --batch --load $(MANAGE_EL) --eval
 
@@ -19,8 +20,9 @@ rebuild:
 uninstall:
 	rm -rvf straight/
 
-backup-state:
-	mkdir $(BACKUP_STATE_DIR)
-	cp -r $(STATE_FILES) $(BACKUP_STATE_DIR)/
-	tar -czvf $(BACKUP_STATE_DIR).tgz $(BACKUP_STATE_DIR)
-	rm -rvf $(BACKUP_STATE_DIR)
+backup:
+	mkdir -p $(BACKUP_DIR)
+	tar -czvf $(BACKUP_FILENAME) $(CACHE_DIR)
+
+clean:
+	rm -rvf $(CACHE_DIR)
