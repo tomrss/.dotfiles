@@ -63,22 +63,6 @@
 
 (add-hook 'prog-mode-hook #'flymake-mode)
 
-;;;; Compilation buffer
-
-;; colorize compilation buffer
-(with-eval-after-load 'compilation-mode
-  (require 'ansi-color))
-
-(defun +colorize-compilation-buffer ()
-  "Support ANSI colors in compilation buffer."
-  (when (eq major-mode 'compilation-mode)
-    (ansi-color-apply-on-region compilation-filter-start (point-max))))
-
-(add-hook 'compilation-filter-hook #'+colorize-compilation-buffer)
-
-;; follow output with scroll in compilation buffer
-(setq compilation-scroll-output t)
-
 ;;;; Indentation
 
 ;; human tab with

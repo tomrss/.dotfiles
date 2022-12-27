@@ -16,6 +16,27 @@
 (eval-and-compile
   (require 'project))
 
+;;;; Compilation and Comint modes
+
+;; colorize compilation buffer
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+;; follow output with scroll in compilation buffer
+(setq compilation-scroll-output t)
+
+;; make prompt readonly
+(setq comint-prompt-read-only t)
+
+;; use proper colors in comint mode
+(setq comint-terminfo-terminal "term-256color")
+
+;;;; Shell
+
+;; note: shell is comint, so comint configuration affects also here
+
+;; properly colorize shell
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
 ;;;; Vterm
 
 (+install-package 'vterm)
