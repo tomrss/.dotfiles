@@ -1,12 +1,2 @@
-**/.emacs.d/*
-!**/.emacs.d/Makefile
-!**/.emacs.d/*.el
-!**/.emacs.d/*.sh
-!**/.emacs.d/packages/
-!**/.emacs.d/lisp/
-**/.emacs-new.d/*
-!**/.emacs-new.d/*.el
-!**/.emacs-new.d/*.sh
-!**/.emacs-new.d/packages/
-!**/.emacs-new.d/lisp/
+**/.emacs.d/.cache/
 qutebrowser/.config/qutebrowser/autoconfig.yml

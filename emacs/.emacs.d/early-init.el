@@ -1,4 +1,4 @@
-;;; early-init.el --- Emacs early init -*- lexical-binding: t -*-
+;;; early-init.el --- Emacs early init -*- lexical-binding: t; eval: (flymake-mode 0) -*-
 
 ;; Copyright (C) 2022 Tommaso Rossi
 
@@ -69,5 +69,19 @@
 
 (set-face-attribute 'default nil :foreground "#ffffff")
 
+;; disable unwanted ui components
 (menu-bar-mode -1)
+(toggle-scroll-bar -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+(setq inhibit-startup-screen t)
+
+;;; Move native compilation cache outside init dir
+
+(when (fboundp 'startup-redirect-eln-cache)
+  (let ((eln-cache-dir "~/.cache/emacs/eln-cache/"))
+    (make-directory eln-cache-dir t)
+    (startup-redirect-eln-cache
+     (convert-standard-filename eln-cache-dir))))
+
 ;;; early-init.el ends here
