@@ -26,7 +26,6 @@
  ("emacsmirror-mirror" . "ec300b58f7e46c3b62c8b7e91b86938a9cda29f9")
  ("embark" . "ee014d5f3c86eafae673a947b492fa03ffbacb4e")
  ("eshell-syntax-highlighting" . "1ba39a9ffb2298cd716a4314cf3f369028c7bafe")
- ("eterm-256color" . "c9cfccef03e730f7ab2b407aada3df15ace1fe32")
  ("evil" . "2e8576188b1d0768fbf92c6bea2fb3fbed9f019f")
  ("evil-collection" . "b7a75062a600b1b1d2ba51a1e3ac1ec331d19fff")
  ("expand-region.el" . "b70feaa644310dc2d599dc277cd20a1f2b6446ac")
@@ -70,6 +69,5 @@
  ("visual-fill-column" . "453d698d7fc243a547665f8ba43c55eee574e0db")
  ("welcome.el" . "d9265ebc528f91057b48428a089022b85c34c24f")
  ("with-editor" . "4da109748da0828b79198701eb641d5b724153ce")
- ("xterm-color" . "1a4012854c69a5cdaeb5a73d2ad705011892fca3")
  ("yaml-mode" . "3fcb36d6039bef57e2a0f6e24c51f623c0bf5fb7"))
 :gamma

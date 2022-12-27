@@ -16,14 +16,7 @@
 (eval-and-compile
   (require 'project))
 
-;;; term
-
-;; colorize term
-(+install-package 'eterm-256color)
-(with-eval-after-load 'term
-  (add-hook 'term-mode-hook #'eterm-256color-mode))
-
-;;; vterm
+;;;; Vterm
 
 (+install-package 'vterm)
 (with-eval-after-load 'vterm
@@ -64,7 +57,7 @@ the same project."
 ;; process running when closing emacs.  (get-buffer-process) and
 ;; than lookup children pid?
 
-;;; eshell
+;;;; Eshell
 
 (+define-key (kbd "C-x e") #'eshell)
 
@@ -190,7 +183,6 @@ the same project."
 		 ("ff"    "find-file $1")
 		 ("d"     "dired $1")
 		 ("pd"    "proced $1")
-		 ("rg"    "rg --color=always $*")
 		 ("l"     "ls -lh $*")
 		 ("ll"    "ls -lah $*")
 		 ("k"     "kubectl $*")
@@ -202,26 +194,6 @@ the same project."
          ("less"  "view-file $1")
 		 ("u"     "eshell-up $1")))	; see section below for `eshell-up' command and package
     (add-to-list 'eshell-command-aliases-list alias)))
-
-;; eshell colors
-(+install-package 'xterm-color)
-(with-eval-after-load 'eshell 		; don't know if there is a specific module
-  (delq 'eshell-handle-ansi-color eshell-output-filter-functions)
-
-  (push 'xterm-color-filter eshell-preoutput-filter-functions)
-  (add-hook 'eshell-before-prompt-hook
-			(lambda ()
-			  (setq xterm-color-preserve-properties t)))
-
-  (setq eshell-term-name "xterm-256color")
-
-  ;; We want to use xterm-256color when running interactive commands
-  ;; in eshell but not during other times when we might be launching
-  ;; a shell command to gather its output (from daviwil conf)
-  (add-hook 'eshell-pre-command-hook
-			(lambda () (setenv "TERM" "xterm-256color")))
-  (add-hook 'eshell-post-command-hook
-			(lambda () (setenv "TERM" "dumb"))))
 
 ;; eshell history
 (with-eval-after-load 'em-hist
@@ -240,6 +212,11 @@ the same project."
 
 ;; eshell defaults and generic conf
 (with-eval-after-load 'eshell
+  ;; colors
+  (setq eshell-term-name "xterm-256color")
+  (setenv "TERM" "xterm-256color")
+
+  ;; configure keys
   (evil-collection-eshell-setup)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-R") #'consult-history)
   (evil-define-key '(normal insert visual) eshell-mode-map (kbd "C-l") #'eshell/clear)
