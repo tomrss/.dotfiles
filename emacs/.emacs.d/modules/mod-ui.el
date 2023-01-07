@@ -88,37 +88,20 @@
 ;; configure Dired
 (with-eval-after-load 'dired
   ;; dired defaults
+  (setq delete-by-moving-to-trash t)
   (setq dired-auto-revert-buffer t)
   (setq dired-dwim-target t)
   (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'top)
+  (setq dired-recursive-deletes 'always) ; no problem, it goes to thrash
   (setq dired-create-destination-dirs 'ask)
   (setq dired-listing-switches "-agho --group-directories-first")
-  (when IS-MAC
-    (setq dired-use-ls-dired nil))
-  (setq delete-by-moving-to-trash t)
+  (setq dired-use-ls-dired (not IS-MAC))
 
-  ;; hide/show dotfiles in Dired (taken from 'dired-hide-dotfiles' package)
-  ;; TODO could be done by hooking a setq on dired-listing-switches ?
-  (defun dired-hide-dotfiles--hide ()
-	"Hide all dot-files in the current `dired' buffer."
-	(let ((inhibit-message t))
-      (dired-mark-files-regexp "^\\."))
-	(dired-do-kill-lines nil "Hidden %d dotfile%s."))
-
-  (define-minor-mode dired-hide-dotfiles-mode
-	"Toggle `dired-hide-dotfiles-mode'"
-	:init-value nil
-	:lighter " !."
-	:group 'dired
-	(if dired-hide-dotfiles-mode
-		(progn
-          (add-hook 'dired-after-readin-hook 'dired-hide-dotfiles--hide)
-          (dired-hide-dotfiles--hide))
-      (remove-hook 'dired-after-readin-hook 'dired-hide-dotfiles--hide)
-      (revert-buffer)))
-
-  (evil-define-key 'normal dired-mode-map (kbd "g h") #'dired-hide-dotfiles-mode))
+  ;; enable dired-x for omit mode and enhanced find file commands
+  (setq dired-x-hands-off-my-keys nil)
+  (setq dired-omit-files "\\`[.]?#\\|\\`[.].*\\'")
+  (require 'dired-x)
+  (evil-define-key 'normal dired-mode-map (kbd "g h") #'dired-omit-mode))
 
 (+define-key (kbd "C-x j") #'dired-jump)
 
