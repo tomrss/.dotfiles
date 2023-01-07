@@ -14,7 +14,7 @@
 
 ;;; Configure `straight.el' as package manager
 
-(defvar +packaging-system
+(defconst +packaging-system
   (intern (or (getenv "EMACS_PACKAGING_SYSTEM") "straight"))
   "Packaging system to use.
 Choice between `straight', `builtin', `guix'")
