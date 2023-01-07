@@ -29,7 +29,7 @@
   (when (x-list-fonts "Cantarell")
     (set-face-attribute 'variable-pitch nil :font "Cantarell" :height 130 :weight 'normal)))
 
-(+install-package 'all-the-icons)
+(+use-package 'all-the-icons)
 (when (display-graphic-p)
   (require 'all-the-icons nil nil)
   (unless (x-list-fonts "all-the-icons")
@@ -40,7 +40,7 @@
 ;;; Theme
 
 ;; use doom themes
-;; (+install-package 'doom-themes)
+;; (+use-package 'doom-themes)
 ;; (load-theme 'doom-nord t)
 ;; (set-face-attribute 'font-lock-doc-face nil :foreground "#EBCB8B")
 ;; (set-face-attribute 'completions-annotations nil :foreground "#EBCB8B")
@@ -52,7 +52,7 @@
 
 ;;; Modeline
 
-(+install-package 'doom-modeline)
+(+use-package 'doom-modeline)
 (setq doom-modeline-icon (display-graphic-p))
 (doom-modeline-mode +1)
 
@@ -104,12 +104,12 @@
 (+define-key (kbd "C-x j") #'dired-jump)
 
 ;; use icons in dired
-(+install-package 'all-the-icons-dired)
+(+use-package 'all-the-icons-dired)
 (with-eval-after-load 'dired
   (add-hook 'dired-mode-hook #'all-the-icons-dired-mode))
 
 ;; colorize dired
-(+install-package 'diredfl)
+(+use-package 'diredfl)
 (with-eval-after-load 'dired
   (add-hook 'dired-mode-hook #'diredfl-mode))
 
@@ -121,7 +121,7 @@
 
 ;;; Visual fill mode
 
-(+install-package 'visual-fill-column)
+(+use-package 'visual-fill-column)
 
 (defun +setup-visual-fill (width)
   "Setup visual line and column centered with WIDTH."
@@ -135,11 +135,15 @@
 ;; i wrote this package and it's not great
 ;; TODO at least add a readme in it
 ;; TODO make it private because it sucks
-(+install-package '(welcome
-                    :type git
-                    :host github
-                    :repo "tomrss/welcome.el"
-                    :files ("welcome.el" "asset")))
+(if (eq +packaging-system 'straight)
+    (+use-package '(welcome :type git
+                            :host github
+                            :repo "tomrss/welcome.el"
+                            :files ("welcome.el" "asset")))
+  ;; TODO this is very wrong. if is ugly, and it requires to having used straight
+  (add-to-list 'load-path "~/.emacs.d/.cache/straight/repos/welcome.el/")
+  (require 'welcome))
+
 (with-eval-after-load 'welcome
   (setq welcome-menu-items
         '(("Recent files"

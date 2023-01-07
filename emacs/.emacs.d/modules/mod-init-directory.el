@@ -35,6 +35,7 @@
 (setq project-list-file                 (+cache-file "projects"))
 (setq recentf-save-file                 (+cache-file "recentf"))
 (setq straight-base-dir                 +emacs-cache-directory)
+(setq package-user-dir                  (+cache-file "elpa"))
 (setq eshell-directory-name             (+cache-file "eshell"))
 (setq undo-tree-history-directory-alist `(("." . ,(+cache-file "undo"))))
 (setq transient-levels-file             (+cache-file "transient/levels.el"))

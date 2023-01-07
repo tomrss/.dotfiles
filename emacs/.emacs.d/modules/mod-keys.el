@@ -32,14 +32,14 @@
 
 ;;; Navigable undo/redo tree
 
-(+install-package 'undo-tree)
+(+use-package 'undo-tree)
 ;; TODO try vundo package
 (global-undo-tree-mode +1)
 
 ;;; Vim emulation
 
 ;; base evil configuration
-(+install-package 'evil)
+(+use-package 'evil)
 (setq evil-want-integration t)
 (setq evil-want-keybinding nil)
 (setq evil-want-C-u-scroll nil)
@@ -49,7 +49,7 @@
 (evil-mode 1)
 
 ;; automatically configure evil for some common modes
-(+install-package 'evil-collection)
+(+use-package 'evil-collection)
 (with-eval-after-load 'evil
   (evil-collection-init))
 

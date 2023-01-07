@@ -17,7 +17,7 @@
 ;;;; Getting help and docs
 
 ;; improve self documentation
-(+install-package 'helpful)
+(+use-package 'helpful)
 (+define-key [remap describe-command] #'helpful-command)
 (+define-key [remap describe-function] #'helpful-callable)
 (+define-key [remap describe-key] #'helpful-key)
@@ -27,26 +27,26 @@
 (+define-key (kbd "C-h p") #'helpful-at-point)
 
 ;; hint keybindings
-(+install-package 'which-key)
+(+use-package 'which-key)
 (which-key-mode +1)
 (with-eval-after-load 'which-key-mode
   (setq which-key-idle-delay 0.5))
 
 ;; help and docs in minibuffer
-(+install-package 'marginalia)
+(+use-package 'marginalia)
 (marginalia-mode +1)
 
 ;;;; Completion styles and functions
 
 ;; completion style (how completion candidates are narrowed)
-(+install-package 'orderless)
+(+use-package 'orderless)
 (setq orderless-matching-styles
       '(orderless-literal orderless-initialism orderless-regexp))
 (setq orderless-component-separator "[ +]+")
 (setq completion-styles '(orderless))
 
 ;; completing read functions
-(+install-package 'consult)
+(+use-package 'consult)
 (with-eval-after-load 'consult
   (setq consult-narrow-key "<"))
 (+define-key (kbd "C-x b")   #'consult-buffer)
@@ -82,28 +82,26 @@
 ;;;; Minibuffer completions
 
 ;; completion UI
-(+install-package 'vertico)
+(+use-package 'vertico)
 (vertico-mode +1)
 (define-key vertico-map (kbd "C-j") #'vertico-next)
 (define-key vertico-map (kbd "C-k") #'vertico-previous)
 
 ;; enable acting on minibuffer candidates (and much more)
-(+install-package 'embark)
+(+use-package 'embark)
 (setq prefix-help-command #'embark-prefix-help-command)
 (+define-key (kbd "C-.") #'embark-act)
 (with-eval-after-load 'embark
   (define-key embark-symbol-map (kbd "h") #'helpful-symbol))
 
-(+install-package 'embark-consult)
+(+use-package 'embark-consult)
 (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)
 
 ;;;; Completions in region
 
 ;; completion UI
-(+install-package 'corfu)
-(+install-package '(corfu-terminal
-                    :type git
-                    :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
+(+use-package 'corfu)
+(+use-package 'corfu-terminal)
 (setq corfu-auto t)
 (setq corfu-auto-delay 0.1)
 (setq corfu-cycle t)
@@ -132,7 +130,7 @@
 
 ;;;; Completion at point functions
 
-(+install-package 'cape)
+(+use-package 'cape)
 
 (add-to-list 'completion-at-point-functions #'cape-file)
 (add-to-list 'completion-at-point-functions #'cape-dabbrev)

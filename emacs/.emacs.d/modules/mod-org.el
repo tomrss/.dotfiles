@@ -56,7 +56,7 @@
 
 ;; ;;;; Org roam
 
-;; (+install-package 'org-roam)
+;; (+use-package 'org-roam)
 ;; (defvar +org-roam-base-dir)
 ;; (setq org-roam-v2-ack t)
 ;; (+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)

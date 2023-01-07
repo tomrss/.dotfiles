@@ -15,15 +15,19 @@
 ;;;; Text selection and navigation
 
 ;; increases the selected region by semantic units
-(+install-package 'expand-region)
+(+use-package 'expand-region)
 (+define-key (kbd "C-ò") #'er/expand-region)
 
 ;;;; Scratch buffers
 
-(+install-package '(scratch-el
-			        :type git
-			        :host github
-                    :repo "tomrss/scratch.el"))
+(if (eq +packaging-system 'straight)
+    (+use-package '(scratch-el :type git
+			                   :host github
+			                   :repo "tomrss/scratch.el"))
+  ;; TODO this is very wrong. if is ugly, and it requires to having used straight
+  (add-to-list 'load-path "~/.emacs.d/.cache/straight/repos/scratch.el/")
+  (require 'scratch))
+
 (with-eval-after-load 'scratch
   (setq scratch-search-fn #'consult-ripgrep)
   (scratch-persist-mode +1))

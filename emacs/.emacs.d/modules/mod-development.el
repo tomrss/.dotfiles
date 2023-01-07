@@ -18,7 +18,7 @@
 ;;;; Version control
 
 ;; magit
-(+install-package 'magit)
+(+use-package 'magit)
 (unless (fboundp 'magit-get-current-branch)
   (autoload #'magit-get-current-branch "magit" nil t))
 (with-eval-after-load 'magit
@@ -32,7 +32,7 @@
 (+define-key (kbd "C-x g") #'magit-status) ; is the default but it's somehow deleted
 
 ;; highlight changes (git gutters)
-(+install-package 'diff-hl)
+(+use-package 'diff-hl)
 (autoload #'diff-hl-magit-post-refresh "diff-hl" nil t)
 (add-hook 'dired-mode-hook #'diff-hl-dired-mode-unless-remote)
 (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
@@ -55,7 +55,7 @@
 (add-to-list 'electric-pair-pairs '(?{ . ?}))
 
 ;; highlight matching delimiters with rainbow colors
-(+install-package 'rainbow-delimiters)
+(+use-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'inferior-emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 
@@ -73,7 +73,7 @@
 
 ;; aggressively indent as you type
 ;; TODO this sometimes interfere with undo
-(+install-package 'aggressive-indent)
+(+use-package 'aggressive-indent)
 (autoload 'aggressive-indent-mode "aggressive-indent")
 (with-eval-after-load 'aggressive-indent
   (setq aggressive-indent-comments-too t))
@@ -100,37 +100,37 @@
 ;;;; Java
 
 ;; TODO it doeesnt work
-;; (+install-package 'eglot-java)
+;; (+use-package 'eglot-java)
 ;; (add-hook 'java-mode-hook 'eglot-java-mode)
 
 ;;;; Groovy
 
-(+install-package 'groovy-mode)
+(+use-package 'groovy-mode)
 (add-hook 'groovy-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 
 ;;;; Kotlin
 
-(+install-package 'kotlin-mode)
+(+use-package 'kotlin-mode)
 (add-hook 'kotlin-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.kt\\'" . kotlin-mode))
 
 ;;;; Scala
 
-(+install-package 'scala-mode)
+(+use-package 'scala-mode)
 (add-hook 'scala-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.sc\(ala\)?\\'" . scala-mode))
 
 ;;;; Clojure
 
-(+install-package 'clojure-mode)
+(+use-package 'clojure-mode)
 (add-hook 'clojure-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
-(+install-package 'cider)
+(+use-package 'cider)
 
 ;;;; Python
 
-(+install-package 'pyvenv)
+(+use-package 'pyvenv)
 (with-eval-after-load 'pyvenv
   (setq pyvenv-mode-line-indicator
         '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] "))))
@@ -159,13 +159,13 @@
 
 ;;;; C#
 
-(+install-package 'csharp-mode)
+(+use-package 'csharp-mode)
 (add-hook 'csharp-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode))
 
 ;;;; Go
 
-(+install-package 'go-mode)
+(+use-package 'go-mode)
 (add-hook 'go-mode-hook #'+eglot-deferred)
 (add-hook 'go-mode-hook (lambda () (setq indent-tabs-mode t)))
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
@@ -173,17 +173,17 @@
 ;;;; LaTeX
 
 ;; add a preview pane of the current edited LaTeX buffer.
-(+install-package 'latex-preview-pane)
+(+use-package 'latex-preview-pane)
 (add-hook 'latex-mode-hook #'latex-preview-pane-mode)
 
 ;;;; Dockerfile
 
-(+install-package 'dockerfile-mode)
+(+use-package 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile" . dockerfile-mode))
 
 ;;;; Markdown
 
-(+install-package 'markdown-mode)
+(+use-package 'markdown-mode)
 (unless
     (fboundp 'gfm-mode)
   (autoload #'gfm-mode "markdown-mode" nil t))
@@ -194,7 +194,7 @@
 
 ;;;; Yaml
 
-(+install-package 'yaml-mode)
+(+use-package 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
 ;; this is for terraform templates
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\.tftpl\\'" . yaml-mode))
@@ -206,18 +206,18 @@
 
 ;;;; Toml
 
-(+install-package 'toml-mode)
+(+use-package 'toml-mode)
 (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
 
 
 ;;;; Csv
 
-(+install-package 'csv-mode)
+(+use-package 'csv-mode)
 (add-to-list 'auto-mode-alist '("\\.csv\\'" . csv-mode))
 
 ;;;; Terraform
 
-(+install-package 'terraform-mode)
+(+use-package 'terraform-mode)
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
 (add-hook 'terraform-mode-hook #'+eglot-deferred)
 (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
@@ -262,7 +262,7 @@ If INTERACTIVE is non-nil, `comint-mode' will be used."
 
 ;;;; Rest client
 
-(+install-package 'restclient)
+(+use-package 'restclient)
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
 ;; TODO write something to persist requests/responses in `scratch' fashion.
@@ -272,8 +272,8 @@ If INTERACTIVE is non-nil, `comint-mode' will be used."
 
 ;;;; Kubernetes
 
-(+install-package 'kubernetes)
-(+install-package 'kubernetes-evil)
+(+use-package 'kubernetes)
+(+use-package 'kubernetes-evil)
 (with-eval-after-load 'kubernetes-overview
   ;; set very low frequency because it is too dangerous and slow
   (setq kubernetes-poll-frequency 3600)

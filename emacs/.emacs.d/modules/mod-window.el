@@ -42,7 +42,7 @@
 ;;;; Window placement and popups
 
 ;; define window placement rules
-(+install-package 'shackle)
+(+use-package 'shackle)
 (shackle-mode +1)
 (setq shackle-rules
       '((compilation-mode :noselect t)
@@ -59,7 +59,7 @@
       '(:noselect t))
 
 ;; define and manage popup buffers
-(+install-package 'popper)
+(+use-package 'popper)
 (setq popper-reference-buffers
 	  (mapcar #'car
 			  (seq-filter (lambda (rule) (plist-get (cdr rule) :popup))

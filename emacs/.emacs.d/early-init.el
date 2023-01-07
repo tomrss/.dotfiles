@@ -1,4 +1,4 @@
-;;; early-init.el --- Emacs early init -*- lexical-binding: t; eval: (flymake-mode 0) -*-
+;;; early-init.el --- Emacs early init -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022 Tommaso Rossi
 

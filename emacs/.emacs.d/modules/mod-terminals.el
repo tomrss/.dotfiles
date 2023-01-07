@@ -39,7 +39,7 @@
 
 ;;;; Vterm
 
-(+install-package 'vterm)
+(+use-package 'vterm)
 (with-eval-after-load 'vterm
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
   (setq vterm-max-scrollback 10000)
@@ -329,7 +329,7 @@ to."
         (eshell/cd parent-dir)))))
 
 ;; eshell syntax highlighting
-(+install-package 'eshell-syntax-highlighting)
+(+use-package 'eshell-syntax-highlighting)
 (add-hook 'eshell-mode-hook #'eshell-syntax-highlighting-mode)
 
 (provide 'mod-terminals)
