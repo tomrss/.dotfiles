@@ -76,9 +76,7 @@
 
 ;;; Highlight current line
 
-(+install-package 'hl-line)
-(with-eval-after-load 'hl-line
-  (setq hl-line-sticky-flag nil))
+(setq hl-line-sticky-flag nil)
 (add-hook 'dired-mode-hook #'hl-line-mode)
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'special-mode-hook #'hl-line-mode)
