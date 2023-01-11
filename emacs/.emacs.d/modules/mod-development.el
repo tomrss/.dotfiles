@@ -92,7 +92,8 @@
   (unless (+consult-preview-p)
     (eglot-ensure)))
 
-(+define-key (kbd "M-RET") #'eglot-code-actions)
+(with-eval-after-load 'eglot
+  (define-key eglot-mode-map (kbd "M-RET") #'eglot-code-actions))
 
 ;; make eglot completions work with orderless + corfu
 (setq completion-category-overrides '((eglot (styles orderless))))
