@@ -155,7 +155,6 @@
   (+setup-virtualenv-project (project-current t)))
 
 (add-hook 'python-mode-hook #'+eglot-deferred)
-(add-hook 'python-mode-hook #'highlight-indent-guides-mode)
 (add-hook 'python-mode-hook #'+setup-virtualenv)
 
 ;;;; C#
@@ -199,7 +198,6 @@
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-mode))
 ;; this is for terraform templates
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\.tftpl\\'" . yaml-mode))
-(add-hook 'yaml-mode-hook #'highlight-indent-guides-mode)
 (add-hook 'yaml-mode-hook
           (lambda ()
             (set (make-local-variable 'font-lock-variable-name-face)
