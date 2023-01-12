@@ -20,7 +20,10 @@
 
 ;;;; Window selection and navigation
 
-(+define-key (kbd "M-o") #'other-window)
+(+use-package 'ace-window)
+(+define-key (kbd "M-o") #'ace-window)
+(with-eval-after-load 'ace-window
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (+define-key (kbd "M-h") #'windmove-left)
 (+define-key (kbd "M-j") #'windmove-down)
