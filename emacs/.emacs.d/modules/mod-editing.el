@@ -25,6 +25,7 @@
 			                   :host github
 			                   :repo "tomrss/scratch.el"))
   ;; TODO this is very wrong. if is ugly, and it requires to having used straight
+  ;; TODO use package with git integration
   (add-to-list 'load-path "~/.emacs.d/.cache/straight/repos/scratch.el/")
   (require 'scratch))
 
@@ -32,13 +33,7 @@
   (setq scratch-search-fn #'consult-ripgrep)
   (scratch-persist-mode +1))
 
-(eval-and-compile
-  (define-prefix-command 'scratch-key-map))
-(define-key scratch-key-map (kbd "n") #'scratch-new)
-(define-key scratch-key-map (kbd "t") #'scratch-titled)
-(define-key scratch-key-map (kbd "o") #'scratch-open)
-(define-key scratch-key-map (kbd "r") #'scratch-search)
-(+define-key (kbd "C-c s") scratch-key-map)
+(+define-key (kbd "C-c s") 'scratch-key-map)
 
 (provide 'mod-editing)
 ;;; mod-editing.el ends here

@@ -55,7 +55,7 @@
  ("rainbow-delimiters" . "a32b39bdfe6c61c322c37226d66e1b6d4f107ed0")
  ("restclient.el" . "0ba72816f92f3d5906cdf76f418fd0a3ee72809b")
  ("s.el" . "e957dcb0677da18b2bb60ad867db5df5c35b5616")
- ("scratch.el" . "b6004cc24069b81830cf70610c1a5f804b4807ae")
+ ("scratch.el" . "59bf21ab768a1cd359893cc6e3ffdbcbdb80ae18")
  ("sesman" . "e0f555f963c9f02f8e4a50e06fc353eb4c15ee77")
  ("shackle" . "f1467db75a8fa5d51c676181fb308ccbf7b05e6f")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
