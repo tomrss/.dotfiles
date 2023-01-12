@@ -46,7 +46,10 @@
 (setq auto-save-list-file-prefix        (+cache-file "auto-save/sessions/"))
 (setq tramp-auto-save-directory         (+cache-file "tramp/auto-save/"))
 (setq tramp-persistency-file-name       (+cache-file "tramp/persistency.el"))
-(setq scratch-directory                 (+cache-file "straight/"))
+(setq scratch-directory                 (+cache-file "scratch/"))
+(setq bookmark-file                     (+cache-file "bookmarks"))
+(setq org-id-locations-file             (+cache-file ".org-id-locations"))
+(setq org-roam-db-location              (+cache-file "org-roam.db"))
 
 (provide 'mod-init-directory)
 ;;; mod-init-directory.el ends here
