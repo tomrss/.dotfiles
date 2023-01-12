@@ -12,6 +12,8 @@
 
 ;;; Code:
 
+;;;; Setup Org Mode
+
 (with-eval-after-load 'org
   ;; setup visual fill
   (add-hook 'org-mode-hook (lambda () (+setup-visual-fill 100)))
@@ -54,21 +56,29 @@
             (lambda ()
               (add-hook 'after-save-hook #'+org-auto-tangle 0 t))))
 
-;; ;;;; Org roam
+;;;; Org roam
 
-;; (+use-package 'org-roam)
-;; (defvar +org-roam-base-dir)
-;; (setq org-roam-v2-ack t)
-;; (+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)
-;; (+define-key (kbd "C-c n f") #'org-roam-node-find)
-;; (+define-key (kbd "C-c n i") #'org-roam-node-insert)
-;; (with-eval-after-load 'org-roam
-;;   (unless (file-exists-p +org-roam-base-dir)
-;;     (make-directory +org-roam-base-dir))
-;;   (setq org-roam-directory +org-roam-base-dir)
-;;   (setq org-roam-completion-everywhere t)
-;;   (define-key org-mode-map (kbd "C-i") #'completion-at-point)
-;;   (org-roam-setup))
+(+use-package 'org-roam)
+(defvar +org-roam-base-dir "~/.org-roam")
+(add-to-list 'recentf-exclude +org-roam-base-dir)
+(setq org-roam-v2-ack t)
+(+define-key (kbd "C-c n l") #'org-roam-buffer-toggle)
+(+define-key (kbd "C-c n f") #'org-roam-node-find)
+(+define-key (kbd "C-c n i") #'org-roam-node-insert)
+(autoload 'org-roam-dailies-map "org-roam-dailies" nil nil 'keymap)
+(+define-key (kbd "C-c n d") 'org-roam-dailies-map)
+(with-eval-after-load 'org-roam
+  (make-directory +org-roam-base-dir t)
+  (setq org-roam-directory +org-roam-base-dir)
+  (setq org-roam-completion-everywhere t)
+  (setq org-roam-capture-templates
+        '(("d" "default" plain
+           "%?"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
+                              "#+title: ${title}\n")
+           :unnarrowed t)))
+  (define-key org-mode-map (kbd "C-i") #'completion-at-point)
+  (org-roam-setup))
 
 (provide 'mod-org)
 ;;; mod-org.el ends here
