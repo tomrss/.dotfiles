@@ -149,27 +149,43 @@
         '(("Recent files"
            :key "f"
            :action consult-recent-file
-           :icon "history")
+           :icon (all-the-icons-octicon . "history"))
           ("Projects"
            :key "p"
            :action project-switch-project
-           :icon "code")
+           :icon (all-the-icons-octicon . "repo"))
           ("Dired"
            :key "d"
            :action dired
-           :icon "file-directory")
+           :icon (all-the-icons-octicon . "file-directory"))
           ("Edit configuration"
            :key "c"
            :action +edit-emacs-config
-           :icon "gear")
+           :icon (all-the-icons-octicon . "gear"))
+          ("Kubernetes"
+           :key "u"
+           :action kubernetes-overview
+           :icon (all-the-icons-octicon . "server"))
           ("Eshell"
            :key "e"
            :action eshell
-           :icon "terminal")
+           :icon (all-the-icons-octicon . "terminal"))
           ("Scratch"
            :key "s"
            :action scratch-new
-           :icon "file-text")))
+           :icon (all-the-icons-octicon . "file-text"))
+          ("Bookmarks"
+           :key "b"
+           :action bookmark-jump
+           :icon (all-the-icons-octicon . "bookmark"))
+          ("Org Roam note"
+           :key "r"
+           :action org-roam-node-find
+           :icon (all-the-icons-octicon . "checklist"))
+          ("Org Roam daily"
+           :key "y"
+           :action org-roam-dailies-capture-today
+           :icon (all-the-icons-octicon . "calendar"))))
 
   (evil-set-initial-state 'welcome-mode 'emacs)
   (define-key welcome-mode-map (kbd "j") #'next-line)
