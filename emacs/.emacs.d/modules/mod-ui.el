@@ -21,7 +21,7 @@
 (defconst IS-MAC     (eq system-type 'darwin))
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
 
-;;; Fonts and icons
+;;;; Fonts and icons
 (when (display-graphic-p)
   (when (x-list-fonts "JetBrains Mono NL")
     (set-face-attribute 'default     nil :font "JetBrains Mono NL" :height 110 :weight 'normal)
@@ -37,7 +37,7 @@
 	    (warn "RuntimeWarning M-x all-the-icons-install-fonts to download the fonts, then install them manually")
       (all-the-icons-install-fonts t))))
 
-;;; Theme
+;;;; Theme
 
 ;; use doom themes
 ;; (+use-package 'doom-themes)
@@ -50,13 +50,37 @@
 (setq modus-themes-italic-constructs t)
 (load-theme 'modus-vivendi)
 
-;;; Modeline
+;;;; Modeline
 
 (+use-package 'doom-modeline)
 (setq doom-modeline-icon (display-graphic-p))
 (doom-modeline-mode +1)
 
-;;; Line and column numbers
+;;;; Directory tree view
+
+(+use-package 'treemacs)
+(+use-package 'treemacs-all-the-icons)
+(+define-key (kbd "C-x c t") #'treemacs-select-window)
+(with-eval-after-load 'treemacs
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+  (treemacs-git-commit-diff-mode t)
+  (treemacs-hide-gitignored-files-mode nil)
+
+  (require 'treemacs-all-the-icons)
+  (treemacs-load-theme "all-the-icons"))
+
+(with-eval-after-load 'evil
+  (with-eval-after-load 'treemacs
+    (require 'treemacs-evil)))
+
+(+use-package 'treemacs-magit)
+(with-eval-after-load 'magit
+  (with-eval-after-load 'treemacs
+    (require 'treemacs-magit)))
+
+;;;; Line and column numbers
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
@@ -65,7 +89,7 @@
 
 (column-number-mode +1)
 
-;;; Smooth scrolling
+;;;; Smooth scrolling
 
 (pixel-scroll-precision-mode +1)
 (setq fast-but-imprecise-scrolling t)
@@ -74,14 +98,14 @@
 (setq scroll-conservatively 10000)
 (setq scroll-preserve-screen-position 1)
 
-;;; Highlight current line
+;;;; Highlight current line
 
 (setq hl-line-sticky-flag nil)
 (add-hook 'dired-mode-hook #'hl-line-mode)
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'special-mode-hook #'hl-line-mode)
 
-;;; File management
+;;;; File management
 
 ;; configure Dired
 (with-eval-after-load 'dired
@@ -113,13 +137,13 @@
 (with-eval-after-load 'dired
   (add-hook 'dired-mode-hook #'diredfl-mode))
 
-;;; Process management
+;;;; Process management
 
 (with-eval-after-load 'proced
   (setq proced-auto-update-interval 5)
   (proced-toggle-auto-update 1))
 
-;;; Visual fill mode
+;;;; Visual fill mode
 
 (+use-package 'visual-fill-column)
 
@@ -130,7 +154,7 @@
   (visual-line-mode +1)
   (visual-fill-column-mode +1))
 
-;;; Starting screen
+;;;; Starting screen
 
 ;; i wrote this package and it's not great
 ;; TODO at least add a readme in it
