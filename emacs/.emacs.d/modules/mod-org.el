@@ -71,12 +71,12 @@
   (make-directory +org-roam-base-dir t)
   (setq org-roam-directory +org-roam-base-dir)
   (setq org-roam-completion-everywhere t)
-  (setq org-roam-capture-templates
-        '(("d" "default" plain
-           "%?"
-           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org.gpg"
-                              "#+title: ${title}\n")
-           :unnarrowed t)))
+  ;; (setq org-roam-capture-templates
+  ;;       '(("d" "default" plain
+  ;;          "%?"
+  ;;          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+  ;;                             "#+title: ${title}\n")
+  ;;          :unnarrowed t)))
   (define-key org-mode-map (kbd "C-i") #'completion-at-point)
   (org-roam-setup))
 
