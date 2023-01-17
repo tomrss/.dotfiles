@@ -107,7 +107,8 @@
 ;;;; Groovy
 
 (+use-package 'groovy-mode)
-(add-hook 'groovy-mode-hook #'+eglot-deferred)
+;; TODO find a groovy ls that works
+;; (add-hook 'groovy-mode-hook #'+eglot-deferred)
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 
 ;;;; Kotlin
