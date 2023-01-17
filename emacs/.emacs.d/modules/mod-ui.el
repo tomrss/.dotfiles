@@ -71,6 +71,7 @@
   (require 'treemacs-all-the-icons)
   (treemacs-load-theme "all-the-icons"))
 
+(+use-package 'treemacs-evil)
 (with-eval-after-load 'evil
   (with-eval-after-load 'treemacs
     (require 'treemacs-evil)))
