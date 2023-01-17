@@ -62,6 +62,7 @@
 (+use-package 'treemacs-all-the-icons)
 (+define-key (kbd "C-x c t") #'treemacs-select-window)
 (with-eval-after-load 'treemacs
+  (treemacs-project-follow-mode t)
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode 'always)
