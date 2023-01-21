@@ -14,7 +14,7 @@
 
 ;;; Code:
 
-;;; Custom keys minor mode
+;;;; Custom keys minor mode
 
 (defvar customized-keys-minor-mode-map (make-sparse-keymap)
   "Keymap for the `customized-keys-minor-mode'.")
@@ -30,13 +30,7 @@
   "Define customized KEY with definition DEF."
   (define-key customized-keys-minor-mode-map key def))
 
-;;; Navigable undo/redo tree
-
-(+use-package 'undo-tree)
-;; TODO try vundo package
-(global-undo-tree-mode +1)
-
-;;; Vim emulation
+;;;; Vim emulation
 
 ;; base evil configuration
 (+use-package 'evil)
@@ -45,7 +39,7 @@
 (setq evil-want-C-u-scroll nil)
 (setq evil-want-C-i-jump nil)
 (setq evil-respect-visual-line-mode t)
-(setq evil-undo-system 'undo-tree)
+(setq evil-undo-system 'undo-redo)
 (evil-mode 1)
 
 ;; automatically configure evil for some common modes
