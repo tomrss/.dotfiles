@@ -50,6 +50,7 @@
 (setq bookmark-file                     (+cache-file "bookmarks"))
 (setq org-id-locations-file             (+cache-file ".org-id-locations"))
 (setq org-roam-db-location              (+cache-file "org-roam.db"))
+(setq url-cache-directory               (+cache-file "url/cache/"))
 
 (provide 'mod-init-directory)
 ;;; mod-init-directory.el ends here
