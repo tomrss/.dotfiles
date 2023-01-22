@@ -13,6 +13,14 @@
 
 ;;; Code:
 
+;;;; Move native compilation cache outside init dir
+
+(when (fboundp 'startup-redirect-eln-cache)
+  (let ((eln-cache-dir "~/.cache/emacs/eln-cache/"))
+    (make-directory eln-cache-dir t)
+    (startup-redirect-eln-cache
+     (convert-standard-filename eln-cache-dir))))
+
 ;;;; Optimize garbage collections
 
 (defconst +gc-cons-standard-threshold-mb 1024
@@ -58,6 +66,7 @@
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
 
+;; initial frame settings
 (setq default-frame-alist
       '(
         ;; start fullscreen without window bar
@@ -75,13 +84,5 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 (setq inhibit-startup-screen t)
-
-;;; Move native compilation cache outside init dir
-
-(when (fboundp 'startup-redirect-eln-cache)
-  (let ((eln-cache-dir "~/.cache/emacs/eln-cache/"))
-    (make-directory eln-cache-dir t)
-    (startup-redirect-eln-cache
-     (convert-standard-filename eln-cache-dir))))
 
 ;;; early-init.el ends here
