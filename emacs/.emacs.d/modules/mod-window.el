@@ -52,31 +52,13 @@
       '((compilation-mode :noselect t)
 		(help-mode :popup t :select t :align below :size 0.33)
 		(helpful-mode :popup t :select t :align below :size 0.33)
-		("\\*.*e?shell\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
-		("\\*.*v?term\\*.*\\'" :regexp t :popup t :select t :align below :size 0.33)
+		("\\*.*-e?shell\\*\\'" :regexp t :popup t :select t :align below :size 0.33)
+		("\\*.*-v?term\\*.*\\'" :regexp t :popup t :select t :align below :size 0.33)
 		(flycheck-error-list-mode :popup t :select t :align below :size 0.25)
 		("\\*Warnings\\*" :regexp t :noselect t)
         ("\\*eldoc" :regexp t :popup t :noselect t :align right :size 80)
         (kubernetes-overview-mode :select t :align left :size 0.5)
         ("\\*terraform.*\\*" :regexp t :select t :popup t :align right)))
-
-;; TODO the following seems to interfere with treemacs
-;; (setq shackle-default-rule
-;;       '(:noselect t))
-
-;; define and manage popup buffers
-(+use-package 'popper)
-(setq popper-reference-buffers
-	  (mapcar #'car
-			  (seq-filter (lambda (rule) (plist-get (cdr rule) :popup))
-				          shackle-rules)))
-(setq popper-mode-line
-      '(:eval (propertize " P " 'face 'mode-line-emphasis)))
-(setq popper-display-control nil)
-(popper-mode +1)
-(+define-key (kbd "C-è") #'popper-toggle-latest)
-(+define-key (kbd "M-è") #'popper-cycle)
-(+define-key (kbd "C-M-è") #'popper-toggle-type)
 
 ;;;; Workspaces (tab-bar-mode)
 
