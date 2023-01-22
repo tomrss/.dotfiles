@@ -196,6 +196,10 @@
            :key "e"
            :action eshell
            :icon (all-the-icons-octicon . "terminal"))
+          ("Vterm"
+           :key "v"
+           :action vterm
+           :icon (all-the-icons-faicon . "terminal"))
           ("Scratch"
            :key "s"
            :action scratch-new
@@ -211,7 +215,11 @@
           ("Org Roam daily"
            :key "y"
            :action org-roam-dailies-capture-today
-           :icon (all-the-icons-octicon . "calendar"))))
+           :icon (all-the-icons-octicon . "calendar"))
+          ("EWW browser"
+           :key "w"
+           :action eww
+           :icon (all-the-icons-octicon . "globe"))))
 
   (evil-set-initial-state 'welcome-mode 'emacs)
   (define-key welcome-mode-map (kbd "j") #'next-line)
