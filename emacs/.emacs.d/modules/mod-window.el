@@ -22,6 +22,7 @@
 
 (+use-package 'ace-window)
 (+define-key (kbd "M-o") #'ace-window)
+(+define-key (kbd "M-O") #'ace-delete-window)
 (with-eval-after-load 'ace-window
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
