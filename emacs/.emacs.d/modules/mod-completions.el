@@ -72,6 +72,10 @@
 (+define-key (kbd "M-s u")   #'consult-focus-lines)
 (define-key minibuffer-local-map (kbd "C-r") #'consult-history)
 
+;; use consult in xref
+(setq xref-show-xrefs-function       #'consult-xref)
+(setq xref-show-definitions-function #'consult-xref)
+
 (defun +consult-preview-p ()
   "Helper function to find out if Consult is previewing."
   (when-let (win (active-minibuffer-window))
