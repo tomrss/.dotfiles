@@ -1,10 +1,10 @@
 (list
- ;; (channel
- ;;  (name 'loc)
- ;;  (url "file:///home/tomrss/.config/guix/local-channel"))
  (channel
   (name 'guix)
   (url "https://git.savannah.gnu.org/git/guix.git")
+  (branch "master")
+  (commit
+   "08edbd2535ae622d319a51e6f877d23d75dc24f3")
   (introduction
    (make-channel-introduction
     "9edb3f66fd807b096b48283debdcddccfea34bad"
@@ -13,16 +13,11 @@
  (channel
   (name 'nonguix)
   (url "https://gitlab.com/nonguix/nonguix")
+  (branch "master")
+  (commit
+   "63145a63fb40f92a8162eb2c1853e8b953f2ee79")
   (introduction
    (make-channel-introduction
     "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
     (openpgp-fingerprint
-     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
- (channel
-  (name 'flat)
-  (url "https://github.com/flatwhatson/guix-channel.git")
-  (introduction
-   (make-channel-introduction
-    "33f86a4b48205c0dc19d7c036c85393f0766f806"
-    (openpgp-fingerprint
-     "736A C00E 1254 378B A982  7AF6 9DBE 8265 81B6 4490")))))
+     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5")))))
