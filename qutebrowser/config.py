@@ -13,8 +13,7 @@ c.aliases = {
 
 c.colors.webpage.darkmode.enabled = True
 c.colors.webpage.darkmode.policy.images = 'never'
-
-# c.url.default_page = 'about:blank'
+c.colors.webpage.preferred_color_scheme = 'dark'
 
 c.url.searchengines = {
     'DEFAULT': 'https://duckduckgo.com/?q={}',
@@ -49,13 +48,16 @@ config.bind('xt', 'config-cycle tabs.show always never')
 config.bind('xx', 'config-cycle statusbar.show always never;; config-cycle tabs.show always never')
 config.bind('M', 'hint links spawn mpv {hint-url}')
 
-
-config.bind('<Ctrl-g>', 'leave-mode', mode='insert')
-config.bind('<Ctrl-g>', 'leave-mode', mode='command')
-config.bind('<Ctrl-g>', 'leave-mode', mode='prompt')
-config.bind('<Ctrl-g>', 'leave-mode', mode='hint')
+config.bind('<Ctrl-g>', 'clear-keychain ;; search ;; fullscreen --leave')
+config.bind('<Ctrl-g>', 'mode-leave', mode='insert')
+config.bind('<Ctrl-g>', 'mode-leave', mode='command')
+config.bind('<Ctrl-g>', 'mode-leave', mode='prompt')
+config.bind('<Ctrl-g>', 'mode-leave', mode='hint')
+config.bind('<Ctrl-g>', 'mode-leave', mode='caret')
 
 config.bind('<Ctrl-j>', 'completion-item-focus --history next', mode='command')
 config.bind('<Ctrl-k>', 'completion-item-focus --history prev', mode='command')
   
+# config.source('themes/nord-qutebrowser.py')
+
 config.load_autoconfig()

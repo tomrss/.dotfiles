@@ -1,0 +1,212 @@
+/* Color palette: nord https://northeme.com */
+@define-color text              #ffffff;
+@define-color text-alt          #000000;
+@define-color bg                #2e3440;
+/* @define-color bg-light          #3b4252; */
+@define-color bg-light          #4c566a;
+@define-color critical          #bf616a;
+@define-color warning           #ebcb8b;
+@define-color success           #a3be8c;
+@define-color module-inactive   #2e3440;
+@define-color module            #4c566a;
+@define-color workspace-focused #81a1c1;
+
+/* Styles */
+
+* {
+    /* `otf-font-awesome` is required to be installed for icons */
+    font-family: FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+window#waybar {
+    background-color: @bg;
+    border-bottom: 3px solid @bg-light;
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+window#waybar.termite {
+    background-color: #3F3F3F;
+}
+
+window#waybar.chromium {
+    background-color: #000000;
+    border: none;
+}
+
+button {
+    /* Use box-shadow instead of border so the text isn't offset */
+    box-shadow: inset 0 -3px transparent;
+    /* Avoid rounded borders under each button name */
+    border: none;
+    border-radius: 0;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+    background: inherit;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#workspaces button.focused {
+    background-color: @workspace-focused;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#workspaces button.urgent {
+    background-color: @critical;
+}
+
+#mode {
+    background-color: #4C566A;
+    border-bottom: 3px solid #ffffff;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#language,
+#mpd {
+    padding: 0 10px;
+    color: @text;
+}
+
+#window,
+#workspaces {
+    margin: 0 4px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+#clock {
+    background-color: transparent;
+}
+
+#battery,
+#language,
+#disk,
+#backlight,
+#temperature,
+#memory,
+#cpu,
+#network,
+#pulseaudio {
+    background-color: @module;
+    border-bottom: 3px solid @bg-light;
+}
+
+#battery.warning,
+#disk.warning,
+#temperature.warning,
+#memory.warning,
+#battery.warning:not(.charging),
+#cpu.warning {
+    background-color: @warning;
+    color: @text-alt;
+    border-bottom: 3px solid @bg-light;
+}
+
+#battery.critical,
+#disk.critical,
+#temperature.critical,
+#memory.critical,
+#cpu.critical {
+    background-color: @critical;
+    color: @text-alt;
+    border-bottom: 3px solid @bg-light;
+}
+
+#battery.charging, #battery.plugged {
+    background-color: @success;
+    color: @text-alt;
+    border-bottom: 3px solid @bg-light;
+}
+
+@keyframes blink {
+    to {
+        background-color: #ffffff;
+        color: #000000;
+    }
+}
+
+#battery.critical:not(.charging) {
+    background-color: @critical;
+    color: @text-alt;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+label:focus {
+    background-color: #000000;
+}
+
+#network.disconnected {
+    background-color: @warning;
+    border-bottom: 3px solid @bg-light;
+}
+
+#pulseaudio.muted {
+    background-color: @module-inactive;
+    border-bottom: 3px solid @bg-light;
+}
+
+#idle_inhibitor {
+    background-color: @module-inactive;
+    border-bottom: 3px solid @bg-light;
+}
+
+#idle_inhibitor.activated {
+    background-color: @module;
+    border-bottom: 3px solid @bg-light;
+}
+
+#language {
+    min-width: 16px;
+}
+
+#scratchpad {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#scratchpad.empty {
+	background-color: transparent;
+}

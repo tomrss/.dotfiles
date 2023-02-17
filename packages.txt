@@ -1,8 +1,0 @@
-alacritty
-bash
-emacs
-i3
-i3status-rs
-qutebrowser
-rofi
-sway
