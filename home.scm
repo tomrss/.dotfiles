@@ -28,6 +28,7 @@
                                        "hicolor-icon-theme"
                                        "pavucontrol"
                                        "xdg-utils"
+                                       "gnome-commander"
 
                                        ;; media
                                        "qbittorrent"
