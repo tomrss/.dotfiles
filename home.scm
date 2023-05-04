@@ -52,6 +52,7 @@
                                        "glibc-locales"
                                        "ncurses"
                                        "libvterm"
+                                       "qtwayland@5.15.8"
 
                                        ;; util
                                        "imagemagick"
@@ -105,6 +106,7 @@
 		                home-environment-variables-service-type
 		                `(("_JAVA_AWT_WM_NONREPARENTING" . "1")
 				          ("QTWEBENGINE_CHROMIUM_FLAGS" . "--disable-seccomp-filter-sandbox")
+                          ("QT_QPA_PLATFORM" . "wayland")
                           ("EMACS_THEME" . "doom-nord")))
         (service home-xdg-configuration-files-service-type
                  `(("sway" ,(local-file "sway" #:recursive? #t))
