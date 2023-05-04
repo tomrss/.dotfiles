@@ -107,7 +107,6 @@
         (simple-service 'home-env-var-service
 		                home-environment-variables-service-type
 		                `(("_JAVA_AWT_WM_NONREPARENTING" . "1")
-				          ("QTWEBENGINE_CHROMIUM_FLAGS" . "--disable-seccomp-filter-sandbox")
                           ("QT_QPA_PLATFORM" . "wayland")
                           ("EMACS_THEME" . "doom-nord")))
         (service home-xdg-configuration-files-service-type
