@@ -5,7 +5,7 @@
 ;; See the "Replicating Guix" section in the manual.
 
 (use-modules (gnu home)
-	     (gnu home services)
+	         (gnu home services)
              (gnu packages)
              (gnu services)
              (guix gexp)
@@ -14,69 +14,71 @@
 (home-environment
  ;; Below is the list of packages that will show up in your
  ;; Home profile, under ~/.guix-home/profile.
- (packages (specifications->packages '(
-                                       ;; editors
-                                       "emacs-next-pgtk"
+ (packages
+  (specifications->packages
+   '(
+     ;; editors
+     "emacs-next-pgtk"
 
-                                       ;; browsers
-                                       "firefox"
-                                       "qutebrowser"
+     ;; browsers
+     "firefox"
+     "qutebrowser"
 
-                                       ;; desktop
-                                       "waybar"
-                                       "fuzzel"
-                                       "hicolor-icon-theme"
-                                       "pavucontrol"
-                                       "xdg-utils"
-                                       "gnome-commander"
+     ;; desktop
+     "waybar"
+     "fuzzel"
+     "hicolor-icon-theme"
+     "pavucontrol"
+     "xdg-utils"
+     "gnome-commander"
 
-                                       ;; media
-                                       "qbittorrent"
-                                       "mkvtoolnix"
-                                       "mpv"
-                                       "youtube-dl"
-                                       "picard"
-                                       "calibre"
+     ;; media
+     "qbittorrent"
+     "mkvtoolnix"
+     "mpv"
+     "youtube-dl"
+     "picard"
+     "calibre"
 
-                                       ;; fonts
-                                       "font-jetbrains-mono"
+     ;; fonts
+     "font-jetbrains-mono"
 
-                                       ;; networking
-                                       "protonvpn-cli"
-                                       "curl"
-                                       "nmap"
-                                       "netcat"
-                                       "net-tools"
+     ;; networking
+     "protonvpn-cli"
+     "curl"
+     "nmap"
+     "netcat"
+     "net-tools"
 
-                                       ;; lib
-                                       "glibc-locales"
-                                       "ncurses"
-                                       "libvterm"
-                                       "qtwayland@5.15.8"
+     ;; lib
+     "glibc-locales"
+     "ncurses"
+     "libvterm"
+     "qtwayland@5.15.8"
 
-                                       ;; util
-                                       "imagemagick"
-                                       "ghostscript"
-                                       "ntfs-3g"
-                                       "tree"
-                                       "ripgrep"
-                                       "unzip"
-                                       "zip"
+     ;; util
+     "imagemagick"
+     "ghostscript"
+     "ntfs-3g"
+     "tree"
+     "ripgrep"
+     "unzip"
+     "zip"
 
-                                       ;; build
-                                       "gcc-toolchain"
-                                       "cmake"
-                                       "make"
+     ;; build
+     "gcc-toolchain"
+     "cmake"
+     "make"
 
-                                       ;; python
-                                       "python"
-                                       "python-pip"
-                                       "python-virtualenv"
+     ;; python
+     "python"
+     "python-pip"
+     "python-virtualenv"
 
-                                       ;; go
-                                       "go"
-                                       "gopls"
-                                       )))
+     ;; go
+     "go"
+     "gopls"
+     )))
 
  ;; Below is the list of Home services.  To search for available
  ;; services, run 'guix home search KEYWORD' in a terminal.
