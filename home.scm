@@ -38,11 +38,6 @@
                                        "picard"
                                        "calibre"
 
-                                       ;; python
-                                       "python"
-                                       "python-pip"
-                                       "python-virtualenv"
-
                                        ;; fonts
                                        "font-jetbrains-mono"
 
@@ -71,6 +66,15 @@
                                        "gcc-toolchain"
                                        "cmake"
                                        "make"
+
+                                       ;; python
+                                       "python"
+                                       "python-pip"
+                                       "python-virtualenv"
+
+                                       ;; go
+                                       "go"
+                                       "gopls"
                                        )))
 
  ;; Below is the list of Home services.  To search for available
