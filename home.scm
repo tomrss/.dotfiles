@@ -31,6 +31,7 @@
      "pavucontrol"
      "xdg-utils"
      "gnome-commander"
+     "qview"
 
      ;; media
      "qbittorrent"
