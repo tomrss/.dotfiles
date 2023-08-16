@@ -11,13 +11,11 @@
 	         (gnu packages pulseaudio)
              (gnu packages package-management)
              (gnu packages version-control)
-             (gnu packages rust-apps)
 	         (srfi srfi-1)
              (web client)
              (web response)
              (rnrs bytevectors)
              (guix packages)
-	         (gnu packages linux)
 	         (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -60,11 +58,7 @@
          swaybg
          swayidle
          swaylock
-         waybar
-         fuzzel
-	     brightnessctl
 	     pulseaudio
-         pavucontrol
          alacritty
          git
          vim
