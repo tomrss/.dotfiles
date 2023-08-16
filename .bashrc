@@ -165,3 +165,8 @@ alias xclip="xclip -selection c"
 alias pvpn="protonvpn"
 alias python="python3"
 
+# unlimited history
+export HISTSIZE=
+export HISTFILESIZE=
+# ignore duplicates in history
+export HISTCONTROL=ignoreboth:erasedups
