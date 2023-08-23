@@ -48,7 +48,7 @@
      "glibc-locales"
      "ncurses"
      "libvterm"
-     "qtwayland@5.15.8"
+     "qtwayland@5"
 
      ;; util
      "imagemagick"
