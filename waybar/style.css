@@ -181,6 +181,7 @@ label:focus {
 
 #network.disconnected {
     background-color: @warning;
+    color: @text-alt;
     border-bottom: 3px solid @bg-light;
 }
 
