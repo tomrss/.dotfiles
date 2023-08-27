@@ -3,10 +3,8 @@
              (gnu services docker)
              (gnu services xorg)        ; just to exclude gdm service
              (gnu packages wm)
-             (gnu packages glib)
              (gnu packages vim)
              (gnu packages certs)
-             (gnu packages xdisorg)
              (gnu packages terminals)
 	         (gnu packages pulseaudio)
              (gnu packages package-management)
