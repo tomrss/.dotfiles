@@ -27,6 +27,15 @@
     	    (eq? (service-kind service) gdm-service-type))
     	  %desktop-services))
 
+;; TODO this rule is only a prototype, rewrite it
+(define %sd-card-udev-rule
+  (udev-rule
+   "90-sd-card.rules"
+   (string-append "ACTION==\"add\", "
+                  "SUBSYSTEM==\"block\", "
+                  "KERNEL==\"mmcblk*\", "
+                  "RUN+=\"/run/setuid-programs/mount /dev/mmcblk0p1 /media/tomrss/ -o rw,uid=1000\"")))
+
 (operating-system
  (kernel linux)
  (firmware (list linux-firmware))
@@ -39,6 +48,7 @@
  (users (cons* (user-account
                 (name "tomrss")
                 (comment "Tommaso Rossi")
+                (uid 1000)
                 (group "users")
                 (home-directory "/home/tomrss")
                 (supplementary-groups '("wheel"
@@ -63,20 +73,21 @@
          stow
          %base-packages))
 
- (services (cons*
-            (service docker-service-type)
-            (modify-services
-             %no-login-desktop-services
-             (guix-service-type
-              config => (guix-configuration
-                         (inherit config)
-                         (substitute-urls
-                          (append (list "https://substitutes.nonguix.org")
-                                  %default-substitute-urls))
-                         (authorized-keys
-                          (cons* (plain-file "non-guix.pub"
-                                             %nonguix-public-key)
-                                 %default-authorized-guix-keys)))))))
+ (services
+  (cons* (service docker-service-type)
+         (udev-rules-service 'sd-card %sd-card-udev-rule)
+         (modify-services
+          %no-login-desktop-services
+          (guix-service-type
+           config => (guix-configuration
+                      (inherit config)
+                      (substitute-urls
+                       (append (list "https://substitutes.nonguix.org")
+                               %default-substitute-urls))
+                      (authorized-keys
+                       (cons* (plain-file "non-guix.pub"
+                                          %nonguix-public-key)
+                              %default-authorized-guix-keys)))))))
 
  (bootloader
   (bootloader-configuration
