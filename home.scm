@@ -1,6 +1,7 @@
 (use-modules (gnu home)
 	         (gnu home services)
              (gnu packages)
+             (gnu packages shells)
              (gnu services)
              (guix gexp)
              (gnu home services shells))
@@ -73,27 +74,17 @@
  (services
   (list (service home-bash-service-type
                  (home-bash-configuration
-                  (aliases '(("cp" . "cp -i")
-                             ("df" . "df -h")
-                             ("egrep" . "egrep --colour=auto")
-                             ("fgrep" . "fgrep --colour=auto")
-                             ("free" . "free -m")
-                             ("grep" . "grep --colour=auto")
-                             ("l" . "ls -lh")
-                             ("ll" . "ls -lah")
-                             ("ls" . "ls --color=auto")
-                             ("more" . "less")
-                             ("np" . "nano -w PKGBUILD")
-                             ("python" . "python3")))
-                  (bashrc (list (local-file
-                                 ".bashrc"
-                                 "bashrc")))
-                  (bash-profile (list (local-file
-                                       ".bash_profile"
-                                       "bash_profile")))))
+                  (bashrc (list (local-file ".bashrc" "bashrc")))
+                  (bash-profile (list (local-file ".bash_profile" "bash_profile")))))
+        (service home-zsh-service-type
+                 (home-zsh-configuration
+                  (xdg-flavor? #f)
+                  (zshrc (list (local-file ".zshrc" "zshrc")))
+                  (zprofile (list (local-file ".zprofile" "zprofile")))))
         (simple-service 'home-env-var-service
 		                home-environment-variables-service-type
-		                `(("_JAVA_AWT_WM_NONREPARENTING" . "1")
+		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
+                          ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "wayland")
                           ("EMACS_THEME" . "doom-nord")))
         (service home-xdg-configuration-files-service-type
