@@ -42,7 +42,7 @@ setopt hist_ignore_space
 local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ %s)"
 local separator="%{$reset_color%}•"
 PROMPT=$'%{$fg[green]%}%n@%m ${separator} %{$fg[cyan]%}%~%{$reset_color%}$(git_prompt_info) ${separator} %{$fg[grey]%}%D{%H:%M:%S}
-${ret_status} %{$reset_color%}'
+${ret_status}%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX=" ${separator} %{$fg_bold[blue]%} %{$fg[purple]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
