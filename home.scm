@@ -86,6 +86,7 @@
 		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "wayland")
+                          ("CALIBRE_USE_DARK_PALETTE" . "1")
                           ("EMACS_THEME" . "doom-nord")))
         (service home-xdg-configuration-files-service-type
                  `(("sway" ,(local-file "sway" #:recursive? #t))
