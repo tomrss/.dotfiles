@@ -90,7 +90,7 @@
                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "wayland")
                           ("CALIBRE_USE_DARK_PALETTE" . "1")
-                          ))
+                          ("EMACSNATIVELOADPATH" . "/tmp:/home/tomrss/.cache/emacs/eln-cache/")))
         (service home-xdg-configuration-files-service-type
                  `(("sway" ,(local-file "sway" #:recursive? #t))
                    ("alacritty" ,(local-file "alacritty" #:recursive? #t))
