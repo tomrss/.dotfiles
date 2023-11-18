@@ -24,9 +24,11 @@ c.url.searchengines = {
     'syt': 'https://www.youtube.com/results?search_query={}',
     'cyt': 'https://www.youtube.com/c/{}/videos',
     'enit': 'https://www.wordreference.com/enit/{}',
-    'iten': 'https://www.wordreference.com/iten/{}'
+    'iten': 'https://www.wordreference.com/iten/{}',
+    'lg': 'http://libgen.rs/search.php?req={}',
 }
 
+# &lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def',
 c.statusbar.show = 'always'
 
 c.tabs.tabs_are_windows = False

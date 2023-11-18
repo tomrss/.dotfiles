@@ -1,6 +1,7 @@
 (use-modules (gnu home)
 	         (gnu home services)
              (gnu packages)
+             (gnu packages shells)
              (gnu services)
              (guix gexp)
              (gnu home services shells))
@@ -31,13 +32,14 @@
      "mpv"
      "qview"
      "youtube-dl"
-     "picard"
      "calibre"
 
      ;; fonts
      "font-jetbrains-mono"
 
      ;; networking
+     "openssh"
+     "sshfs"
      "protonvpn-cli"
      "curl"
      "nmap"
@@ -54,10 +56,13 @@
      "imagemagick"
      "ghostscript"
      "ntfs-3g"
+     "cifs-utils"
      "tree"
      "ripgrep"
      "unzip"
      "zip"
+     "unrar-free"
+     "lsof"
 
      ;; toolchain
      "gcc-toolchain"
@@ -67,35 +72,25 @@
      "python-pip"
      "python-virtualenv"
      "go"
-     "gopls"
      )))
 
  (services
   (list (service home-bash-service-type
                  (home-bash-configuration
-                  (aliases '(("cp" . "cp -i")
-                             ("df" . "df -h")
-                             ("egrep" . "egrep --colour=auto")
-                             ("fgrep" . "fgrep --colour=auto")
-                             ("free" . "free -m")
-                             ("grep" . "grep --colour=auto")
-                             ("l" . "ls -lh")
-                             ("ll" . "ls -lah")
-                             ("ls" . "ls --color=auto")
-                             ("more" . "less")
-                             ("np" . "nano -w PKGBUILD")
-                             ("python" . "python3")))
-                  (bashrc (list (local-file
-                                 ".bashrc"
-                                 "bashrc")))
-                  (bash-profile (list (local-file
-                                       ".bash_profile"
-                                       "bash_profile")))))
+                  (bashrc (list (local-file ".bashrc" "bashrc")))
+                  (bash-profile (list (local-file ".bash_profile" "bash_profile")))))
+        (service home-zsh-service-type
+                 (home-zsh-configuration
+                  (xdg-flavor? #f)
+                  (zshrc (list (local-file ".zshrc" "zshrc")))
+                  (zprofile (list (local-file ".zprofile" "zprofile")))))
         (simple-service 'home-env-var-service
 		                home-environment-variables-service-type
-		                `(("_JAVA_AWT_WM_NONREPARENTING" . "1")
+		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
+                          ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "wayland")
-                          ("EMACS_THEME" . "doom-nord")))
+                          ("CALIBRE_USE_DARK_PALETTE" . "1")
+                          ("EMACSNATIVELOADPATH" . "/tmp:/home/tomrss/.cache/emacs/eln-cache/")))
         (service home-xdg-configuration-files-service-type
                  `(("sway" ,(local-file "sway" #:recursive? #t))
                    ("alacritty" ,(local-file "alacritty" #:recursive? #t))
