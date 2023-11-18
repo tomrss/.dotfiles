@@ -32,13 +32,14 @@
      "mpv"
      "qview"
      "youtube-dl"
-     "picard"
      "calibre"
 
      ;; fonts
      "font-jetbrains-mono"
 
      ;; networking
+     "openssh"
+     "sshfs"
      "protonvpn-cli"
      "curl"
      "nmap"
@@ -55,10 +56,13 @@
      "imagemagick"
      "ghostscript"
      "ntfs-3g"
+     "cifs-utils"
      "tree"
      "ripgrep"
      "unzip"
      "zip"
+     "unrar-free"
+     "lsof"
 
      ;; toolchain
      "gcc-toolchain"
