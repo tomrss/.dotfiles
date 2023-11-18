@@ -1,6 +1,5 @@
 (use-modules (gnu)
              (gnu services desktop)
-             (gnu services docker)
              (gnu services xorg)        ; just to exclude gdm service
              (gnu packages wm)
              (gnu packages vim)
@@ -56,7 +55,6 @@
                                         "audio"
                                         "tty"
                                         "input"
-                                        "docker"
                                         "video")))
                %base-user-accounts))
 
@@ -74,8 +72,7 @@
          %base-packages))
 
  (services
-  (cons* (service docker-service-type)
-         (udev-rules-service 'sd-card %sd-card-udev-rule)
+  (cons* (udev-rules-service 'sd-card %sd-card-udev-rule)
          (modify-services
           %no-login-desktop-services
           (guix-service-type
