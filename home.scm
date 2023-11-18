@@ -68,7 +68,6 @@
      "python-pip"
      "python-virtualenv"
      "go"
-     "gopls"
      )))
 
  (services
