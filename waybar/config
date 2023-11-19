@@ -7,7 +7,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces", "sway/mode", "sway/scratchpad", "sway/window"],
     "modules-center": ["clock"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "disk", "sway/language", "battery"],
+    "modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "disk", "sway/language", "battery", "custom/power"],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -125,5 +125,11 @@
              "critical": 90
         },
         "path": "/"
+    },
+    "custom/power": {
+        "format": "",
+        "on-click": "swaynag -t warning -m 'Power Menu Options' -b 'Logout' 'swaymsg exit' -b 'Reboot' 'loginctl reboot' -b 'Shutdown' 'loginctl poweroff'",
+        "tooltip-format": "Power Menu Options",
+        "tooltip": true
     }
 }
