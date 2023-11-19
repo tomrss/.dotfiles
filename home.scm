@@ -21,6 +21,8 @@
      "pavucontrol"
      "xdg-utils"
      "gnome-commander"
+     "swaynotificationcenter"
+     "libnotify"
 
      ;; browsers
      "firefox"
@@ -96,6 +98,7 @@
                    ("alacritty" ,(local-file "alacritty" #:recursive? #t))
                    ("waybar" ,(local-file "waybar" #:recursive? #t))
                    ("fuzzel" ,(local-file "fuzzel" #:recursive? #t))
+                   ("swaync" ,(local-file "swaync" #:recursive? #t))
                    ;; don't copy the whole folder because some files are to be written from qutebrowser
                    ;; TODO: move that kind of files to another folder from qutebrowser config
                    ("qutebrowser/themes" ,(local-file "qutebrowser/themes" #:recursive? #t))

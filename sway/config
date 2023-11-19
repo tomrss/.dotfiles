@@ -52,6 +52,11 @@ gaps inner 2
 for_window [app_id="pavucontrol"] floating enable
 for_window [app_id="nm-connection-editor"] floating enable
 
+# Notification Daemon
+exec swaync
+# Toggle control center
+bindsym $mod+Shift+n exec swaync-client -t -sw
+
 ### Idle configuration
 #
 # Example configuration:

@@ -7,7 +7,19 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces", "sway/mode", "sway/scratchpad", "sway/window"],
     "modules-center": ["clock"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "disk", "sway/language", "battery", "custom/power"],
+    "modules-right": [
+        "idle_inhibitor",
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "disk",
+        "sway/language",
+        "battery",
+        "custom/controlcenter"
+    ],
     // Modules configuration
     // "sway/workspaces": {
     //     "disable-scroll": true,
@@ -126,10 +138,24 @@
         },
         "path": "/"
     },
-    "custom/power": {
-        "format": "",
-        "on-click": "swaynag -t warning -m 'Power Menu Options' -b 'Logout' 'swaymsg exit' -b 'Reboot' 'loginctl reboot' -b 'Shutdown' 'loginctl poweroff'",
-        "tooltip-format": "Power Menu Options",
-        "tooltip": true
-    }
+    "custom/controlcenter": {
+    "tooltip": false,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='#bf616a'><sup></sup></span> ",
+      "none": "",
+      "dnd-notification": "<span foreground='#bf616a'><sup></sup></span> ",
+      "dnd-none": " ",
+      "inhibited-notification": "<span foreground='#bf616a'><sup></sup></span> ",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='#bf616a'><sup></sup></span> ",
+      "dnd-inhibited-none": " "
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
 }

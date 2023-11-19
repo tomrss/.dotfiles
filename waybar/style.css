@@ -94,7 +94,7 @@ button:hover {
 #idle_inhibitor,
 #scratchpad,
 #language,
-#custom-power,
+#custom-controlcenter,
 #mpd {
     padding: 0 10px;
     color: @text;
@@ -127,7 +127,7 @@ button:hover {
 #memory,
 #cpu,
 #network,
-#custom-power,
+#custom-controlcenter,
 #pulseaudio {
     background-color: @module;
     border-bottom: 3px solid @bg-light;
