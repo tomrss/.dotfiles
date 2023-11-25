@@ -14,6 +14,9 @@
              (rnrs bytevectors)
              (guix packages)
              (ice-9 format)
+             (ice-9 ftw)
+             (ice-9 string-fun)
+             (ice-9 textual-ports)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -29,34 +32,22 @@
 
 (define %user-uid 1000)
 
-;; TODO these rules are not very generic but they work for me
-(define %sd-card-udev-rule
-  (udev-rule
-   "90-sd-card.rules"
-   (string-append "ACTION==\"add\", "
-                  "SUBSYSTEM==\"block\", "
-                  "KERNEL==\"mmcblk0p1\", "
-                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/mmcblk0p1' -u ~d -p 'SD Card' -A\"\n" %user-uid)
+(define %udev-rules-folder "/home/tomrss/.dotfiles/udev")
 
-                  "ACTION==\"remove\", "
-                  "SUBSYSTEM==\"block\", "
-                  "KERNEL==\"mmcblk0p1\", "
-                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/mmcblk0p1' -u ~d -p 'SD Card'\"\n" %user-uid))))
+(define (file-to-udev-rule-service file)
+  (let ((filename (car file)))
+    (udev-rules-service
+     (string->symbol filename)
+     (udev-rule filename
+                (string-replace-substring
+                 (call-with-input-file (format #f "~a/~a" %udev-rules-folder filename) get-string-all)
+                 "%%UID%%"
+                 (format #f "~d" %user-uid))))))
 
-(define %usb-udev-rule
-  (udev-rule
-   "90-usb.rules"
-   (string-append "ACTION==\"add\", "
-                  "SUBSYSTEM==\"block\", "
-                  "DRIVERS==\"usb\", "
-                  "KERNEL==\"sdb1\", "
-                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/sdb1' -u ~d -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk -A\"\n" %user-uid)
+(define %udev-rules-services
+  (map file-to-udev-rule-service
+       (cdr (cdr (file-system-tree %udev-rules-folder)))))
 
-                  "ACTION==\"remove\", "
-                  "SUBSYSTEM==\"block\", "
-                  "DRIVERS==\"usb\", "
-                  "KERNEL==\"sdb1\", "
-                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/sdb1' -u ~d -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk\"" %user-uid))))
 
 (operating-system
  (kernel linux)
@@ -95,20 +86,19 @@
          %base-packages))
 
  (services
-  (cons* (udev-rules-service 'sd-card %sd-card-udev-rule)
-         (udev-rules-service 'usb %usb-udev-rule)
-         (modify-services
-          %no-login-desktop-services
-          (guix-service-type
-           config => (guix-configuration
-                      (inherit config)
-                      (substitute-urls
-                       (append (list "https://substitutes.nonguix.org")
-                               %default-substitute-urls))
-                      (authorized-keys
-                       (cons* (plain-file "non-guix.pub"
-                                          %nonguix-public-key)
-                              %default-authorized-guix-keys)))))))
+  (append %udev-rules-services
+          (modify-services
+           %no-login-desktop-services
+           (guix-service-type
+            config => (guix-configuration
+                       (inherit config)
+                       (substitute-urls
+                        (append (list "https://substitutes.nonguix.org")
+                                %default-substitute-urls))
+                       (authorized-keys
+                        (cons* (plain-file "non-guix.pub"
+                                           %nonguix-public-key)
+                               %default-authorized-guix-keys)))))))
 
  (bootloader
   (bootloader-configuration

@@ -1,0 +1,9 @@
+ACTION=="add", \
+  SUBSYSTEM=="block", \
+  KERNEL=="mmcblk0p1", \
+  RUN+="/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/mmcblk0p1' -u %%UID%% -p 'SD Card' -A"
+
+ACTION=="remove", \
+  SUBSYSTEM=="block", \
+  KERNEL=="mmcblk0p1", \
+  RUN+="/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/mmcblk0p1' -u %%UID%% -p 'SD Card'"

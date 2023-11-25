@@ -1,0 +1,11 @@
+ACTION=="add", \
+  SUBSYSTEM=="block", \
+  DRIVERS=="usb", \
+  KERNEL=="sdb1", \
+  RUN+="/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/sdb1' -u %%UID%% -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk -A"
+
+ACTION=="remove", \
+  SUBSYSTEM=="block", \
+  DRIVERS=="usb", \
+  KERNEL=="sdb1", \
+  RUN+="/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/sdb1' -u %%UID%% -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk"
