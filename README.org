@@ -1,0 +1,16 @@
+#+title: dotfiles
+#+author: Tommaso Rossi
+
+Personal configuration files for a reproducible, minimal and stable GNU Guix system.
+
+Configure system:
+
+#+begin_src shell
+  sudo -E guix time-machine -C channels.scm system reconfigure system.scm
+#+end_src
+
+Configure home:
+
+#+begin_src shell
+  guix time-machine -C channels.scm home reconfigure home.scm
+#+end_src
