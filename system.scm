@@ -1,9 +1,9 @@
 (use-modules (gnu)
              (gnu services desktop)
              (gnu services xorg)        ; just to exclude gdm service
-             (gnu packages wm)
              (gnu packages vim)
              (gnu packages certs)
+             (gnu packages gnome)
              (gnu packages terminals)
              (gnu packages pulseaudio)
              (gnu packages package-management)
@@ -74,15 +74,13 @@
 
  (packages
   (cons* nss-certs
-         sway
-         swaybg
-         swayidle
-         swaylock
 	     pulseaudio
          alacritty
          git
          vim
          stow
+         libnotify
+
          %base-packages))
 
  (services

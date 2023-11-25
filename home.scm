@@ -14,15 +14,15 @@
      "emacs-next-pgtk"
 
      ;; desktop
+     "sway"
      "waybar"
      "fuzzel"
-     "hicolor-icon-theme"
+     "adwaita-icon-theme"
      "brightnessctl"
      "pavucontrol"
      "xdg-utils"
      "gnome-commander"
      "swaynotificationcenter"
-     "libnotify"
 
      ;; browsers
      "firefox"
