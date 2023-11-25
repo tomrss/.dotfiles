@@ -1,0 +1,4 @@
+SUBSYSTEM=="power_supply", \
+  ATTR{status}=="Discharging", \
+  ATTR{capacity}=="[0-1][05]", \
+  RUN+="/home/tomrss/.dotfiles/scripts/notify.sh -u %%UID%% -i battery-low-symbolic -c 'Low battery' 'Battery at $attr{capacity}%'"
