@@ -1,7 +1,0 @@
-configuration {
-	modi: "window,drun,combi";
-	/* theme: "solarized dark"; */
-	font: "JetBrainsMono 12";
-	combi-modi: "window,drun";
-	icon-theme: "Papirus";
-}
