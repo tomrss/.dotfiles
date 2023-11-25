@@ -5,15 +5,16 @@
              (gnu packages vim)
              (gnu packages certs)
              (gnu packages terminals)
-	         (gnu packages pulseaudio)
+             (gnu packages pulseaudio)
              (gnu packages package-management)
              (gnu packages version-control)
-	         (srfi srfi-1)
+             (srfi srfi-1)
              (web client)
              (web response)
              (rnrs bytevectors)
              (guix packages)
-	         (nongnu packages linux)
+             (ice-9 format)
+             (nongnu packages linux)
              (nongnu system linux-initrd))
 
 (define %nonguix-public-key
@@ -26,14 +27,36 @@
     	    (eq? (service-kind service) gdm-service-type))
     	  %desktop-services))
 
-;; TODO this rule is only a prototype, rewrite it
+(define %user-uid 1000)
+
+;; TODO these rules are not very generic but they work for me
 (define %sd-card-udev-rule
   (udev-rule
    "90-sd-card.rules"
    (string-append "ACTION==\"add\", "
                   "SUBSYSTEM==\"block\", "
-                  "KERNEL==\"mmcblk*\", "
-                  "RUN+=\"/run/setuid-programs/mount /dev/mmcblk0p1 /media/tomrss/ -o rw,uid=1000\"")))
+                  "KERNEL==\"mmcblk0p1\", "
+                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/mmcblk0p1' -u ~d -p 'SD Card' -A\"\n" %user-uid)
+
+                  "ACTION==\"remove\", "
+                  "SUBSYSTEM==\"block\", "
+                  "KERNEL==\"mmcblk0p1\", "
+                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/mmcblk0p1' -u ~d -p 'SD Card'\"\n" %user-uid))))
+
+(define %usb-udev-rule
+  (udev-rule
+   "90-usb.rules"
+   (string-append "ACTION==\"add\", "
+                  "SUBSYSTEM==\"block\", "
+                  "DRIVERS==\"usb\", "
+                  "KERNEL==\"sdb1\", "
+                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a add -d '/dev/sdb1' -u ~d -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk -A\"\n" %user-uid)
+
+                  "ACTION==\"remove\", "
+                  "SUBSYSTEM==\"block\", "
+                  "DRIVERS==\"usb\", "
+                  "KERNEL==\"sdb1\", "
+                  (format #f "RUN+=\"/home/tomrss/.dotfiles/scripts/handle_device.sh -a remove -d '/dev/sdb1' -u ~d -m '$attr{manufacturer}' -p '$attr{product}' -i drive-harddisk\"" %user-uid))))
 
 (operating-system
  (kernel linux)
@@ -47,7 +70,7 @@
  (users (cons* (user-account
                 (name "tomrss")
                 (comment "Tommaso Rossi")
-                (uid 1000)
+                (uid %user-uid)
                 (group "users")
                 (home-directory "/home/tomrss")
                 (supplementary-groups '("wheel"
@@ -73,6 +96,7 @@
 
  (services
   (cons* (udev-rules-service 'sd-card %sd-card-udev-rule)
+         (udev-rules-service 'usb %usb-udev-rule)
          (modify-services
           %no-login-desktop-services
           (guix-service-type
