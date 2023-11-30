@@ -18,6 +18,7 @@
      "waybar"
      "fuzzel"
      "adwaita-icon-theme"
+     "hicolor-icon-theme"
      "brightnessctl"
      "pavucontrol"
      "xdg-utils"
