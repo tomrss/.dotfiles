@@ -50,7 +50,6 @@
      "net-tools"
 
      ;; lib
-     "glibc-locales"
      "ncurses"
      "libvterm"
      "qtwayland@5"
