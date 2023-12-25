@@ -33,6 +33,7 @@ source $ZSH/oh-my-zsh.sh
 alias ll="ls -lah --group-directories-first"
 alias k="kubectl"
 alias h="helm"
+alias python="python3"
 
 HISTSIZE=100000000
 SAVEHIST=$HISTSIZE
