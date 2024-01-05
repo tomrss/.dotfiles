@@ -91,7 +91,8 @@
 		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "wayland")
-                          ("CALIBRE_USE_DARK_PALETTE" . "1")))
+                          ("CALIBRE_USE_DARK_PALETTE" . "1")
+                          ("PATH" . "$PATH:$HOME/go/bin")))
         (service home-xdg-configuration-files-service-type
                  `(("sway" ,(local-file "sway" #:recursive? #t))
                    ("alacritty" ,(local-file "alacritty" #:recursive? #t))
