@@ -8,22 +8,14 @@
              (gnu packages pulseaudio)
              (gnu packages package-management)
              (gnu packages version-control)
-             (srfi srfi-1)
-             (web client)
-             (web response)
-             (rnrs bytevectors)
              (guix packages)
+             (srfi srfi-1)
              (ice-9 format)
              (ice-9 ftw)
              (ice-9 string-fun)
              (ice-9 textual-ports)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-
-(define %nonguix-public-key
-  (utf8->string
-   (read-response-body
-    (http-request "https://substitutes.nonguix.org/signing-key.pub" #:streaming? #t))))
 
 (define %no-login-desktop-services
   (remove (lambda (service)
@@ -53,7 +45,6 @@
  (kernel linux)
  (firmware (list linux-firmware))
  (initrd microcode-initrd)
- 
  (locale "en_US.utf8")
  (timezone "Europe/Rome")
  (keyboard-layout (keyboard-layout "it" #:options '("caps:escape")))
@@ -74,13 +65,12 @@
 
  (packages
   (cons* nss-certs
-	     pulseaudio
+         pulseaudio
          alacritty
          git
          vim
          stow
          libnotify
-
          %base-packages))
 
  (services
@@ -94,8 +84,7 @@
                         (append (list "https://substitutes.nonguix.org")
                                 %default-substitute-urls))
                        (authorized-keys
-                        (cons* (plain-file "non-guix.pub"
-                                           %nonguix-public-key)
+                        (cons* (local-file "/home/tomrss/.dotfiles/nonguix-signing-key.pub")
                                %default-authorized-guix-keys)))))))
 
  (bootloader
