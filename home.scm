@@ -52,7 +52,7 @@
      ;; lib
      "ncurses"
      "libvterm"
-     "qtwayland@5"
+     "qtwayland"
 
      ;; util
      "imagemagick"
@@ -95,7 +95,8 @@
 		                home-environment-variables-service-type
 		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
-                          ("QT_QPA_PLATFORM" . "wayland")
+                          ("QT_QPA_PLATFORM" . "xcb")
+                          ("QUTE_QT_WRAPPER" . "PyQt6")
                           ("CALIBRE_USE_DARK_PALETTE" . "1")
                           ("PATH" . "$PATH:$HOME/go/bin")))
         (service home-xdg-configuration-files-service-type
