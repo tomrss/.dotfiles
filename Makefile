@@ -17,3 +17,7 @@ home-upgrade:
 .PHONY: system-upgrade
 system-upgrade:
 	sudo -E guix system reconfigure system.scm
+
+.PHONY: update-channel-definitions
+update-channel-definitions:
+	guix describe -f channels > channels.scm
