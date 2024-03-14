@@ -65,11 +65,16 @@
      "zip"
      "unrar-free"
      "lsof"
+     "bc"
 
      ;; toolchain
      "gcc-toolchain"
      "cmake"
      "make"
+     "pkg-config"
+     "ccls"
+     "bear"
+     "guile"
      "python"
      "python-pip"
      "python-virtualenv"
