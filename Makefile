@@ -1,5 +1,8 @@
 # Collection of useful commands for using the guix configuration
 
+HOST=$(shell hostname)
+
+
 all: pull check-substitutes home-upgrade system-upgrade
 
 .PHONY: pull
@@ -12,11 +15,15 @@ check-substitutes:
 
 .PHONY: home-upgrade
 home-upgrade:
-	guix home reconfigure home.scm
+	guix home -L . reconfigure tomrss/home/$(HOST).scm
+
+.PHONY: home-container
+home-container:
+	guix home -L . container tomrss/home/$(HOST).scm
 
 .PHONY: system-upgrade
 system-upgrade:
-	sudo -E guix system reconfigure system.scm
+	sudo -E guix system -L . reconfigure tomrss/systems/$(HOST).scm
 
 .PHONY: update-channel-definitions
 update-channel-definitions:

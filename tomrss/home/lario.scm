@@ -1,10 +1,12 @@
-(use-modules (gnu home)
-	         (gnu home services)
-             (gnu packages)
-             (gnu packages shells)
-             (gnu services)
-             (guix gexp)
-             (gnu home services shells))
+;; TODO refactor with services
+(define-module (tomrss home lario)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages shells)
+  #:use-module (gnu services)
+  #:use-module (guix gexp)
+  #:use-module (gnu home services shells))
 
 (home-environment
  (packages
@@ -49,19 +51,15 @@
      "nmap"
      "netcat"
      "net-tools"
-     "bind:utils" ;; dig, nslookup
-     "openresolv"
 
      ;; lib
      "ncurses"
      "libvterm"
      "qtwayland"
-     "libxcrypt"
 
      ;; util
      "imagemagick"
      "ghostscript"
-     "ntfs-3g"
      "cifs-utils"
      "tree"
      "ripgrep"
@@ -83,6 +81,7 @@
      "python-pip"
      "python-virtualenv"
      "go"
+     "docker-compose"
      )))
 
  (services
@@ -90,14 +89,9 @@
                  (home-bash-configuration
                   (bashrc (list (local-file ".bashrc" "bashrc")))
                   (bash-profile (list (local-file ".bash_profile" "bash_profile")))))
-        (service home-zsh-service-type
-                 (home-zsh-configuration
-                  (xdg-flavor? #f)
-                  (zshrc (list (local-file ".zshrc" "zshrc")))
-                  (zprofile (list (local-file ".zprofile" "zprofile")))))
         (simple-service 'home-env-var-service
 		                home-environment-variables-service-type
-		                `(("SHELL" . ,(file-append zsh "/bin/zsh"))
+		                `(
                           ("_JAVA_AWT_WM_NONREPARENTING" . "1")
                           ("QT_QPA_PLATFORM" . "xcb")
                           ("QUTE_QT_WRAPPER" . "PyQt6")
