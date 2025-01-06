@@ -11,6 +11,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages wm)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 format)
@@ -48,73 +49,80 @@
 
 (define base-system
   (operating-system
-    (host-name "base")                  ; will be overwritten
-    (kernel linux)
-    (firmware (list linux-firmware))
-    (initrd microcode-initrd)
-    (locale "en_US.utf8")
-    (timezone "Europe/Rome")
-    (keyboard-layout (keyboard-layout "it" #:options '("caps:escape")))
-    (users (cons* (user-account
-                   (name "tomrss")
-                   (comment "Tommaso Rossi")
-                   (uid %user-uid)
-                   (group "users")
-                   (home-directory "/home/tomrss")
-                   (supplementary-groups '("wheel"
-                                           "netdev"
-                                           "docker"
-                                           "audio"
-                                           "tty"
-                                           "input"
-                                           "video")))
-                  %base-user-accounts))
+   (host-name "base")                  ; will be overwritten
+   (kernel linux)
+   (firmware (list linux-firmware))
+   (initrd microcode-initrd)
+   (locale "en_US.utf8")
+   (timezone "Europe/Rome")
+   (keyboard-layout (keyboard-layout "it" #:options '("caps:escape")))
+   (users (cons* (user-account
+                  (name "tomrss")
+                  (comment "Tommaso Rossi")
+                  (uid %user-uid)
+                  (group "users")
+                  (home-directory "/home/tomrss")
+                  (supplementary-groups '("wheel"
+                                          "netdev"
+                                          "docker"
+                                          "audio"
+                                          "tty"
+                                          "input"
+                                          "video")))
+                 %base-user-accounts))
 
-    (packages
-     (cons* pulseaudio
-            alacritty
-            git
-            vim
-            stow
-            libnotify
-            %base-packages))
+   (packages
+    (cons* pulseaudio
+           alacritty
+           git
+           vim
+           stow
+           libnotify
+           %base-packages))
 
-    (services
-     (append
-      (list
-       (service openssh-service-type
-                (openssh-configuration
-                 (permit-root-login #f)
-                 (openssh openssh-sans-x)
-                 (port-number 2222)))
-       (service containerd-service-type)
-       (service docker-service-type))
-      %udev-rules-services
-      (modify-services %no-login-desktop-services
-        (guix-service-type
-         config => (guix-configuration
-                    (inherit config)
-                    (substitute-urls
-                     (append (list "https://substitutes.nonguix.org")
-                             %default-substitute-urls))
-                    (authorized-keys
-                     (cons* (plain-file "nonguix.pub"
-                                        "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))")
-                            %default-authorized-guix-keys)))))))
+   (services
+    (append
+     (list
+      (service openssh-service-type
+               (openssh-configuration
+                (permit-root-login #f)
+                (openssh openssh-sans-x)
+                (port-number 2222)))
+      ;; this should be in home config but it can't be
+      (service screen-locker-service-type
+               (screen-locker-configuration
+                (name "swaylock")
+                (program (file-append swaylock "/bin/swaylock"))
+                (using-pam? #t)
+                (using-setuid? #f)))
+      (service containerd-service-type)
+      (service docker-service-type))
+     %udev-rules-services
+     (modify-services %no-login-desktop-services
+                      (guix-service-type
+                       config => (guix-configuration
+                                  (inherit config)
+                                  (substitute-urls
+                                   (append (list "https://substitutes.nonguix.org")
+                                           %default-substitute-urls))
+                                  (authorized-keys
+                                   (cons* (plain-file "nonguix.pub"
+                                                      "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))")
+                                          %default-authorized-guix-keys)))))))
 
-    ;; this will be overwritten by legacy bios systems
-    (bootloader
-     (bootloader-configuration
-      (bootloader grub-efi-bootloader)
-      (targets (list "/boot/efi"))
-      (timeout 2)
-      (keyboard-layout keyboard-layout)))
+   ;; this will be overwritten by legacy bios systems
+   (bootloader
+    (bootloader-configuration
+     (bootloader grub-efi-bootloader)
+     (targets (list "/boot/efi"))
+     (timeout 2)
+     (keyboard-layout keyboard-layout)))
 
-    ;; this will be overwritten
-    (file-systems (cons*
-                   (file-system
-                     (mount-point "/tmp")
-                     (device "none")
-                     (type "tmpfs")
-                     (check? #f))
-                   %base-file-systems))))
+   ;; this will be overwritten
+   (file-systems (cons*
+                  (file-system
+                   (mount-point "/tmp")
+                   (device "none")
+                   (type "tmpfs")
+                   (check? #f))
+                  %base-file-systems))))

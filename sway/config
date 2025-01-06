@@ -58,13 +58,13 @@ exec swaync
 bindsym $mod+Shift+n exec swaync-client -t -sw
 
 ### Idle configuration
-#
-# Example configuration:
-#
-# exec swayidle -w \
-#          timeout 5 'swaylock -f -c 000000' \
-#          timeout 10 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-#          before-sleep 'swaylock -f -c 000000'
+
+set $lock 'swaylock -f -i ~/.dotfiles/sway/guix-nord-bg.png -s fill --font "JetBrains Mono"'
+exec swayidle -w \
+  timeout 360 $lock \
+  timeout 420 'swaymsg "output * dpms off"' \
+	resume 'swaymsg "output * dpms on"' \
+  before-sleep $lock
 #
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -119,8 +119,7 @@ input type:touchpad tap enabled
     bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
 
     # Lock screen
-#    bindsym $mod+t exec swaylock -i /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png --scaling fill
-    bindsym $mod+t exec swaylock -c 000000
+    bindsym $mod+t exec $lock
 #
 # Custom:
 #
