@@ -1,8 +1,8 @@
 (use-modules (gnu)
              (gnu services desktop)
              (gnu services xorg)        ; just to exclude gdm service
+             (gnu services docker)
              (gnu packages vim)
-             (gnu packages certs)
              (gnu packages gnome)
              (gnu packages terminals)
              (gnu packages pulseaudio)
@@ -57,6 +57,7 @@
                 (home-directory "/home/tomrss")
                 (supplementary-groups '("wheel"
                                         "netdev"
+                                        "docker"
                                         "audio"
                                         "tty"
                                         "input"
@@ -64,8 +65,7 @@
                %base-user-accounts))
 
  (packages
-  (cons* nss-certs
-         pulseaudio
+  (cons* pulseaudio
          alacritty
          git
          vim
@@ -74,18 +74,22 @@
          %base-packages))
 
  (services
-  (append %udev-rules-services
-          (modify-services
-           %no-login-desktop-services
-           (guix-service-type
-            config => (guix-configuration
-                       (inherit config)
-                       (substitute-urls
-                        (append (list "https://substitutes.nonguix.org")
-                                %default-substitute-urls))
-                       (authorized-keys
-                        (cons* (local-file "/home/tomrss/.dotfiles/nonguix-signing-key.pub")
-                               %default-authorized-guix-keys)))))))
+  (append
+   (list
+    (service containerd-service-type)
+    (service docker-service-type))
+   %udev-rules-services
+   (modify-services
+    %no-login-desktop-services
+    (guix-service-type
+     config => (guix-configuration
+                (inherit config)
+                (substitute-urls
+                 (append (list "https://substitutes.nonguix.org")
+                         %default-substitute-urls))
+                (authorized-keys
+                 (cons* (local-file "/home/tomrss/.dotfiles/nonguix-signing-key.pub")
+                        %default-authorized-guix-keys)))))))
 
  (bootloader
   (bootloader-configuration
