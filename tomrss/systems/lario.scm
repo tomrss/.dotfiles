@@ -1,4 +1,4 @@
-(define-module (tomrss systems dergano)
+(define-module (tomrss systems lario)
   #:use-module (gnu)
   #:use-module (guix)
   #:use-module (tomrss systems base))
@@ -12,7 +12,7 @@
     (bootloader grub-bootloader)
     (targets (list "/dev/sda"))
     (timeout 2)
-    (keyboard-layout keyboard-layout)))
+    (keyboard-layout (operating-system-keyboard-layout base-system))))
 
   (mapped-devices
    (list (mapped-device
