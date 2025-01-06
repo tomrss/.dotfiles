@@ -15,7 +15,11 @@ check-substitutes:
 
 .PHONY: home-upgrade
 home-upgrade:
-	guix home reconfigure home.scm
+	guix home -L . reconfigure tomrss/home/$(HOST).scm
+
+.PHONY: home-container
+home-container:
+	guix home -L . container tomrss/home/$(HOST).scm
 
 .PHONY: system-upgrade
 system-upgrade:
