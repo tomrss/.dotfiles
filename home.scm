@@ -42,17 +42,21 @@
 
      ;; networking
      "openssh"
+     "openvpn"
      "sshfs"
      "protonvpn-cli"
      "curl"
      "nmap"
      "netcat"
      "net-tools"
+     "bind:utils" ;; dig, nslookup
+     "openresolv"
 
      ;; lib
      "ncurses"
      "libvterm"
      "qtwayland"
+     "libxcrypt"
 
      ;; util
      "imagemagick"
