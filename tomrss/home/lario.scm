@@ -87,8 +87,8 @@
  (services
   (list (service home-bash-service-type
                  (home-bash-configuration
-                  (bashrc (list (local-file ".bashrc" "bashrc")))
-                  (bash-profile (list (local-file ".bash_profile" "bash_profile")))))
+                  (bashrc (list (local-file "../../.bashrc" "bashrc")))
+                  (bash-profile (list (local-file "../../.bash_profile" "bash_profile")))))
         (simple-service 'home-env-var-service
 		                home-environment-variables-service-type
 		                `(
@@ -98,13 +98,13 @@
                           ("CALIBRE_USE_DARK_PALETTE" . "1")
                           ("PATH" . "$PATH:$HOME/go/bin")))
         (service home-xdg-configuration-files-service-type
-                 `(("sway" ,(local-file "sway" #:recursive? #t))
-                   ("alacritty" ,(local-file "alacritty" #:recursive? #t))
-                   ("waybar" ,(local-file "waybar" #:recursive? #t))
-                   ("fuzzel" ,(local-file "fuzzel" #:recursive? #t))
-                   ("swaync" ,(local-file "swaync" #:recursive? #t))
+                 `(("sway" ,(local-file "../../sway" #:recursive? #t))
+                   ("alacritty" ,(local-file "../../alacritty" #:recursive? #t))
+                   ("waybar" ,(local-file "../../waybar" #:recursive? #t))
+                   ("fuzzel" ,(local-file "../../fuzzel" #:recursive? #t))
+                   ("swaync" ,(local-file "../../swaync" #:recursive? #t))
                    ;; don't copy the whole folder because some files are to be written from qutebrowser
                    ;; TODO: move that kind of files to another folder from qutebrowser config
-                   ("qutebrowser/themes" ,(local-file "qutebrowser/themes" #:recursive? #t))
-                   ("qutebrowser/config.py" ,(local-file "qutebrowser/config.py"))
-                   ("qutebrowser/quickmarks" ,(local-file "qutebrowser/quickmarks")))))))
+                   ("qutebrowser/themes" ,(local-file "../../qutebrowser/themes" #:recursive? #t))
+                   ("qutebrowser/config.py" ,(local-file "../../qutebrowser/config.py"))
+                   ("qutebrowser/quickmarks" ,(local-file "../../qutebrowser/quickmarks")))))))
