@@ -7,6 +7,7 @@
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (gnu home services shells)
+  #:use-module (gnu home services desktop)
   #:use-module (tomrss home services wm))
 
 (home-environment
@@ -115,6 +116,7 @@
                   ("qutebrowser/themes" ,(local-file "../../qutebrowser/themes" #:recursive? #t))
                   ("qutebrowser/config.py" ,(local-file "../../qutebrowser/config.py"))
                   ("qutebrowser/quickmarks" ,(local-file "../../qutebrowser/quickmarks"))))
+       (service home-dbus-service-type)
        (service home-sway-service-type
                 (home-sway-configuration
                  (config-folder "/home/tomrss/.dotfiles/sway"))))))
