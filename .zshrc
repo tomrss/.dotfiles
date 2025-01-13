@@ -14,18 +14,12 @@ function _clone {
 plugins=(
 	git 
 	docker 
-	nvm 
-	kubectl 
 	zsh-autosuggestions 
-	zsh-nvm 
-	zsh-sdkman
 )
 
 if [ ! -d "$ZSH" ]; then
     _clone "https://github.com/ohmyzsh/ohmyzsh" "$ZSH"
     _clone "https://github.com/zsh-users/zsh-autosuggestions" "$plugins_home/zsh-autosuggestions"
-    _clone "https://github.com/lukechilds/zsh-nvm" "$plugins_home/zsh-nvm"
-    _clone "https://github.com/matthieusb/zsh-sdkman" "$plugins_home/zsh-sdkman"
 fi
 
 source $ZSH/oh-my-zsh.sh
