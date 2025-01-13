@@ -12,7 +12,8 @@
  (packages
   (specifications->packages
    '(
-     ;; editors
+     ;; editors and terminals
+     "alacritty"
      "emacs-next-pgtk"
 
      ;; desktop
@@ -21,7 +22,6 @@
      "fuzzel"
      "adwaita-icon-theme"
      "hicolor-icon-theme"
-     "brightnessctl"
      "pavucontrol"
      "xdg-utils"
      "gnome-commander"
@@ -56,6 +56,7 @@
      "ncurses"
      "libvterm"
      "qtwayland"
+     "libnotify"
 
      ;; util
      "imagemagick"

@@ -85,12 +85,11 @@
 
    ;;; Base packages for minimal system functionality
    (packages (cons*
-              alacritty                 ; should not be here
+              brightnessctl
               pulseaudio
               git
               vim
               stow
-              libnotify
               %base-packages))
 
    ;;; Shepherd services
