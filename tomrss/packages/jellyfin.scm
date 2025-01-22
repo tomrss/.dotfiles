@@ -4,6 +4,7 @@
   #:use-module (gnu packages)
   #:use-module (guix build-system qt)
   #:use-module (guix git-download)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages xorg)
