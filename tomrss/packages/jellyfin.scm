@@ -1,6 +1,7 @@
 (define-module (tomrss packages jellyfin)
   #:use-module (guix)
-  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix licenses)
+                #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (guix build-system qt)
   #:use-module (guix git-download)
@@ -35,28 +36,49 @@
              (url "https://github.com/jellyfin/jellyfin-media-player")
              (commit "v1.11.1")))
        (file-name (git-file-name name version))
-       (sha256 (base32 "09c13qvdil76mlfc372jss9qk578dfrb0nyayh4a8l9kcj8zij96"))))
-    (inputs
-     (list libtool harfbuzz freetype fontconfig libx11 libxrandr
-           libvdpau libva mesa-headers egl-wayland yasm alsa-lib
-           pulseaudio uchardet zlib fribidi gnutls sdl2
-           qtwebengine-5 qtquickcontrols-5 qtbase-5 qtwayland-5
-           qtx11extras curl wget unzip python mpv))
-    (native-inputs
-     (list ninja python-wrapper))
+       (sha256
+        (base32 "09c13qvdil76mlfc372jss9qk578dfrb0nyayh4a8l9kcj8zij96"))))
+    (inputs (list libtool
+                  harfbuzz
+                  freetype
+                  fontconfig
+                  libx11
+                  libxrandr
+                  libvdpau
+                  libva
+                  mesa-headers
+                  egl-wayland
+                  yasm
+                  alsa-lib
+                  pulseaudio
+                  uchardet
+                  zlib
+                  fribidi
+                  gnutls
+                  sdl2
+                  qtwebengine-5
+                  qtquickcontrols-5
+                  qtbase-5
+                  qtwayland-5
+                  qtx11extras
+                  curl
+                  wget
+                  unzip
+                  python
+                  mpv))
+    (native-inputs (list ninja python-wrapper))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f
        #:configure-flags (list "-GNinja")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda _
-             (invoke "ninja"
-                     "-j" (number->string (parallel-job-count)))))
-         (replace 'install
-           (lambda _
-             (invoke "ninja" "install"))))))
+       #:phases (modify-phases %standard-phases
+                  (replace 'build
+                    (lambda _
+                      (invoke "ninja" "-j"
+                              (number->string (parallel-job-count)))))
+                  (replace 'install
+                    (lambda _
+                      (invoke "ninja" "install"))))))
     (home-page "https://github.com/jellyfin/jellyfin-media-player")
     (synopsis "Jellyfin Desktop Client")
     (description "Desktop client for Jellyfin, the free software media system.
