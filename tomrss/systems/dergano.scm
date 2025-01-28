@@ -1,7 +1,7 @@
 (define-module (tomrss systems dergano)
   #:use-module (gnu)
   #:use-module (guix)
-  #:use-module (tomrss systems base))
+  #:use-module (tomrss services base))
 
 (operating-system
  (inherit %base-system)

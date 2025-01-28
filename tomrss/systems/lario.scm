@@ -151,25 +151,25 @@
 
    ;; containerd is needed by docker
    (service containerd-service-type)
-   (service docker-service-type))
+   (service docker-service-type)
 
-  ;;; Base services
-  ;;; https://guix.gnu.org/manual/en/html_node/Base-Services.html
+   ;;; Base services
+   ;;; https://guix.gnu.org/manual/en/html_node/Base-Services.html
 
-  (modify-services %base-services
-                   ;; configure nonguix substitutes in the guix daemon
-                   (guix-service-type
-                    config => (guix-configuration
-                               (inherit config)
-                               (substitute-urls
-                                (append (list "https://substitutes.nonguix.org")
-                                        %default-substitute-urls))
-                               (authorized-keys
-                                (cons* (nonguix-key)
-                                       %default-authorized-guix-keys))))
-		           (mingetty-service-type 
-		            config => (auto-login-to-tty
-                               config "tty1" "tomrss"))))
+   (modify-services %base-services
+                    ;; configure nonguix substitutes in the guix daemon
+                    (guix-service-type
+                     config => (guix-configuration
+                                (inherit config)
+                                (substitute-urls
+                                 (append (list "https://substitutes.nonguix.org")
+                                         %default-substitute-urls))
+                                (authorized-keys
+                                 (cons* (nonguix-key)
+                                        %default-authorized-guix-keys))))
+		            (mingetty-service-type 
+		             config => (auto-login-to-tty
+                                config "tty1" "tomrss")))))
 
  ;;; Configure the bootloader
  
