@@ -29,8 +29,6 @@
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd))
 
-(define %user-uid 1000)
-
 (define (nonguix-key)
   (plain-file "nonguix.pub"
               "(public-key (ecc (curve Ed25519) (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))"))
@@ -65,7 +63,7 @@
          (user-account
           (name "tomrss")
           (comment "Tommaso Rossi")
-          (uid %user-uid)
+          (uid 1000)
           (group "users")
           (home-directory "/home/tomrss")
           (supplementary-groups '("wheel"
@@ -78,13 +76,19 @@
          (user-account
           (name "hms")
           (comment "Home Media Server")
-          (uid %user-uid)
-          (group "users")
+          (uid 999)
+          (group "applications")
           (home-directory "/home/hms")
           (supplementary-groups '("audio"
                                   "input"
                                   "video")))
          %base-user-accounts))
+
+ (groups (cons*
+          (user-group
+           (name "applications")
+           (id 999))
+          %base-groups))
 
  ;;; Base packages for minimal system functionality
  (packages (cons*
@@ -98,75 +102,74 @@
 
  ;;; Shepherd services
  (services
-  (append
-   (list
-    ;;; Networking
-    ;;; https://guix.gnu.org/manual/devel/en/html_node/Networking-Setup.html
-    ;;; https://guix.gnu.org/manual/devel/en/html_node/Networking-Services.html
+  (cons*
+   ;;; Networking
+   ;;; https://guix.gnu.org/manual/devel/en/html_node/Networking-Setup.html
+   ;;; https://guix.gnu.org/manual/devel/en/html_node/Networking-Services.html
 
-    ;; needed by network manager
-    (service wpa-supplicant-service-type)
-    ;; network manager will take care of most of it. just add vpn plugin
-    (service network-manager-service-type
-             (network-manager-configuration
-              (vpn-plugins
-               (list network-manager-openvpn))))
-    ;; time sync
-    (service ntp-service-type)
-    ;; enable ssh server on port 2222
-    (service openssh-service-type
-             (openssh-configuration
-              (permit-root-login #f)
-              (openssh openssh-sans-x)
-              (port-number 2222)))
-    ;; cellular modems
-    (service modem-manager-service-type)
-    ;; discoverability on the local network
-    (service avahi-service-type)
+   ;; needed by network manager
+   (service wpa-supplicant-service-type)
+   ;; network manager will take care of most of it. just add vpn plugin
+   (service network-manager-service-type
+            (network-manager-configuration
+             (vpn-plugins
+              (list network-manager-openvpn))))
+   ;; time sync
+   (service ntp-service-type)
+   ;; enable ssh server on port 2222
+   (service openssh-service-type
+            (openssh-configuration
+             (permit-root-login #f)
+             (openssh openssh-sans-x)
+             (port-number 2222)))
+   ;; cellular modems
+   (service modem-manager-service-type)
+   ;; discoverability on the local network
+   (service avahi-service-type)
 
-    ;;; Desktop services 
-    ;;; https://guix.gnu.org/manual/en/html_node/Desktop-Services.html
+   ;;; Desktop services 
+   ;;; https://guix.gnu.org/manual/en/html_node/Desktop-Services.html
 
-    (service elogind-service-type)
-    (service udisks-service-type)
-    (service upower-service-type)
-    (service dbus-root-service-type)    
-    fontconfig-file-system-service
+   (service elogind-service-type)
+   (service udisks-service-type)
+   (service upower-service-type)
+   (service dbus-root-service-type)    
+   fontconfig-file-system-service
 
-    ;;; Power management services
-    ;;; https://guix.gnu.org/manual/en/html_node/Power-Management-Services.html
+   ;;; Power management services
+   ;;; https://guix.gnu.org/manual/en/html_node/Power-Management-Services.html
 
-    ;; power saving
-    (service tlp-service-type
-             (tlp-configuration
-              (cpu-boost-on-ac? #t)))
-    ;; control thermal state
-    (service thermald-service-type)
+   ;; power saving
+   (service tlp-service-type
+            (tlp-configuration
+             (cpu-boost-on-ac? #t)))
+   ;; control thermal state
+   (service thermald-service-type)
 
       ;;; Miscellaneous services
       ;;; https://guix.gnu.org/manual/devel/en/html_node/Miscellaneous-Services.html
 
-    ;; containerd is needed by docker
-    (service containerd-service-type)
-    (service docker-service-type))
+   ;; containerd is needed by docker
+   (service containerd-service-type)
+   (service docker-service-type))
 
-   ;;; Base services
-   ;; https://guix.gnu.org/manual/en/html_node/Base-Services.html
+  ;;; Base services
+  ;;; https://guix.gnu.org/manual/en/html_node/Base-Services.html
 
-   (modify-services %base-services
-                    ;; configure nonguix substitutes in the guix daemon
-                    (guix-service-type
-                     config => (guix-configuration
-                                (inherit config)
-                                (substitute-urls
-                                 (append (list "https://substitutes.nonguix.org")
-                                         %default-substitute-urls))
-                                (authorized-keys
-                                 (cons* (nonguix-key)
-                                        %default-authorized-guix-keys))))
-		            (mingetty-service-type 
-		             config => (auto-login-to-tty
-                                config "tty1" "tomrss")))))
+  (modify-services %base-services
+                   ;; configure nonguix substitutes in the guix daemon
+                   (guix-service-type
+                    config => (guix-configuration
+                               (inherit config)
+                               (substitute-urls
+                                (append (list "https://substitutes.nonguix.org")
+                                        %default-substitute-urls))
+                               (authorized-keys
+                                (cons* (nonguix-key)
+                                       %default-authorized-guix-keys))))
+		           (mingetty-service-type 
+		            config => (auto-login-to-tty
+                               config "tty1" "tomrss"))))
 
  ;;; Configure the bootloader
  
