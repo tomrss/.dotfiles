@@ -63,7 +63,6 @@
          (user-account
           (name "tomrss")
           (comment "Tommaso Rossi")
-          (uid 1000)
           (group "users")
           (home-directory "/home/tomrss")
           (supplementary-groups '("wheel"
@@ -76,7 +75,6 @@
          (user-account
           (name "hms")
           (comment "Home Media Server")
-          (uid 999)
           (group "applications")
           (home-directory "/home/hms")
           (supplementary-groups '("audio"
@@ -85,7 +83,6 @@
          (user-account
           (name "hmsplayer")
           (comment "Home Media Server Player")
-          (uid 998)
           (group "applications")
           (home-directory "/home/hmsplayer")
           (supplementary-groups '("audio"
