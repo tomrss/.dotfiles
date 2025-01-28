@@ -82,6 +82,15 @@
           (supplementary-groups '("audio"
                                   "input"
                                   "video")))
+         (user-account
+          (name "hmsplayer")
+          (comment "Home Media Server Player")
+          (uid 998)
+          (group "applications")
+          (home-directory "/home/hmsplayer")
+          (supplementary-groups '("audio"
+                                  "input"
+                                  "video")))
          %base-user-accounts))
 
  (groups (cons*
@@ -169,7 +178,7 @@
                                         %default-authorized-guix-keys))))
 		            (mingetty-service-type 
 		             config => (auto-login-to-tty
-                                config "tty1" "tomrss")))))
+                                config "tty1" "hmsplayer")))))
 
  ;;; Configure the bootloader
  
