@@ -1,4 +1,4 @@
-# TODO use base system
+;; TODO use base system
 (define-module (tomrss systems base)
   #:use-module (gnu)
   #:use-module (gnu services base)
@@ -73,6 +73,15 @@
                                   "docker"
                                   "audio"
                                   "tty"
+                                  "input"
+                                  "video")))
+         (user-account
+          (name "hms")
+          (comment "Home Media Server")
+          (uid %user-uid)
+          (group "users")
+          (home-directory "/home/hms")
+          (supplementary-groups '("audio"
                                   "input"
                                   "video")))
          %base-user-accounts))
