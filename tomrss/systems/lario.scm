@@ -92,8 +92,7 @@
 
  (groups (cons*
           (user-group
-           (name "applications")
-           (id 999))
+           (name "applications"))
           %base-groups))
 
  ;;; Base packages for minimal system functionality
