@@ -12,6 +12,7 @@
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages vpn)
   #:use-module (gnu packages wm)
   #:use-module (gnu services)
   #:use-module (gnu home services shells)
@@ -33,6 +34,7 @@
          net-tools
          lsof
          openresolv
+	 openvpn
          ;; other nice utilities
          tree
          ripgrep
