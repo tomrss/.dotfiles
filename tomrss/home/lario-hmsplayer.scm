@@ -5,7 +5,8 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu services)
   #:use-module (gnu home)
-  #:use-module (gnu home services shells))
+  #:use-module (gnu home services shells)
+  #:use-module (gnu home services desktop))
 
 ;; kiosk with jellyfin client
 
