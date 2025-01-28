@@ -1,4 +1,4 @@
-(define-module (tomrss home lario)
+(define-module (tomrss home lario-tomrss)
   #:use-module (tomrss packages jellyfin)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
@@ -23,32 +23,24 @@
 
 (home-environment
  (packages 
-   ;; kiosk with jellyfin client
-   (list cage
-         jellyfin-media-player
-         ;; networking utils
-         curl
-         nmap
-         netcat
-         net-tools
-         lsof
-         openresolv
-         ;; other nice utilities
-         tree
-         ripgrep
-         zip
-         unzip
-         bc))
+  (list emacs-no-x
+        ;; networking utils
+        curl
+        nmap
+        netcat
+        net-tools
+        lsof
+        openresolv
+        openvpn
+        ;; other nice utilities
+        tree
+        ripgrep
+        zip
+        unzip
+        bc))
+
  (services
   (list (service home-bash-service-type
                  (home-bash-configuration
-		  (bashrc       (list (local-file 
-					"../../.bashrc"
-					"bashrc")))
-                  (bash-profile (list (plain-file 
-					"start-jellyfin-kiosk"
-					(string-append
-					  "# If running from tty1 start jellyfin kiosk\n"
-					  "[ \"$(tty)\" = \"/dev/tty1\" ] && "
-					  "cage -d -- jellyfinmediaplayer --platform wayland"))))))
-	(service home-dbus-service-type))))
+		          (bashrc (list (local-file "../../.bashrc" "bashrc")))))
+        (service home-dbus-service-type))))
