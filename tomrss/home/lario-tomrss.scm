@@ -12,14 +12,15 @@
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages vpn)
   #:use-module (gnu packages wm)
   #:use-module (gnu services)
-  #:use-module (gnu home services shells)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services pm)
   #:use-module (gnu home services desktop)
-  #:use-module (gnu home services syncthing))
+  #:use-module (gnu home services syncthing)
+  #:use-module (gnu home services shells))
 
 (home-environment
  (packages 
