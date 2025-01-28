@@ -126,7 +126,9 @@
             (openssh-configuration
              (permit-root-login #f)
              (openssh openssh-sans-x)
-             (port-number 2222)))
+             (port-number 2222)
+             (extra-content (string-append "AllowGroups users"
+                                           "DenyGroups applications")))
    ;; cellular modems
    (service modem-manager-service-type)
    ;; discoverability on the local network
