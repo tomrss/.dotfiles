@@ -1,5 +1,5 @@
 ;; TODO use base system
-(define-module (tomrss systems base)
+(define-module (tomrss systems lario)
   #:use-module (gnu)
   #:use-module (gnu services base)
   #:use-module (gnu services avahi)
