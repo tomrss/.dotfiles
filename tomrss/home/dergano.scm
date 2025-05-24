@@ -39,6 +39,7 @@
      "qview"
      "youtube-dl"
      "calibre"
+     "jellyfin-media-player"
 
      ;; fonts
      "font-jetbrains-mono"
